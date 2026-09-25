@@ -50,6 +50,13 @@
     padding:16px 20px;margin:14px auto 0;max-width:1340px;
   }
 
+  .topbarLeft{display:flex;align-items:center;gap:14px}
+
+  .refreshBtn{
+    width:44px;height:44px;padding:0;font-size:22px;
+    display:flex;align-items:center;justify-content:center;
+  }
+
   .brand{display:flex;align-items:center;gap:14px}
   .logo{
     width:46px;height:46px;border-radius:16px;
@@ -395,13 +402,18 @@
   </div>
 
   <header class="glass topbar">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <h1>Configuratore Stampa</h1>
-        <p>Logica semplificata · grafica snella · piccole tirature corrette</p>
+    <div class="topbarLeft">
+      <button class="btn refreshBtn" onclick="window.location.reload()" title="Ricarica la pagina">⟳</button>
+
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Configuratore Stampa</h1>
+          <p>Tariffa a foglio · taglio cliente · formato libero</p>
+        </div>
       </div>
     </div>
+
     <div class="topActions">
       <button id="viewStepBtn" class="btn" onclick="showWizard()">Step</button>
       <button id="viewNormalBtn" class="btn" onclick="showNormal()">Configuratore</button>
@@ -430,11 +442,11 @@
 
           <div class="fieldRow3">
             <label>Larghezza
-              <input id="wWidth" type="text" inputmode="decimal" value="14,8">
+              <input id="wWidth" type="text" inputmode="decimal" value="0">
             </label>
 
             <label>Altezza
-              <input id="wHeight" type="text" inputmode="decimal" value="21">
+              <input id="wHeight" type="text" inputmode="decimal" value="0">
             </label>
 
             <div class="unitControl">
@@ -499,7 +511,7 @@
         </div>
 
         <div id="wStep5" class="wStep hidden">
-          <h3>5 · Grafica</h3>
+          <h3>5 · Grafica e opzioni finali</h3>
 
           <div class="singleField">
             <label>Complessità grafica</label>
@@ -513,6 +525,13 @@
           </div>
 
           <div class="muted" id="wGraphicsNote"></div>
+
+          <div style="margin-top:16px">
+            <label class="check">
+              <input type="checkbox" id="wCustomerCut" onchange="setCustomerCut(this.checked)">
+              <span>Taglio a carico del cliente</span>
+            </label>
+          </div>
         </div>
 
         <div id="wStep6" class="wStep hidden">
@@ -543,11 +562,11 @@
 
           <div class="fieldRow3">
             <label>Larghezza
-              <input id="width" type="text" inputmode="decimal" value="14,8">
+              <input id="width" type="text" inputmode="decimal" value="0">
             </label>
 
             <label>Altezza
-              <input id="height" type="text" inputmode="decimal" value="21">
+              <input id="height" type="text" inputmode="decimal" value="0">
             </label>
 
             <div class="unitControl">
@@ -608,6 +627,13 @@
               <span>Rivenditore</span>
             </label>
           </div>
+
+          <div style="margin-top:10px">
+            <label class="check">
+              <input type="checkbox" id="customerCut" onchange="setCustomerCut(this.checked)">
+              <span>Taglio a carico del cliente</span>
+            </label>
+          </div>
         </section>
 
         <section class="glass card summary">
@@ -647,7 +673,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v10';
+const STORAGE_KEY = 'configuratore_stampa_v12';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -657,23 +683,20 @@ const DEFAULT_DATA = {
     minOrder: 5,
     resellerDiscount: 20,
 
-    fixedCut: 10,
+    fixedCut: 0,
 
     smallMaxSheets: 3,
     smallSheetCost: 3,
     smallDuplexFixed: 5,
 
-    midMaxSheets: 30,
-    midRate: 0.70,
-    largeRate: 0.50,
-
-    extraThreshold: 40,
-    extraCost: 20,
+    standardSheetRate: 0.70,
+    standardSheetThreshold: 50,
+    discountedSheetRate: 0.50,
+    customerCutSheetThreshold: 60,
 
     heavyThreshold: 170,
     heavyCost: 10,
-
-    printUnit: 'sheet',
+    customerCutHeavySheetThreshold: 50,
 
     hourlyFirstHour: 50,
     hourlyNextHours: 30,
@@ -786,8 +809,8 @@ const state = {
   wizardStep: 1,
 
   unit: 'cm',
-  widthMm: 148,
-  heightMm: 210,
+  widthMm: 0,
+  heightMm: 0,
 
   qty: 0,
 
@@ -812,6 +835,8 @@ const state = {
   graphicHours: 1,
 
   reseller: false,
+  customerCut: false,
+
   admin: false
 };
 
@@ -1129,18 +1154,10 @@ function evaluate(qty = state.qty){
 
   const s = data.settings;
 
-  const units = s.printUnit === 'piece'
-    ? producedPieces * state.sides
-    : chosen.sheets * state.sides;
-
-  const printLabel = s.printUnit === 'piece'
-    ? `Stampe (${fmtNum(producedPieces)} pezzi, ${fmtNum(units)} stampe)`
-    : `Stampe (${fmtNum(chosen.sheets)} fogli, ${fmtNum(units)} stampe)`;
-
   let productionCost = 0;
   let details = [];
 
-  if(chosen.sheets <= s.smallMaxSheets){
+  if(s.smallMaxSheets > 0 && chosen.sheets <= s.smallMaxSheets){
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
 
@@ -1151,7 +1168,7 @@ function evaluate(qty = state.qty){
     }
 
     details.push({
-      label: printLabel,
+      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.smallSheetCost)})`,
       info: smallInfo,
       value: smallCost
     });
@@ -1167,25 +1184,40 @@ function evaluate(qty = state.qty){
       }
     }
   } else {
-    const rate = chosen.sheets <= s.midMaxSheets ? s.midRate : s.largeRate;
-    const printCost = units * rate;
+    const threshold = state.customerCut
+      ? parseNum(s.customerCutSheetThreshold)
+      : parseNum(s.standardSheetThreshold);
 
+    const rate = chosen.sheets > threshold
+      ? parseNum(s.discountedSheetRate)
+      : parseNum(s.standardSheetRate);
+
+    const printCost = chosen.sheets * rate;
     productionCost += printCost;
-    details.push({ label: printLabel, value: printCost });
 
-    if(units > s.extraThreshold){
-      productionCost += s.extraCost;
-      details.push({ label:`Superamento soglia ${s.extraThreshold} stampe`, value:s.extraCost });
+    details.push({
+      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(rate)})`,
+      info: `Tariffa per foglio: ${fmtMoney(rate)}. Soglia: ${fmtNum(threshold)} fogli${state.customerCut ? ' con taglio a carico del cliente' : ''}.`,
+      value: printCost
+    });
+
+    let applyHeavy = state.weight > s.heavyThreshold;
+
+    if(applyHeavy && state.customerCut){
+      const customerHeavyThreshold = parseNum(s.customerCutHeavySheetThreshold);
+      applyHeavy = chosen.sheets > customerHeavyThreshold;
     }
 
-    if(state.weight > s.heavyThreshold){
+    if(applyHeavy){
       productionCost += s.heavyCost;
       details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
     }
   }
 
-  productionCost += s.fixedCut;
-  details.push({ label:'Taglio', value:s.fixedCut });
+  if(!state.customerCut && parseNum(s.fixedCut) > 0){
+    productionCost += parseNum(s.fixedCut);
+    details.push({ label:'Taglio', value:parseNum(s.fixedCut) });
+  }
 
   const graphicsCost = getGraphicsCost();
   details.push({ label:`Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
@@ -1228,7 +1260,6 @@ function evaluate(qty = state.qty){
     candidates,
     chosen,
     producedPieces,
-    units,
     details,
     productionCost: round2(productionCost),
     graphicsCost: round2(graphicsCost),
@@ -1508,7 +1539,8 @@ function renderSummaryInto(calc, container){
     { key:'sides', label:'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' },
     { key:'extras', label:'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' },
     { key:'graphics', label:'Grafica', value:getGraphicsLabel() },
-    { key:'reseller', label:'Rivenditore', value: state.reseller ? 'Sì' : 'No' }
+    { key:'reseller', label:'Rivenditore', value: state.reseller ? 'Sì' : 'No' },
+    { key:'customerCut', label:'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
   );
 
   const priceHtml = calc.isQtyZero
@@ -1579,6 +1611,9 @@ function refresh(){
 
   if($('#reseller')) $('#reseller').checked = state.reseller;
   if($('#wReseller')) $('#wReseller').checked = state.reseller;
+
+  if($('#customerCut')) $('#customerCut').checked = state.customerCut;
+  if($('#wCustomerCut')) $('#wCustomerCut').checked = state.customerCut;
 
   if(state.uiMode === 'normal'){
     renderPreviewInto(calc, $('#preview'));
@@ -1715,6 +1750,11 @@ function setSides(n){
 
 function setReseller(checked){
   state.reseller = checked;
+  refresh();
+}
+
+function setCustomerCut(checked){
+  state.customerCut = checked;
   refresh();
 }
 
@@ -1986,6 +2026,17 @@ function editSummaryItem(el){
     return;
   }
 
+  if(key === 'customerCut'){
+    strong.outerHTML = `
+      <label class="check" style="margin-top:8px">
+        <input type="checkbox" ${state.customerCut ? 'checked' : ''} onchange="setCustomerCutFromSummary(this.checked)">
+        <span>Taglio a carico del cliente</span>
+      </label>
+    `;
+    el.querySelector('input').focus();
+    return;
+  }
+
   if(key === 'format'){
     strong.outerHTML = `
       <div class="inlineEditor" onclick="event.stopPropagation()">
@@ -2077,6 +2128,11 @@ function setSidesFromSummary(value){
 
 function setResellerFromSummary(checked){
   state.reseller = checked;
+  refresh();
+}
+
+function setCustomerCutFromSummary(checked){
+  state.customerCut = checked;
   refresh();
 }
 
@@ -2222,21 +2278,17 @@ function renderAdmin(){
         <input type="number" step="0.01" id="set_smallDuplexFixed" value="${s.smallDuplexFixed}">
       </label>
 
-      <label>Soglia media tiratura (fogli)
-        <input type="number" step="1" id="set_midMaxSheets" value="${s.midMaxSheets}">
+      <label>Costo standard €/foglio
+        <input type="number" step="0.01" id="set_standardSheetRate" value="${s.standardSheetRate}">
       </label>
-      <label>Tariffa media €/lato
-        <input type="number" step="0.01" id="set_midRate" value="${s.midRate}">
+      <label>Soglia standard (fogli)
+        <input type="number" step="1" id="set_standardSheetThreshold" value="${s.standardSheetThreshold}">
       </label>
-      <label>Tariffa grande €/lato
-        <input type="number" step="0.01" id="set_largeRate" value="${s.largeRate}">
+      <label>Costo oltre soglia €/foglio
+        <input type="number" step="0.01" id="set_discountedSheetRate" value="${s.discountedSheetRate}">
       </label>
-
-      <label>Soglia extra stampe
-        <input type="number" step="1" id="set_extraThreshold" value="${s.extraThreshold}">
-      </label>
-      <label>Costo extra €
-        <input type="number" step="0.01" id="set_extraCost" value="${s.extraCost}">
+      <label>Soglia con taglio cliente (fogli)
+        <input type="number" step="1" id="set_customerCutSheetThreshold" value="${s.customerCutSheetThreshold}">
       </label>
 
       <label>Soglia costo aggiuntivo carta (g)
@@ -2245,12 +2297,8 @@ function renderAdmin(){
       <label>Costo aggiuntivo carta €
         <input type="number" step="0.01" id="set_heavyCost" value="${s.heavyCost}">
       </label>
-
-      <label>Base calcolo stampa
-        <select id="set_printUnit">
-          <option value="sheet" ${s.printUnit === 'sheet' ? 'selected' : ''}>Lati fisici del foglio</option>
-          <option value="piece" ${s.printUnit === 'piece' ? 'selected' : ''}>Lati prodotto / pezzi imposti</option>
-        </select>
+      <label>Soglia costo carta con taglio cliente (fogli)
+        <input type="number" step="1" id="set_customerCutHeavySheetThreshold" value="${s.customerCutHeavySheetThreshold}">
       </label>
 
       <label>Grafica: prima ora €
@@ -2262,8 +2310,10 @@ function renderAdmin(){
     </div>
 
     <div class="adminNote">
-      Il costo “Fronte/retro piccola tiratura” si applica solo quando i fogli sono entro la soglia piccola e la stampa è fronte/retro.<br>
-      Non raddoppia il costo stampa e non si applica quando le stampe superano la soglia piccola.
+      Logica attuale:<br>
+      - senza taglio cliente: €0,70 a foglio fino alla soglia standard, poi €0,50 oltre la soglia;<br>
+      - con taglio cliente: €0,70 a foglio fino alla soglia taglio cliente, poi €0,50 oltre la soglia.<br><br>
+      Se vuoi disattivare la fascia piccola 1–3 fogli, imposta “Soglia piccola tiratura” a 0.
     </div>
 
     <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
@@ -2379,17 +2429,20 @@ function saveAdmin(){
   s.minOrder = parseNum($('#set_minOrder').value);
   s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
   s.fixedCut = parseNum($('#set_fixedCut').value);
-  s.smallMaxSheets = Math.max(1, Math.round(parseNum($('#set_smallMaxSheets').value)));
+
+  s.smallMaxSheets = Math.max(0, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
   s.smallDuplexFixed = parseNum($('#set_smallDuplexFixed').value);
-  s.midMaxSheets = Math.max(1, Math.round(parseNum($('#set_midMaxSheets').value)));
-  s.midRate = parseNum($('#set_midRate').value);
-  s.largeRate = parseNum($('#set_largeRate').value);
-  s.extraThreshold = parseNum($('#set_extraThreshold').value);
-  s.extraCost = parseNum($('#set_extraCost').value);
+
+  s.standardSheetRate = parseNum($('#set_standardSheetRate').value);
+  s.standardSheetThreshold = parseNum($('#set_standardSheetThreshold').value);
+  s.discountedSheetRate = parseNum($('#set_discountedSheetRate').value);
+  s.customerCutSheetThreshold = parseNum($('#set_customerCutSheetThreshold').value);
+
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
   s.heavyCost = parseNum($('#set_heavyCost').value);
-  s.printUnit = $('#set_printUnit').value;
+  s.customerCutHeavySheetThreshold = parseNum($('#set_customerCutHeavySheetThreshold').value);
+
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
   s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
 
