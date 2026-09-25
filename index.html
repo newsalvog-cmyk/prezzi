@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuratore Stampa Cartoncini</title>
+<style>
+  :root{
+    --text:#111827;
+    --muted:rgba(17,24,39,.58);
+    --line:rgba(255,255,255,.45);
+    --shadow:0 20px 60px rgba(0,0,0,.12);
+    --radius:28px;
+    --blue:#0a84ff;
+    --purple:#5856d6;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--text);
+    font-weight:400;
+    background:
+      radial-gradient(1200px 700px at 15% 10%, rgba(10,132,255,.12), transparent 50%),
+      radial-gradient(1000px 600px at 85% 20%, rgba(88,86,214,.14), transparent 50%),
+      linear-gradient(160deg,#f4f7ff,#eef5ff);
+    min-height:100vh;
+  }
+
+  .bg{position:fixed;inset:0;overflow:hidden;z-index:-1}
+  .blob{position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(70px);opacity:.32}
+  .b1{left:-120px;top:80px;background:rgba(10,132,255,.32)}
+  .b2{right:-100px;top:20px;background:rgba(88,86,214,.28)}
+  .b3{right:18%;bottom:-160px;background:rgba(52,199,89,.18)}
+
+  .glass{
+    background:linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
+    backdrop-filter:blur(24px) saturate(160%);
+    -webkit-backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+  }
+
+  header.topbar{
+    position:sticky;top:14px;z-index:20;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding:16px 20px;margin:14px auto 0;max-width:1340px;
+  }
+
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{
+    width:46px;height:46px;border-radius:16px;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    position:relative;overflow:hidden;flex:0 0 auto;
+  }
+  .logo:after{
+    content:"";position:absolute;inset:8px;border-radius:10px;
+    background:rgba(255,255,255,.32);
+  }
+
+  h1{margin:0;font-size:22px;letter-spacing:-.02em;font-weight:600}
+  header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  h2{margin:0 0 14px;font-size:20px;font-weight:600}
+  h3{margin:0 0 12px;font-size:16px;font-weight:600}
+
+  main{max-width:1340px;margin:18px auto 40px;padding:0 14px}
+  .hidden{display:none!important}
+  .muted{color:var(--muted)}
+  small{font-size:12px}
+
+  .topActions{display:flex;gap:10px;flex-wrap:wrap}
+
+  #normalView{display:grid;gap:18px}
+  .preview{padding:22px}
+  .grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:start}
+  .card{padding:20px}
+
+  .heroStats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px
+  }
+  .heroStat{
+    padding:14px 16px;border-radius:22px;
+    background:rgba(255,255,255,.42);
+    border:1px solid rgba(255,255,255,.45);
+  }
+  .heroValue{display:block;font-size:28px;font-weight:600}
+  .heroLabel{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+
+  .sheets{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  .sheetFig{margin:0;min-width:280px;flex:1;max-width:430px}
+  .sheetWrap{
+    padding:14px;border-radius:26px;background:rgba(255,255,255,.4);
+    border:1px solid rgba(255,255,255,.45);
+  }
+  .sheetFig svg{width:100%;height:auto;display:block}
+  .sheetFig figcaption{text-align:center;margin-top:10px;color:var(--muted);font-size:13px}
+  .paper{fill:#e9ebf0;stroke:rgba(0,0,0,.08)}
+  .printable{fill:#fff;stroke:rgba(0,0,0,.08)}
+  .copy{fill:rgba(10,132,255,.13);stroke:rgba(10,132,255,.35);stroke-width:1.2}
+  .copy.back{fill:rgba(88,86,214,.13);stroke:rgba(88,86,214,.35)}
+
+  label{display:block;font-size:13px;font-weight:500;color:rgba(17,24,39,.7)}
+  input,select,textarea{
+    width:100%;margin-top:6px;padding:12px 13px;border-radius:16px;
+    border:1px solid rgba(17,24,39,.09);
+    background:rgba(255,255,255,.6);
+    outline:none;font:inherit;font-weight:400;
+  }
+
+  .fieldRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .fieldRow3{display:grid;grid-template-columns:130px 1fr 1fr;gap:12px;margin-bottom:12px}
+  .singleField{margin-bottom:12px}
+  .fieldName{margin:16px 0 8px;font-size:13px;font-weight:600}
+
+  .segmented{
+    display:flex;gap:6px;padding:6px;border-radius:18px;
+    background:rgba(255,255,255,.42);
+    border:1px solid rgba(255,255,255,.45);
+    flex-wrap:wrap;
+  }
+
+  .btn,.segBtn{
+    border:none;cursor:pointer;font:inherit;font-weight:500;
+    transition:.18s transform,.18s background,.18s box-shadow;
+  }
+
+  .segBtn{
+    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(17,24,39,.64)
+  }
+  .segBtn.active{
+    background:rgba(255,255,255,.82);color:var(--text);
+    box-shadow:0 8px 20px rgba(0,0,0,.07);
+  }
+
+  .btn{
+    padding:11px 14px;border-radius:16px;
+    background:rgba(255,255,255,.62);
+    border:1px solid rgba(255,255,255,.5);
+  }
+  .btn.primary{
+    color:white;background:linear-gradient(135deg,var(--blue),var(--purple));
+    border:none;
+  }
+  .btn.active{
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    color:white;border:none;
+  }
+  .btn:disabled{opacity:.5;pointer-events:none}
+
+  .checkGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .check{
+    display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:16px;
+    background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.45);
+    font-size:14px;font-weight:500;cursor:pointer;
+  }
+  .check input{width:auto;margin-top:3px}
+  .check span{display:block;line-height:1.35}
+
+  .descGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+  .descItem{
+    padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.42);
+    border:1px solid rgba(255,255,255,.45)
+  }
+  .descItem span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+  .descItem strong{font-size:14px;font-weight:600}
+
+  .priceBox{
+    margin-top:16px;padding:18px;border-radius:24px;
+    background:linear-gradient(135deg,rgba(10,132,255,.10),rgba(88,86,214,.10));
+    border:1px solid rgba(255,255,255,.45)
+  }
+  .priceLabel{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  .price{font-size:38px;font-weight:600;margin-top:6px}
+  .breakdown{margin-top:14px;display:grid;gap:8px}
+  .breakRow{
+    display:flex;justify-content:space-between;gap:12px;padding:10px 12px;
+    border-radius:14px;background:rgba(255,255,255,.45);font-weight:500
+  }
+
+  .wizard{display:flex;justify-content:center;padding:10px 0 30px}
+  .wizardCard{width:min(920px,100%);padding:24px}
+  .wizardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+  .progress{height:8px;border-radius:999px;background:rgba(17,24,39,.08);overflow:hidden;margin:14px 0 22px}
+  #progressFill{
+    height:100%;width:16.6%;border-radius:999px;
+    background:linear-gradient(90deg,var(--blue),var(--purple));
+    transition:width .25s ease;
+  }
+  .wStep{min-height:340px}
+  .wizardNav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
+  .error{
+    padding:16px;border-radius:18px;background:rgba(255,59,48,.1);
+    border:1px solid rgba(255,59,48,.18);color:#b30000;font-weight:500
+  }
+
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.28);backdrop-filter:blur(8px)}
+  .modal-panel{
+    position:relative;width:min(1180px,100%);max-height:88vh;overflow:auto;
+    padding:20px;background:linear-gradient(135deg, rgba(255,255,255,.86), rgba(255,255,255,.68));
+    border-radius:28px;
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .adminGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .adminTable{width:100%;border-collapse:collapse;margin-top:10px}
+  .adminTable th,.adminTable td{padding:8px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:middle}
+  .adminTable input,.adminTable select{padding:9px 10px;border-radius:12px}
+  .adminNote{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.45}
+  .adminActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
+    padding:12px 16px;border-radius:16px;background:rgba(17,24,39,.9);color:white;
+    opacity:0;pointer-events:none;transition:.25s;z-index:200;font-weight:500
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:980px){
+    .grid{grid-template-columns:1fr}
+    .heroStats{grid-template-columns:repeat(2,1fr)}
+    .adminGrid{grid-template-columns:1fr}
+    .fieldRow3{grid-template-columns:1fr}
+    .checkGrid{grid-template-columns:1fr}
+  }
+
+  @media print{
+    .bg,.topActions,.controls,.modal,.toast,.btn,#wizardView{display:none!important}
+    body{background:white}
+    .glass{box-shadow:none;background:white;backdrop-filter:none;border-color:#ddd}
+  }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <header class="glass topbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>Configuratore Stampa</h1>
+        <p>Logica semplificata · lavorazioni extra · grafica separata · mm/cm</p>
+      </div>
+    </div>
+    <div class="topActions">
+      <button id="viewStepBtn" class="btn" onclick="showWizard()">Step</button>
+      <button id="viewNormalBtn" class="btn" onclick="showNormal()">Configuratore</button>
+      <button class="btn" onclick="printNormal()">PDF</button>
+      <button id="adminBtn" class="btn" onclick="openAdmin()">Admin</button>
+      <button id="logoutBtn" class="btn hidden" onclick="logoutAdmin()">Esci</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- WIZARD -->
+    <section id="wizardView" class="wizard">
+      <div class="glass wizardCard">
+        <div class="wizardHead">
+          <div>
+            <h2>Configurazione guidata</h2>
+            <div id="wizardStepLabel" class="muted">Step 1 di 6</div>
+          </div>
+        </div>
+
+        <div class="progress"><div id="progressFill"></div></div>
+
+        <div id="wStep1" class="wStep">
+          <h3>1 · Formato cartoncino</h3>
+
+          <div class="fieldRow3">
+            <label>Unità
+              <select id="wUnit" onchange="setUnit(this.value)">
+                <option value="cm">cm</option>
+                <option value="mm">mm</option>
+              </select>
+            </label>
+            <label>Larghezza
+              <input id="wWidth" type="text" inputmode="decimal" value="14,8">
+            </label>
+            <label>Altezza
+              <input id="wHeight" type="text" inputmode="decimal" value="21">
+            </label>
+          </div>
+
+          <div id="wStep1Error" class="error hidden"></div>
+        </div>
+
+        <div id="wStep2" class="wStep hidden">
+          <h3>2 · Quantità e carta</h3>
+
+          <div class="singleField">
+            <label>Quantità
+              <input id="wQty" type="number" value="1000">
+            </label>
+          </div>
+
+          <div class="fieldRow">
+            <label>Carta
+              <select id="wPaperType"></select>
+            </label>
+            <label>Grammatura
+              <select id="wWeight"></select>
+            </label>
+          </div>
+
+          <div id="wVariantWrap" class="singleField hidden">
+            <label>Variante carta speciale
+              <select id="wSpecialVariant"></select>
+            </label>
+          </div>
+
+          <div id="wStep2Error" class="error hidden"></div>
+        </div>
+
+        <div id="wStep3" class="wStep hidden">
+          <h3>3 · Stampa</h3>
+
+          <div class="fieldName">Stampa</div>
+          <div id="wSidesOptions" class="segmented">
+            <button class="segBtn" data-sides="1" onclick="setSides(1)">Solo fronte</button>
+            <button class="segBtn" data-sides="2" onclick="setSides(2)">Fronte/retro</button>
+          </div>
+
+          <div style="margin-top:16px">
+            <label class="check">
+              <input type="checkbox" id="wReseller" onchange="setReseller(this.checked)">
+              <span>Rivenditore (sconto 20%)</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="wStep4" class="wStep hidden">
+          <h3>4 · Lavorazioni extra</h3>
+          <div id="wExtrasOptions" class="checkGrid"></div>
+        </div>
+
+        <div id="wStep5" class="wStep hidden">
+          <h3>5 · Grafica</h3>
+
+          <div class="singleField">
+            <label>Complessità grafica
+              <select id="wGraphicsType" onchange="setGraphicsType(this.value)"></select>
+            </label>
+          </div>
+
+          <div id="wGraphicHoursWrap" class="singleField hidden">
+            <label>Ore di grafica
+              <input id="wGraphicHours" type="number" min="1" step="1" value="1" onchange="setGraphicHours(this.value)">
+            </label>
+          </div>
+
+          <div class="muted" id="wGraphicsNote"></div>
+        </div>
+
+        <div id="wStep6" class="wStep hidden">
+          <h3>6 · Riepilogo</h3>
+          <div id="wizardSummary"></div>
+          <div id="wizardPreview" style="margin-top:18px"></div>
+        </div>
+
+        <div class="wizardNav">
+          <button id="wBack" class="btn" onclick="wizardBack()">Indietro</button>
+          <div style="display:flex;gap:10px">
+            <button id="wNext" class="btn primary" onclick="wizardNext()">Avanti</button>
+            <button id="wFinish" class="btn primary hidden" onclick="finishWizard()">Apri configuratore</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NORMAL VIEW -->
+    <div id="normalView" class="hidden">
+      <section class="glass preview">
+        <div id="preview"></div>
+      </section>
+
+      <section class="grid">
+        <section class="glass card controls">
+          <h2>Configura prodotto</h2>
+
+          <div class="fieldRow3">
+            <label>Unità
+              <select id="unit" onchange="setUnit(this.value)">
+                <option value="cm">cm</option>
+                <option value="mm">mm</option>
+              </select>
+            </label>
+            <label>Larghezza
+              <input id="width" type="text" inputmode="decimal" value="14,8">
+            </label>
+            <label>Altezza
+              <input id="height" type="text" inputmode="decimal" value="21">
+            </label>
+          </div>
+
+          <div class="singleField">
+            <label>Quantità
+              <input id="qty" type="number" value="1000">
+            </label>
+          </div>
+
+          <div class="fieldRow">
+            <label>Carta
+              <select id="paperType"></select>
+            </label>
+            <label>Grammatura
+              <select id="weight"></select>
+            </label>
+          </div>
+
+          <div id="variantWrap" class="singleField hidden">
+            <label>Variante carta speciale
+              <select id="specialVariant"></select>
+            </label>
+          </div>
+
+          <div class="fieldName">Stampa</div>
+          <div id="sidesOptions" class="segmented">
+            <button class="segBtn" data-sides="1" onclick="setSides(1)">Solo fronte</button>
+            <button class="segBtn" data-sides="2" onclick="setSides(2)">Fronte/retro</button>
+          </div>
+
+          <div class="fieldName">Lavorazioni extra</div>
+          <div id="extrasOptions" class="checkGrid"></div>
+
+          <div class="fieldName">Grafica</div>
+          <div class="singleField">
+            <select id="graphicsType" onchange="setGraphicsType(this.value)"></select>
+          </div>
+
+          <div id="graphicHoursWrap" class="singleField hidden">
+            <label>Ore di grafica
+              <input id="graphicHours" type="number" min="1" step="1" value="1" onchange="setGraphicHours(this.value)">
+            </label>
+          </div>
+
+          <div class="muted" id="graphicsNote"></div>
+
+          <div style="margin-top:16px">
+            <label class="check">
+              <input type="checkbox" id="reseller" onchange="setReseller(this.checked)">
+              <span>Rivenditore (sconto 20%)</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="glass card summary">
+          <h2>Riepilogo e prezzo</h2>
+          <div id="summary"></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <!-- ADMIN -->
+  <div id="adminModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeAdmin()"></div>
+    <div class="modal-panel glass">
+      <div class="modal-head">
+        <h2>Pannello privato</h2>
+        <button class="btn" onclick="closeAdmin()">Chiudi</button>
+      </div>
+
+      <div id="adminContent"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+const STORAGE_KEY = 'configuratore_stampa_v4';
+let lastCalc = null;
+
+const DEFAULT_DATA = {
+  settings: {
+    pin: '1234',
+    minOrder: 5,
+    resellerDiscount: 20,
+
+    fixedCut: 10,
+
+    smallMaxSheets: 3,
+    smallSheetCost: 3,
+
+    midMaxSheets: 30,
+    midRate: 0.70,
+    largeRate: 0.50,
+
+    extraThreshold: 40,
+    extraCost: 20,
+
+    heavyThreshold: 170,
+    heavyCost: 10,
+
+    printUnit: 'sheet', // sheet = lati fisici foglio | piece = lati prodotto/pezzi imposti
+
+    hourlyFirstHour: 50,
+    hourlyNextHours: 30
+  },
+
+  papers: [
+    { id:'p3244', label:'32×44 cm', w:320, h:440, printW:310, printH:430, order:1 },
+    { id:'p3245', label:'32×45 cm', w:320, h:450, printW:310, printH:440, order:2 },
+    { id:'p33488', label:'33×48,8 cm', w:330, h:488, printW:320, printH:478, order:3 }
+  ],
+
+  paperTypes: [
+    {
+      id:'patinata',
+      label:'Patinata',
+      kind:'standard',
+      formats:['p3244','p3245','p33488'],
+      weights:[80,90,135,150,170,200,300,350,400]
+    },
+    {
+      id:'usomano',
+      label:'Usomano',
+      kind:'standard',
+      formats:['p3244','p3245','p33488'],
+      weights:[80,90,135,150,170,200,300,350,400]
+    },
+    {
+      id:'speciale',
+      label:'Carte speciali',
+      kind:'special',
+      formats:['p33488'],
+      weights:[280],
+      variants:['Avorio rigata','Avorio liscio','Martellata bianca','Martellata avorio','Corn Mais','Colorata']
+    }
+  ],
+
+  graphicsOptions: [
+    { id:'client', label:'Grafica fornita dal cliente', cost:0, type:'fixed' },
+    { id:'ready', label:'Grafica pronta', cost:0, type:'fixed' },
+    { id:'very_simple', label:'Grafica semplicissima', cost:0, type:'fixed' },
+    { id:'simple', label:'Grafica semplice', cost:5, type:'fixed' },
+    { id:'normal', label:'Grafica normale', cost:10, type:'fixed' },
+    { id:'articulated', label:'Grafica articolata', cost:30, type:'fixed' },
+    { id:'hourly', label:'Grafica ad ore', cost:0, type:'hourly' }
+  ],
+
+  extras: [
+    {
+      id:'lam',
+      label:'Plastificazione',
+      enabled:true,
+      fixed:20,
+      threshold:50,
+      rate:0.30,
+      unit:'sheet',
+      mode:'over' // over = solo oltre soglia | all = tutta la quantità se superi soglia
+    },
+    {
+      id:'hole',
+      label:'Foro',
+      enabled:true,
+      fixed:10,
+      threshold:50,
+      rate:0.05,
+      unit:'piece',
+      mode:'over'
+    },
+    {
+      id:'round',
+      label:'Angoli arrotondati',
+      enabled:true,
+      fixed:10,
+      threshold:50,
+      rate:0.05,
+      unit:'piece',
+      mode:'over'
+    },
+    {
+      id:'crease',
+      label:'Cordonatura',
+      enabled:true,
+      fixed:10,
+      threshold:50,
+      rate:0.02,
+      unit:'piece',
+      mode:'over'
+    },
+    {
+      id:'die',
+      label:'Fustella',
+      enabled:true,
+      fixed:30,
+      threshold:100,
+      rate:0.30,
+      unit:'sheet',
+      mode:'over'
+    }
+  ]
+};
+
+const state = {
+  uiMode: 'wizard',
+  wizardStep: 1,
+
+  unit: 'cm',
+  widthMm: 148,
+  heightMm: 210,
+
+  qty: 1000,
+
+  paperType: 'patinata',
+  weight: 170,
+  specialVariant: 'Avorio rigata',
+
+  sides: 2,
+
+  extras: {
+    lam:false,
+    hole:false,
+    round:false,
+    crease:false,
+    die:false
+  },
+
+  graphicsType: 'client',
+  graphicHours: 1,
+
+  reseller: false,
+  admin: false
+};
+
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function mergeDeep(base, extra){
+  const out = clone(base);
+  if(!extra) return out;
+
+  (function merge(target, source){
+    Object.keys(source).forEach(k => {
+      const v = source[k];
+      if(v && typeof v === 'object' && !Array.isArray(v)){
+        if(!target[k] || typeof target[k] !== 'object') target[k] = {};
+        merge(target[k], v);
+      } else {
+        target[k] = v;
+      }
+    });
+  })(out, extra);
+
+  return out;
+}
+
+function loadData(){
+  const def = clone(DEFAULT_DATA);
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return mergeDeep(def, JSON.parse(raw));
+  }catch(e){}
+  return def;
+}
+
+let data = loadData();
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+function parseNum(v){
+  if(typeof v === 'number') return isFinite(v) ? v : 0;
+  if(!v) return 0;
+  const n = parseFloat(String(v).trim().replace(',', '.'));
+  return isNaN(n) ? 0 : n;
+}
+
+function round2(n){ return Math.round(n * 100) / 100; }
+
+function fmtMoney(n){
+  return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
+}
+
+function fmtNum(n){
+  return new Intl.NumberFormat('it-IT').format(n);
+}
+
+function mmToCm(mm){
+  return (mm / 10).toLocaleString('it-IT', { maximumFractionDigits:2 });
+}
+
+function formatDim(mm){
+  return state.unit === 'cm' ? `${mmToCm(mm)} cm` : `${fmtNum(mm)} mm`;
+}
+
+function displayDimension(mm){
+  const v = state.unit === 'cm' ? mm / 10 : mm;
+  return Number.isInteger(v)
+    ? String(v)
+    : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
+}
+
+function parseDimensionToMm(value){
+  const n = parseNum(value);
+  return state.unit === 'cm' ? Math.round(n * 10) : Math.round(n);
+}
+
+function getType(){
+  return data.paperTypes.find(t => t.id === state.paperType) || data.paperTypes[0];
+}
+
+function getGraphicOption(){
+  return data.graphicsOptions.find(o => o.id === state.graphicsType) || data.graphicsOptions[0];
+}
+
+function getGraphicsCost(){
+  const opt = getGraphicOption();
+  if(!opt) return 0;
+
+  if(opt.type === 'hourly'){
+    const h = Math.max(0, Math.round(state.graphicHours));
+    if(h <= 0) return 0;
+    return data.settings.hourlyFirstHour + Math.max(0, h - 1) * data.settings.hourlyNextHours;
+  }
+
+  return opt.cost || 0;
+}
+
+function getGraphicsLabel(){
+  const opt = getGraphicOption();
+  if(!opt) return '';
+
+  if(opt.type === 'hourly'){
+    const h = Math.max(0, Math.round(state.graphicHours));
+    return `${opt.label} (${h} ${h === 1 ? 'ora' : 'ore'})`;
+  }
+
+  return opt.label;
+}
+
+function normalizeExtras(){
+  data.extras.forEach(e => {
+    if(!(e.id in state.extras)) state.extras[e.id] = false;
+  });
+}
+
+function layoutPaper(item, paper){
+  const eps = 0.01;
+  const opts = [{ w:item.w, h:item.h, rotated:false }];
+  if(item.w !== item.h) opts.push({ w:item.h, h:item.w, rotated:true });
+
+  let best = null;
+
+  for(const o of opts){
+    const cols = Math.floor((paper.printW + eps) / o.w);
+    const rows = Math.floor((paper.printH + eps) / o.h);
+    const copies = cols * rows;
+
+    if(copies > 0){
+      const unused = paper.w * paper.h - copies * item.w * item.h;
+      if(!best || copies > best.copies || (copies === best.copies && unused < best.unused)){
+        best = {
+          cols,
+          rows,
+          copies,
+          rotated:o.rotated,
+          cellW:o.w,
+          cellH:o.h,
+          unused
+        };
+      }
+    }
+  }
+
+  return best;
+}
+
+function getExtraCost(extra, sheets, producedPieces){
+  if(!extra.enabled || !state.extras[extra.id]) return 0;
+
+  const count = extra.unit === 'sheet' ? sheets : producedPieces;
+  let variable = 0;
+
+  if(count > extra.threshold){
+    const billable = extra.mode === 'all' ? count : Math.max(0, count - extra.threshold);
+    variable = billable * extra.rate;
+  }
+
+  return extra.fixed + variable;
+}
+
+function evaluate(qty = state.qty){
+  const item = {
+    w: state.widthMm,
+    h: state.heightMm
+  };
+
+  if(item.w <= 0 || item.h <= 0 || qty <= 0){
+    return { valid:false, item, qty };
+  }
+
+  const type = getType();
+  const candidates = [];
+
+  for(const pid of type.formats){
+    const paper = data.papers.find(p => p.id === pid);
+    if(!paper) continue;
+
+    const layout = layoutPaper(item, paper);
+    if(!layout) continue;
+
+    const sheets = Math.ceil(qty / layout.copies);
+    const paperArea = paper.w * paper.h;
+    const totalArea = sheets * paperArea;
+    const itemArea = item.w * item.h * qty;
+    const wasteArea = Math.max(0, totalArea - itemArea);
+    const wastePct = totalArea ? wasteArea / totalArea * 100 : 0;
+
+    candidates.push({
+      paper,
+      layout,
+      sheets,
+      totalArea,
+      wasteArea,
+      wastePct
+    });
+  }
+
+  if(!candidates.length){
+    return { valid:false, item, qty };
+  }
+
+  candidates.sort((a,b) => {
+    if(a.totalArea !== b.totalArea) return a.totalArea - b.totalArea;
+    if(a.wasteArea !== b.wasteArea) return a.wasteArea - b.wasteArea;
+    return (a.paper.order || 99) - (b.paper.order || 99);
+  });
+
+  const chosen = candidates[0];
+  const producedPieces = chosen.sheets * chosen.layout.copies;
+
+  const s = data.settings;
+
+  const units = s.printUnit === 'piece'
+    ? producedPieces * state.sides
+    : chosen.sheets * state.sides;
+
+  let productionCost = 0;
+  let details = [];
+
+  if(chosen.sheets <= s.smallMaxSheets){
+    const smallCost = chosen.sheets * s.smallSheetCost;
+    productionCost += smallCost;
+    details.push({ label:`Fogli piccoli (${chosen.sheets} × ${fmtMoney(s.smallSheetCost)})`, value: smallCost });
+  } else {
+    const rate = chosen.sheets <= s.midMaxSheets ? s.midRate : s.largeRate;
+    const printCost = units * rate;
+
+    productionCost += printCost;
+    details.push({
+      label: s.printUnit === 'piece'
+        ? `Lati prodotto (${fmtNum(units)} × ${fmtMoney(rate)})`
+        : `Lati foglio (${fmtNum(units)} × ${fmtMoney(rate)})`,
+      value: printCost
+    });
+
+    if(units > s.extraThreshold){
+      productionCost += s.extraCost;
+      details.push({ label:`Superamento soglia ${s.extraThreshold} stampe`, value:s.extraCost });
+    }
+
+    if(state.weight > s.heavyThreshold){
+      productionCost += s.heavyCost;
+      details.push({ label:'Maggiorazione cartoncino', value:s.heavyCost });
+    }
+  }
+
+  productionCost += s.fixedCut;
+  details.push({ label:'Taglio fisso', value:s.fixedCut });
+
+  const graphicsCost = getGraphicsCost();
+  details.push({ label:`Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
+
+  let extrasTotal = 0;
+
+  data.extras.forEach(extra => {
+    const cost = getExtraCost(extra, chosen.sheets, producedPieces);
+    if(cost > 0){
+      extrasTotal += cost;
+
+      const baseLabel = extra.unit === 'sheet'
+        ? `${fmtNum(chosen.sheets)} fogli`
+        : `${fmtNum(producedPieces)} pezzi`;
+
+      details.push({ label:`${extra.label} (${baseLabel})`, value: cost });
+    }
+  });
+
+  let total = productionCost + graphicsCost + extrasTotal;
+
+  const discount = state.reseller ? total * s.resellerDiscount / 100 : 0;
+  total -= discount;
+
+  const minApplied = total < s.minOrder;
+  if(minApplied) total = s.minOrder;
+
+  return {
+    valid:true,
+    item,
+    qty,
+    candidates,
+    chosen,
+    producedPieces,
+    units,
+    details,
+    productionCost: round2(productionCost),
+    graphicsCost: round2(graphicsCost),
+    extrasTotal: round2(extrasTotal),
+    discount: round2(discount),
+    total: round2(total),
+    minApplied,
+    costPerPiece: qty ? round2(total / qty) : 0
+  };
+}
+
+function svgSheet(chosen, label, isBack = false){
+  const { paper, layout } = chosen;
+  const mx = (paper.w - paper.printW) / 2;
+  const my = (paper.h - paper.printH) / 2;
+
+  let cells = '';
+  const maxDraw = 600;
+  const count = Math.min(layout.copies, maxDraw);
+
+  for(let i=0; i<count; i++){
+    const r = Math.floor(i / layout.cols);
+    const c = i % layout.cols;
+    if(r >= layout.rows) break;
+
+    const x = mx + c * layout.cellW;
+    const y = my + r * layout.cellH;
+
+    cells += `<rect x="${x}" y="${y}" width="${layout.cellW}" height="${layout.cellH}" rx="7" class="copy ${isBack ? 'back' : ''}"></rect>`;
+  }
+
+  return `
+    <figure class="sheetFig ${isBack ? 'back' : ''}">
+      <div class="sheetWrap">
+        <svg viewBox="0 0 ${paper.w} ${paper.h}" preserveAspectRatio="xMidYMid meet">
+          <rect x="0" y="0" width="${paper.w}" height="${paper.h}" rx="18" class="paper"></rect>
+          <rect x="${mx}" y="${my}" width="${paper.printW}" height="${paper.printH}" rx="12" class="printable"></rect>
+          ${cells}
+        </svg>
+      </div>
+      <figcaption>${label}</figcaption>
+    </figure>
+  `;
+}
+
+function renderTopbar(){
+  $('#adminBtn').textContent = state.admin ? 'Pannello' : 'Admin';
+  $('#logoutBtn').classList.toggle('hidden', !state.admin);
+  $('#viewStepBtn').classList.toggle('active', state.uiMode === 'wizard');
+  $('#viewNormalBtn').classList.toggle('active', state.uiMode === 'normal');
+}
+
+function updateSegmented(){
+  $$('#sidesOptions button, #wSidesOptions button').forEach(b => {
+    b.classList.toggle('active', Number(b.dataset.sides) === Number(state.sides));
+  });
+}
+
+function updateUnitSelects(){
+  $('#unit').value = state.unit;
+  $('#wUnit').value = state.unit;
+}
+
+function updateDimensionInputs(){
+  $('#width').value = displayDimension(state.widthMm);
+  $('#height').value = displayDimension(state.heightMm);
+  $('#wWidth').value = displayDimension(state.widthMm);
+  $('#wHeight').value = displayDimension(state.heightMm);
+}
+
+function renderExtrasOptions(){
+  const containers = [$('#extrasOptions'), $('#wExtrasOptions')];
+
+  const enabledExtras = data.extras.filter(e => e.enabled);
+
+  const html = enabledExtras.length ? enabledExtras.map(e => {
+    const base = e.unit === 'sheet' ? 'fogli' : 'pezzi';
+    return `
+      <label class="check">
+        <input type="checkbox" ${state.extras[e.id] ? 'checked' : ''} onchange="toggleExtra('${e.id}', this.checked)">
+        <span>
+          ${e.label}
+          <br>
+          <small class="muted">
+            Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)}
+          </small>
+        </span>
+      </label>
+    `;
+  }).join('') : `<div class="muted">Nessuna lavorazione extra disponibile</div>`;
+
+  containers.forEach(el => {
+    if(el) el.innerHTML = html;
+  });
+}
+
+function renderGraphicsSelects(){
+  const options = data.graphicsOptions.map(o => `
+    <option value="${o.id}" ${o.id === state.graphicsType ? 'selected' : ''}>${o.label}</option>
+  `).join('');
+
+  $('#graphicsType').innerHTML = options;
+  $('#wGraphicsType').innerHTML = options;
+
+  const opt = getGraphicOption();
+  const showHours = opt && opt.type === 'hourly';
+
+  $('#graphicHoursWrap').classList.toggle('hidden', !showHours);
+  $('#wGraphicHoursWrap').classList.toggle('hidden', !showHours);
+
+  $('#graphicHours').value = state.graphicHours;
+  $('#wGraphicHours').value = state.graphicHours;
+
+  const note = opt?.type === 'hourly'
+    ? `Prima ora ${fmtMoney(data.settings.hourlyFirstHour)}, poi ${fmtMoney(data.settings.hourlyNextHours)} all'ora.`
+    : '';
+
+  $('#graphicsNote').textContent = note;
+  $('#wGraphicsNote').textContent = note;
+}
+
+function renderPreviewInto(calc, container){
+  if(!container) return;
+
+  if(!calc || !calc.valid){
+    container.innerHTML = `
+      <div class="error">
+        Il formato inserito non sta in nessuno dei fogli disponibili.
+      </div>
+    `;
+    return;
+  }
+
+  const chosen = calc.chosen;
+  const orientation = chosen.layout.rotated ? 'Orizzontale' : 'Verticale';
+  const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits:3 });
+
+  container.innerHTML = `
+    <div class="heroStats">
+      <div class="heroStat">
+        <span class="heroValue">${chosen.layout.copies}</span>
+        <span class="heroLabel">Copie / foglio</span>
+      </div>
+      <div class="heroStat">
+        <span class="heroValue">${fmtNum(chosen.sheets)}</span>
+        <span class="heroLabel">Fogli necessari</span>
+      </div>
+      <div class="heroStat">
+        <span class="heroValue">${fmtNum(calc.producedPieces)}</span>
+        <span class="heroLabel">Pezzi lavorati</span>
+      </div>
+      <div class="heroStat">
+        <span class="heroValue">${chosen.wastePct.toFixed(1)}%</span>
+        <span class="heroLabel">Scarto</span>
+      </div>
+      <div class="heroStat">
+        <span class="heroValue" style="font-size:20px;line-height:1.15;padding-top:6px">${chosen.paper.label}</span>
+        <span class="heroLabel">Foglio scelto · ${orientation}</span>
+      </div>
+    </div>
+
+    <div class="sheets">
+      ${svgSheet(chosen, 'Fronte', false)}
+      ${state.sides === 2 ? svgSheet(chosen, 'Retro', true) : ''}
+    </div>
+
+    <p class="muted" style="text-align:center;margin-top:14px">
+      Carta totale: ${totalSqm} m² · Area utile foglio: ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm
+    </p>
+  `;
+}
+
+function renderSummaryInto(calc, container){
+  if(!container) return;
+
+  if(!calc || !calc.valid){
+    container.innerHTML = `<div class="error">Configurazione non valida.</div>`;
+    return;
+  }
+
+  const type = getType();
+  const paperText = type.kind === 'special'
+    ? `${type.label} · ${state.specialVariant} · 280 g`
+    : `${type.label} · ${state.weight} g`;
+
+  const extraLabels = data.extras
+    .filter(e => e.enabled && state.extras[e.id])
+    .map(e => e.label);
+
+  container.innerHTML = `
+    <div class="descGrid">
+      <div class="descItem"><span>Formato finito</span><strong>${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}</strong></div>
+      <div class="descItem"><span>Quantità ordinata</span><strong>${fmtNum(calc.qty)} pz</strong></div>
+      <div class="descItem"><span>Pezzi lavorati</span><strong>${fmtNum(calc.producedPieces)} pz</strong></div>
+      <div class="descItem"><span>Carta</span><strong>${paperText}</strong></div>
+      <div class="descItem"><span>Foglio</span><strong>${calc.chosen.paper.label}</strong></div>
+      <div class="descItem"><span>Stampa</span><strong>${state.sides === 2 ? 'Fronte/retro' : 'Solo fronte'}</strong></div>
+      <div class="descItem"><span>Lavorazioni extra</span><strong>${extraLabels.length ? extraLabels.join(', ') : 'Nessuna'}</strong></div>
+      <div class="descItem"><span>Grafica</span><strong>${getGraphicsLabel()}</strong></div>
+    </div>
+
+    <div class="priceBox">
+      <div class="priceLabel">Totale IVA esclusa</div>
+      <div class="price">${fmtMoney(calc.total)}</div>
+      <div class="muted">
+        ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
+        ${state.reseller ? `Sconto rivenditore ${data.settings.resellerDiscount}% applicato` : 'Cliente standard'}
+      </div>
+    </div>
+
+    <div class="breakdown">
+      ${calc.details.map(d => `
+        <div class="breakRow"><span>${d.label}</span><strong>${fmtMoney(d.value)}</strong></div>
+      `).join('')}
+      ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
+      <div class="breakRow"><span>Costo pezzo</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
+    </div>
+  `;
+}
+
+function refresh(){
+  normalizeExtras();
+
+  let calc = evaluate(state.qty);
+  lastCalc = calc;
+
+  renderTopbar();
+  updateSegmented();
+  updateUnitSelects();
+  renderExtrasOptions();
+  renderGraphicsSelects();
+
+  if($('#reseller')) $('#reseller').checked = state.reseller;
+  if($('#wReseller')) $('#wReseller').checked = state.reseller;
+
+  if(state.uiMode === 'normal'){
+    renderPreviewInto(calc, $('#preview'));
+    renderSummaryInto(calc, $('#summary'));
+  } else {
+    renderWizardDynamic(calc);
+  }
+}
+
+function syncInputsFromState(){
+  updateDimensionInputs();
+
+  $('#qty').value = state.qty;
+  $('#wQty').value = state.qty;
+
+  updatePaperSelects();
+  renderGraphicsSelects();
+}
+
+function updatePaperSelects(){
+  if(!data.paperTypes.some(t => t.id === state.paperType)){
+    state.paperType = data.paperTypes[0].id;
+  }
+
+  const typeOptions = data.paperTypes.map(t => `
+    <option value="${t.id}" ${t.id === state.paperType ? 'selected' : ''}>${t.label}</option>
+  `).join('');
+
+  $('#paperType').innerHTML = typeOptions;
+  $('#wPaperType').innerHTML = typeOptions;
+
+  const type = getType();
+
+  if(type.kind === 'special'){
+    state.weight = 280;
+
+    $('#weight').innerHTML = `<option value="280" selected>280 g</option>`;
+    $('#wWeight').innerHTML = `<option value="280" selected>280 g</option>`;
+    $('#weight').disabled = true;
+    $('#wWeight').disabled = true;
+
+    $('#variantWrap').classList.remove('hidden');
+    $('#wVariantWrap').classList.remove('hidden');
+
+    if(!type.variants.includes(state.specialVariant) && type.variants.length){
+      state.specialVariant = type.variants[0];
+    }
+
+    const variantOptions = (type.variants || []).map(v => `
+      <option ${v === state.specialVariant ? 'selected' : ''}>${v}</option>
+    `).join('');
+
+    $('#specialVariant').innerHTML = variantOptions;
+    $('#wSpecialVariant').innerHTML = variantOptions;
+    $('#specialVariant').value = state.specialVariant;
+    $('#wSpecialVariant').value = state.specialVariant;
+
+  } else {
+    $('#weight').disabled = false;
+    $('#wWeight').disabled = false;
+
+    $('#variantWrap').classList.add('hidden');
+    $('#wVariantWrap').classList.add('hidden');
+
+    if(!type.weights.includes(state.weight)){
+      state.weight = type.weights[0];
+    }
+
+    const weightOptions = type.weights.map(w => `
+      <option value="${w}" ${Number(w) === Number(state.weight) ? 'selected' : ''}>${w} g</option>
+    `).join('');
+
+    $('#weight').innerHTML = weightOptions;
+    $('#wWeight').innerHTML = weightOptions;
+  }
+}
+
+function showWizard(){
+  state.uiMode = 'wizard';
+  $('#normalView').classList.add('hidden');
+  $('#wizardView').classList.remove('hidden');
+  syncInputsFromState();
+  refresh();
+}
+
+function showNormal(){
+  state.uiMode = 'normal';
+  $('#wizardView').classList.add('hidden');
+  $('#normalView').classList.remove('hidden');
+  refresh();
+}
+
+function printNormal(){
+  if(state.uiMode !== 'normal') showNormal();
+  setTimeout(() => window.print(), 80);
+}
+
+function setUnit(unit){
+  state.unit = unit;
+  updateUnitSelects();
+  updateDimensionInputs();
+  refresh();
+}
+
+function setQty(q){
+  state.qty = Number(q);
+  $('#qty').value = state.qty;
+  $('#wQty').value = state.qty;
+  refresh();
+}
+
+function handleQtyChange(value){
+  const q = Math.max(1, Math.round(parseNum(value)));
+  state.qty = q;
+  $('#qty').value = state.qty;
+  $('#wQty').value = state.qty;
+  refresh();
+}
+
+function handleDimensionInput(field, value, sourceInput){
+  const mm = parseDimensionToMm(value);
+
+  if(field === 'width'){
+    state.widthMm = mm;
+    if(sourceInput !== $('#width')) $('#width').value = value;
+    if(sourceInput !== $('#wWidth')) $('#wWidth').value = value;
+  } else {
+    state.heightMm = mm;
+    if(sourceInput !== $('#height')) $('#height').value = value;
+    if(sourceInput !== $('#wHeight')) $('#wHeight').value = value;
+  }
+
+  refresh();
+}
+
+function setSides(n){
+  state.sides = Number(n);
+  refresh();
+}
+
+function setReseller(checked){
+  state.reseller = checked;
+  refresh();
+}
+
+function toggleExtra(id, checked){
+  state.extras[id] = checked;
+  refresh();
+}
+
+function setGraphicsType(id){
+  state.graphicsType = id;
+  renderGraphicsSelects();
+  refresh();
+}
+
+function setGraphicHours(value){
+  state.graphicHours = Math.max(1, Math.round(parseNum(value)));
+  $('#graphicHours').value = state.graphicHours;
+  $('#wGraphicHours').value = state.graphicHours;
+  refresh();
+}
+
+function canProceedStep(step){
+  if(step === 1){
+    return lastCalc && lastCalc.valid && state.widthMm > 0 && state.heightMm > 0;
+  }
+  if(step === 2){
+    return lastCalc && lastCalc.valid && state.qty > 0;
+  }
+  return true;
+}
+
+function wizardBack(){
+  if(state.wizardStep > 1){
+    state.wizardStep--;
+    refresh();
+  }
+}
+
+function wizardNext(){
+  if(!canProceedStep(state.wizardStep)){
+    toast('Completa lo step corrente');
+    return;
+  }
+
+  if(state.wizardStep < 6){
+    state.wizardStep++;
+    refresh();
+  } else {
+    finishWizard();
+  }
+}
+
+function finishWizard(){
+  showNormal();
+}
+
+function renderWizardDynamic(calc){
+  $('#wizardStepLabel').textContent = `Step ${state.wizardStep} di 6`;
+  $('#progressFill').style.width = `${(state.wizardStep / 6) * 100}%`;
+
+  for(let i=1; i<=6; i++){
+    $(`#wStep${i}`).classList.toggle('hidden', state.wizardStep !== i);
+  }
+
+  $('#wBack').disabled = state.wizardStep === 1;
+  $('#wNext').classList.toggle('hidden', state.wizardStep === 6);
+  $('#wFinish').classList.toggle('hidden', state.wizardStep !== 6);
+
+  const nextBtn = $('#wNext');
+  nextBtn.disabled = false;
+
+  const error1 = $('#wStep1Error');
+  const error2 = $('#wStep2Error');
+
+  error1.classList.add('hidden');
+  error2.classList.add('hidden');
+
+  if(state.wizardStep === 1){
+    if(state.widthMm <= 0 || state.heightMm <= 0){
+      error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
+      error1.classList.remove('hidden');
+      nextBtn.disabled = true;
+    } else if(!calc || !calc.valid){
+      error1.textContent = 'Il formato inserito non sta in nessuno dei fogli disponibili.';
+      error1.classList.remove('hidden');
+      nextBtn.disabled = true;
+    }
+  }
+
+  if(state.wizardStep === 2){
+    if(!calc || !calc.valid || state.qty <= 0){
+      error2.textContent = 'Quantità o configurazione non valida.';
+      error2.classList.remove('hidden');
+      nextBtn.disabled = true;
+    }
+  }
+
+  if(state.wizardStep === 6){
+    renderSummaryInto(calc, $('#wizardSummary'));
+    renderPreviewInto(calc, $('#wizardPreview'));
+  }
+}
+
+function openAdmin(){
+  if(!state.admin){
+    const pin = prompt('PIN amministratore:');
+    if(pin !== data.settings.pin){
+      if(pin !== null) alert('PIN errato');
+      return;
+    }
+    state.admin = true;
+  }
+
+  $('#adminModal').classList.remove('hidden');
+  renderAdmin();
+  refresh();
+}
+
+function closeAdmin(){
+  $('#adminModal').classList.add('hidden');
+}
+
+function logoutAdmin(){
+  state.admin = false;
+  closeAdmin();
+  refresh();
+}
+
+function renderAdmin(){
+  const s = data.settings;
+
+  $('#adminContent').innerHTML = `
+    <h3>Impostazioni principali</h3>
+    <div class="adminGrid">
+      <label>PIN admin
+        <input type="text" id="set_pin" value="${s.pin}">
+      </label>
+      <label>Ordine minimo €
+        <input type="number" step="0.01" id="set_minOrder" value="${s.minOrder}">
+      </label>
+      <label>Sconto rivenditore %
+        <input type="number" step="0.1" id="set_resellerDiscount" value="${s.resellerDiscount}">
+      </label>
+
+      <label>Taglio fisso €
+        <input type="number" step="0.01" id="set_fixedCut" value="${s.fixedCut}">
+      </label>
+
+      <label>Fogli piccoli max
+        <input type="number" step="1" id="set_smallMaxSheets" value="${s.smallMaxSheets}">
+      </label>
+      <label>Costo foglio piccolo €
+        <input type="number" step="0.01" id="set_smallSheetCost" value="${s.smallSheetCost}">
+      </label>
+
+      <label>Fogli medi max
+        <input type="number" step="1" id="set_midMaxSheets" value="${s.midMaxSheets}">
+      </label>
+      <label>Tariffa medi €/lato
+        <input type="number" step="0.01" id="set_midRate" value="${s.midRate}">
+      </label>
+      <label>Tariffa grandi €/lato
+        <input type="number" step="0.01" id="set_largeRate" value="${s.largeRate}">
+      </label>
+
+      <label>Soglia extra stampe
+        <input type="number" step="1" id="set_extraThreshold" value="${s.extraThreshold}">
+      </label>
+      <label>Costo extra €
+        <input type="number" step="0.01" id="set_extraCost" value="${s.extraCost}">
+      </label>
+
+      <label>Soglia cartoncino (g)
+        <input type="number" step="1" id="set_heavyThreshold" value="${s.heavyThreshold}">
+      </label>
+      <label>Maggiorazione cartoncino €
+        <input type="number" step="0.01" id="set_heavyCost" value="${s.heavyCost}">
+      </label>
+
+      <label>Base calcolo stampa
+        <select id="set_printUnit">
+          <option value="sheet" ${s.printUnit === 'sheet' ? 'selected' : ''}>Lati fisici del foglio</option>
+          <option value="piece" ${s.printUnit === 'piece' ? 'selected' : ''}>Lati prodotto / pezzi imposti</option>
+        </select>
+      </label>
+
+      <label>Grafica: prima ora €
+        <input type="number" step="0.01" id="set_hourlyFirstHour" value="${s.hourlyFirstHour}">
+      </label>
+      <label>Grafica: ore successive €
+        <input type="number" step="0.01" id="set_hourlyNextHours" value="${s.hourlyNextHours}">
+      </label>
+    </div>
+
+    <h3 style="margin-top:20px">Costi grafica</h3>
+    <table class="adminTable">
+      <thead>
+        <tr>
+          <th>Voce</th>
+          <th>Costo €</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.graphicsOptions.map((g,i) => `
+          <tr>
+            <td>${g.label}</td>
+            <td>
+              ${
+                g.type === 'hourly'
+                ? `<span class="muted">Tariffa oraria</span>`
+                : `<input type="number" step="0.01" data-graph-index="${i}" value="${g.cost}">`
+              }
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:20px">Lavorazioni extra</h3>
+    <table class="adminTable">
+      <thead>
+        <tr>
+          <th>Attiva</th>
+          <th>Nome</th>
+          <th>Fisso €</th>
+          <th>Soglia</th>
+          <th>Tariffa €</th>
+          <th>Base</th>
+          <th>Modalità</th>
+        </tr>
+      </thead>
+      <tbody id="extrasBody">
+        ${data.extras.map((e,i) => `
+          <tr>
+            <td><input type="checkbox" class="ex_enabled" ${e.enabled ? 'checked' : ''}></td>
+            <td><input type="text" class="ex_label" value="${String(e.label || '').replace(/"/g,'&quot;')}"></td>
+            <td><input type="number" step="0.01" class="ex_fixed" value="${e.fixed}"></td>
+            <td><input type="number" step="1" class="ex_threshold" value="${e.threshold}"></td>
+            <td><input type="number" step="0.001" class="ex_rate" value="${e.rate}"></td>
+            <td>
+              <select class="ex_unit">
+                <option value="sheet" ${e.unit === 'sheet' ? 'selected' : ''}>Fogli</option>
+                <option value="piece" ${e.unit === 'piece' ? 'selected' : ''}>Pezzi</option>
+              </select>
+            </td>
+            <td>
+              <select class="ex_mode">
+                <option value="over" ${e.mode === 'over' ? 'selected' : ''}>Solo oltre soglia</option>
+                <option value="all" ${e.mode === 'all' ? 'selected' : ''}>Tutta la quantità</option>
+              </select>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+
+    <div class="adminActions">
+      <button class="btn primary" onclick="saveAdmin()">Salva impostazioni</button>
+      <button class="btn" onclick="resetData()">Ripristina default</button>
+    </div>
+
+    <div class="adminNote">
+      <strong>Nota pezzi:</strong> le lavorazioni a pezzo vengono calcolate su fogli × copie per foglio, cioè sui cartoncini realmente presenti nella produzione.<br><br>
+      <strong>Nota soglia:</strong> “Solo oltre soglia” applica la tariffa variabile solo alla parte che supera la soglia.
+      “Tutta la quantità” applica la tariffa variabile a tutta la quantità quando la soglia viene superata.
+    </div>
+  `;
+}
+
+function saveAdmin(){
+  const s = data.settings;
+
+  s.pin = $('#set_pin').value || '1234';
+  s.minOrder = parseNum($('#set_minOrder').value);
+  s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
+  s.fixedCut = parseNum($('#set_fixedCut').value);
+  s.smallMaxSheets = Math.max(1, Math.round(parseNum($('#set_smallMaxSheets').value)));
+  s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
+  s.midMaxSheets = Math.max(1, Math.round(parseNum($('#set_midMaxSheets').value)));
+  s.midRate = parseNum($('#set_midRate').value);
+  s.largeRate = parseNum($('#set_largeRate').value);
+  s.extraThreshold = parseNum($('#set_extraThreshold').value);
+  s.extraCost = parseNum($('#set_extraCost').value);
+  s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
+  s.heavyCost = parseNum($('#set_heavyCost').value);
+  s.printUnit = $('#set_printUnit').value;
+  s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
+  s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
+
+  $$('[data-graph-index]').forEach(inp => {
+    const i = Number(inp.dataset.graphIndex);
+    if(data.graphicsOptions[i] && data.graphicsOptions[i].type === 'fixed'){
+      data.graphicsOptions[i].cost = parseNum(inp.value);
+    }
+  });
+
+  const rows = $$('#extrasBody tr');
+  rows.forEach((tr,i) => {
+    if(!data.extras[i]) return;
+
+    data.extras[i].enabled = tr.querySelector('.ex_enabled').checked;
+    data.extras[i].label = tr.querySelector('.ex_label').value;
+    data.extras[i].fixed = parseNum(tr.querySelector('.ex_fixed').value);
+    data.extras[i].threshold = parseNum(tr.querySelector('.ex_threshold').value);
+    data.extras[i].rate = parseNum(tr.querySelector('.ex_rate').value);
+    data.extras[i].unit = tr.querySelector('.ex_unit').value;
+    data.extras[i].mode = tr.querySelector('.ex_mode').value;
+  });
+
+  saveData();
+  refresh();
+  toast('Impostazioni salvate');
+}
+
+function resetData(){
+  if(confirm('Vuoi davvero ripristinare tutti i dati predefiniti?')){
+    data = clone(DEFAULT_DATA);
+    saveData();
+    updatePaperSelects();
+    refresh();
+    renderAdmin();
+    toast('Dati ripristinati');
+  }
+}
+
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function initEvents(){
+  $('#wWidth').addEventListener('input', e => {
+    handleDimensionInput('width', e.target.value, e.target);
+  });
+
+  $('#wHeight').addEventListener('input', e => {
+    handleDimensionInput('height', e.target.value, e.target);
+  });
+
+  $('#width').addEventListener('input', e => {
+    handleDimensionInput('width', e.target.value, e.target);
+  });
+
+  $('#height').addEventListener('input', e => {
+    handleDimensionInput('height', e.target.value, e.target);
+  });
+
+  $('#qty').addEventListener('change', e => handleQtyChange(e.target.value));
+  $('#wQty').addEventListener('change', e => handleQtyChange(e.target.value));
+
+  $('#paperType').addEventListener('change', e => {
+    state.paperType = e.target.value;
+    updatePaperSelects();
+    refresh();
+  });
+
+  $('#wPaperType').addEventListener('change', e => {
+    state.paperType = e.target.value;
+    updatePaperSelects();
+    refresh();
+  });
+
+  $('#weight').addEventListener('change', e => {
+    state.weight = parseNum(e.target.value);
+    refresh();
+  });
+
+  $('#wWeight').addEventListener('change', e => {
+    state.weight = parseNum(e.target.value);
+    refresh();
+  });
+
+  $('#specialVariant').addEventListener('change', e => {
+    state.specialVariant = e.target.value;
+    refresh();
+  });
+
+  $('#wSpecialVariant').addEventListener('change', e => {
+    state.specialVariant = e.target.value;
+    refresh();
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closeAdmin();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initEvents();
+  updatePaperSelects();
+  showWizard();
+});
+</script>
+</body>
+</html>
