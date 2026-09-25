@@ -219,6 +219,18 @@
   .check input{width:auto;margin-top:3px;accent-color:var(--primary)}
   .check span{display:block;line-height:1.35}
 
+  .miniBadge{
+    border:none;
+    background:var(--primary-soft);
+    color:var(--primary);
+    padding:7px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
   .info{
     position:relative;
     width:20px;height:20px;border-radius:50%;
@@ -240,11 +252,11 @@
     border-radius:12px;
     font-size:12px;
     line-height:1.35;
-    width:240px;
+    width:250px;
     opacity:0;
     pointer-events:none;
     transition:.18s;
-    z-index:40;
+    z-index:60;
   }
   .info::before{
     content:"";
@@ -256,7 +268,7 @@
     border-top-color:#5B5B5B;
     opacity:0;
     transition:.18s;
-    z-index:40;
+    z-index:60;
   }
   .info:hover::after,
   .info:focus::after,
@@ -334,6 +346,9 @@
     padding:20px;background:linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
     border-radius:28px;
   }
+  .modal-panel.small{
+    width:min(620px,100%);
+  }
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
   .adminGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .adminTable{width:100%;border-collapse:collapse;margin-top:10px}
@@ -341,6 +356,8 @@
   .adminTable input,.adminTable select{padding:9px 10px;border-radius:12px}
   .adminNote{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.45}
   .adminActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+  .dieSizeOptions{display:grid;gap:10px;margin-top:14px}
 
   .toast{
     position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
@@ -382,7 +399,7 @@
       <div class="logo"></div>
       <div>
         <h1>Configuratore Stampa</h1>
-        <p>Logica semplificata · lavorazioni extra · grafica separata</p>
+        <p>Logica semplificata · lavorazioni extra · fustella nuova/esistente</p>
       </div>
     </div>
     <div class="topActions">
@@ -602,6 +619,18 @@
     </div>
   </main>
 
+  <!-- MODALE FUSTELLA -->
+  <div id="dieModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="cancelDieModal()"></div>
+    <div class="modal-panel glass small">
+      <div class="modal-head">
+        <h2>Fustella</h2>
+        <button class="btn" onclick="cancelDieModal()">Chiudi</button>
+      </div>
+      <div id="dieModalContent"></div>
+    </div>
+  </div>
+
   <!-- ADMIN -->
   <div id="adminModal" class="modal hidden">
     <div class="modal-backdrop" onclick="closeAdmin()"></div>
@@ -618,8 +647,9 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v8';
+const STORAGE_KEY = 'configuratore_stampa_v9';
 let lastCalc = null;
+let dieTemp = { isNew:false, size:'medium' };
 
 const DEFAULT_DATA = {
   settings: {
@@ -650,7 +680,11 @@ const DEFAULT_DATA = {
     dieLeftMm: 2,
     dieRightMm: 2,
     dieTopMm: 2,
-    dieBottomMm: 30
+    dieBottomMm: 30,
+
+    dieNewSmallCost: 40,
+    dieNewMediumCost: 60,
+    dieNewLargeCost: 100
   },
 
   papers: [
@@ -770,6 +804,9 @@ const state = {
     crease:false,
     die:false
   },
+
+  dieIsNew: false,
+  dieNewSize: 'medium', // small | medium | large
 
   graphicsType: 'client',
   graphicHours: 1,
@@ -936,6 +973,29 @@ function isDieActive(){
   return !!(dieExtra && dieExtra.enabled && state.extras.die);
 }
 
+function getDieNewCost(size){
+  const s = data.settings;
+  if(size === 'small') return parseNum(s.dieNewSmallCost);
+  if(size === 'large') return parseNum(s.dieNewLargeCost);
+  return parseNum(s.dieNewMediumCost);
+}
+
+function getDieNewSizeLabel(size){
+  if(size === 'small') return 'Piccola (meno di A6)';
+  if(size === 'large') return 'Grande (A4 circa)';
+  return 'Media (meno di A5)';
+}
+
+function guessDieSize(){
+  const area = state.widthMm * state.heightMm;
+  const a6 = 105 * 148;
+  const a5 = 148 * 210;
+
+  if(area > 0 && area <= a6) return 'small';
+  if(area > 0 && area <= a5) return 'medium';
+  return 'large';
+}
+
 function getEffectiveItem(){
   const margins = getDieMargins();
   const active = isDieActive();
@@ -1007,7 +1067,14 @@ function evaluate(qty = state.qty){
   };
 
   if(item.w <= 0 || item.h <= 0 || layoutItem.w <= 0 || layoutItem.h <= 0 || qty <= 0){
-    return { valid:false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
+    return {
+      valid:false,
+      item,
+      qty,
+      effectiveItem: layoutItem,
+      dieActive: effective.active,
+      dieMargins: effective.margins
+    };
   }
 
   const type = getType();
@@ -1033,7 +1100,14 @@ function evaluate(qty = state.qty){
   }
 
   if(!candidates.length){
-    return { valid:false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
+    return {
+      valid:false,
+      item,
+      qty,
+      effectiveItem: layoutItem,
+      dieActive: effective.active,
+      dieMargins: effective.margins
+    };
   }
 
   candidates.sort((a,b) => {
@@ -1108,6 +1182,16 @@ function evaluate(qty = state.qty){
       details.push({ label: extra.label, value: cost });
     }
   });
+
+  if(isDieActive() && state.dieIsNew){
+    const size = state.dieNewSize || 'medium';
+    const newDieCost = getDieNewCost(size);
+    extrasTotal += newDieCost;
+    details.push({
+      label:`Fustella nuova (${getDieNewSizeLabel(size)})`,
+      value:newDieCost
+    });
+  }
 
   let total = productionCost + graphicsCost + extrasTotal;
 
@@ -1216,14 +1300,33 @@ function renderExtrasOptions(){
       ? 'applica la tariffa a tutta la quantità quando superi la soglia'
       : 'applica la tariffa solo alla parte oltre la soglia';
 
-    const tip = `Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)} · ${modeText}`;
+    let tip = `Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)} · ${modeText}`;
+    let labelHtml = e.label;
+    let dieBadge = '';
+
+    if(e.id === 'die'){
+      if(state.extras.die){
+        labelHtml += ` <span class="starBadge">★</span>`;
+        tip += ` · Margini applicati a ogni singolo elemento sul foglio.`;
+
+        if(state.dieIsNew){
+          const size = state.dieNewSize || 'medium';
+          tip += ` · Fustella nuova: ${getDieNewSizeLabel(size)} ${fmtMoney(getDieNewCost(size))}.`;
+          dieBadge = `<button type="button" class="miniBadge" onclick="openDieModal()">Nuova</button>`;
+        } else {
+          tip += ` · Fustella già esistente.`;
+          dieBadge = `<button type="button" class="miniBadge" onclick="openDieModal()">Esistente</button>`;
+        }
+      }
+    }
 
     return `
       <div class="extraItem">
         <label class="check">
           <input type="checkbox" ${state.extras[e.id] ? 'checked' : ''} onchange="toggleExtra('${e.id}', this.checked)">
-          <span>${e.label}</span>
+          <span>${labelHtml}</span>
         </label>
+        ${dieBadge}
         <span class="info" tabindex="0" data-tip="${escapeAttr(tip)}">i</span>
       </div>
     `;
@@ -1300,7 +1403,7 @@ function renderPreviewInto(calc, container){
   const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits:3 });
 
   const dieNote = calc.dieActive
-    ? ` · Fustella attiva: margini aggiunti al calcolo`
+    ? ` · Fustella ${state.dieIsNew ? 'nuova' : 'esistente'}: margini applicati a ogni elemento`
     : '';
 
   container.innerHTML = `
@@ -1344,7 +1447,14 @@ function renderSummaryInto(calc, container){
 
   const extraLabels = data.extras
     .filter(e => e.enabled && state.extras[e.id])
-    .map(e => e.label);
+    .map(e => {
+      if(e.id === 'die'){
+        return state.dieIsNew
+          ? `Fustella nuova (${getDieNewSizeLabel(state.dieNewSize || 'medium')})`
+          : 'Fustella esistente';
+      }
+      return e.label;
+    });
 
   const qtyText = state.qty <= 0
     ? `${fmtNum(state.qty)} pz`
@@ -1357,7 +1467,11 @@ function renderSummaryInto(calc, container){
     const effW = calc.effectiveItem.w;
     const effH = calc.effectiveItem.h;
 
-    const dieTip = `Fustella attiva: per il conteggio delle stampe vengono aggiunti margini: sinistra ${fmtNum(m.left)} mm, destra ${fmtNum(m.right)} mm, alto ${fmtNum(m.top)} mm, basso ${fmtNum(m.bottom)} mm. Formato utile per l'imposizione: ${formatDim(effW)} × ${formatDim(effH)}.`;
+    const dieTypeText = state.dieIsNew
+      ? `Fustella nuova (${getDieNewSizeLabel(state.dieNewSize || 'medium')}).`
+      : `Fustella già esistente.`;
+
+    const dieTip = `${dieTypeText} Per il conteggio delle stampe vengono aggiunti margini a ogni singolo elemento: sinistra ${fmtNum(m.left)} mm, destra ${fmtNum(m.right)} mm, alto ${fmtNum(m.top)} mm, basso ${fmtNum(m.bottom)} mm. Formato utile per l'imposizione: ${formatDim(effW)} × ${formatDim(effH)}.`;
 
     formatValue += ` <span class="starBadge">★</span><span class="info" tabindex="0" data-tip="${escapeAttr(dieTip)}">i</span>`;
   }
@@ -1588,8 +1702,92 @@ function setReseller(checked){
 }
 
 function toggleExtra(id, checked){
+  if(id === 'die'){
+    if(checked){
+      openDieModal();
+      return;
+    }
+
+    state.extras.die = false;
+    refresh();
+    return;
+  }
+
   state.extras[id] = checked;
   refresh();
+}
+
+function openDieModal(){
+  dieTemp.isNew = state.dieIsNew;
+  dieTemp.size = state.dieNewSize || guessDieSize();
+
+  renderDieModal();
+  $('#dieModal').classList.remove('hidden');
+}
+
+function cancelDieModal(){
+  $('#dieModal').classList.add('hidden');
+  refresh();
+}
+
+function confirmDieModal(){
+  state.extras.die = true;
+  state.dieIsNew = dieTemp.isNew;
+  state.dieNewSize = dieTemp.isNew ? dieTemp.size : null;
+
+  $('#dieModal').classList.add('hidden');
+  refresh();
+}
+
+function setDieTempNew(mode){
+  dieTemp.isNew = mode === 'new';
+  renderDieModal();
+}
+
+function setDieTempSize(size){
+  dieTemp.size = size;
+  renderDieModal();
+}
+
+function renderDieModal(){
+  const costs = {
+    small: getDieNewCost('small'),
+    medium: getDieNewCost('medium'),
+    large: getDieNewCost('large')
+  };
+
+  $('#dieModalContent').innerHTML = `
+    <p class="muted">
+      Quando la fustella è attiva, i margini vengono applicati a ogni singolo elemento presente sul foglio.
+    </p>
+
+    <div class="segmented">
+      <button class="segBtn ${!dieTemp.isNew ? 'active' : ''}" onclick="setDieTempNew('existing')">Già esistente</button>
+      <button class="segBtn ${dieTemp.isNew ? 'active' : ''}" onclick="setDieTempNew('new')">Nuova</button>
+    </div>
+
+    <div class="dieSizeOptions ${dieTemp.isNew ? '' : 'hidden'}">
+      <label class="check">
+        <input type="radio" name="dieSize" ${dieTemp.size === 'small' ? 'checked' : ''} onclick="setDieTempSize('small')">
+        <span>Piccola (meno di A6) · ${fmtMoney(costs.small)}</span>
+      </label>
+
+      <label class="check">
+        <input type="radio" name="dieSize" ${dieTemp.size === 'medium' ? 'checked' : ''} onclick="setDieTempSize('medium')">
+        <span>Media (meno di A5) · ${fmtMoney(costs.medium)}</span>
+      </label>
+
+      <label class="check">
+        <input type="radio" name="dieSize" ${dieTemp.size === 'large' ? 'checked' : ''} onclick="setDieTempSize('large')">
+        <span>Grande (A4 circa) · ${fmtMoney(costs.large)}</span>
+      </label>
+    </div>
+
+    <div class="adminActions">
+      <button class="btn" onclick="cancelDieModal()">Annulla</button>
+      <button class="btn primary" onclick="confirmDieModal()">Conferma</button>
+    </div>
+  `;
 }
 
 function setGraphicsType(id){
@@ -1928,11 +2126,19 @@ function saveGraphicsSummary(){
 
 function saveExtrasSummary(){
   const checks = $$('.sumExtra');
-  state.extras = {};
+  const newExtras = {};
 
   checks.forEach(c => {
-    state.extras[c.value] = c.checked;
+    newExtras[c.value] = c.checked;
   });
+
+  const wasDie = state.extras.die;
+  state.extras = newExtras;
+
+  if(state.extras.die && !wasDie){
+    openDieModal();
+    return;
+  }
 
   refresh();
 }
@@ -2043,9 +2249,23 @@ function renderAdmin(){
         <input type="number" step="1" id="set_dieBottom" value="${s.dieBottomMm}">
       </label>
     </div>
+
+    <h3 style="margin-top:20px">Costi Fustella nuova</h3>
+    <div class="adminGrid">
+      <label>Piccola (meno di A6)
+        <input type="number" step="0.01" id="set_dieNewSmall" value="${s.dieNewSmallCost}">
+      </label>
+      <label>Media (meno di A5)
+        <input type="number" step="0.01" id="set_dieNewMedium" value="${s.dieNewMediumCost}">
+      </label>
+      <label>Grande (A4 circa)
+        <input type="number" step="0.01" id="set_dieNewLarge" value="${s.dieNewLargeCost}">
+      </label>
+    </div>
+
     <div class="adminNote">
-      Questi margini vengono aggiunti solo al formato utile per il calcolo dell’imposizione quando la Fustella è attiva.<br>
-      Di default il margine in basso è impostato a <strong>30 mm</strong>, cioè <strong>3 cm</strong>. Se ti serve diverso, puoi modificarlo qui.
+      I margini fustella vengono aggiunti al formato di ogni singolo elemento quando la fustella è attiva.<br>
+      Il costo “Fustella nuova” viene aggiunto solo se viene scelta l’opzione “Nuova”.
     </div>
 
     <h3 style="margin-top:20px">Costi grafica</h3>
@@ -2148,6 +2368,10 @@ function saveAdmin(){
   s.dieTopMm = parseNum($('#set_dieTop').value);
   s.dieBottomMm = parseNum($('#set_dieBottom').value);
 
+  s.dieNewSmallCost = parseNum($('#set_dieNewSmall').value);
+  s.dieNewMediumCost = parseNum($('#set_dieNewMedium').value);
+  s.dieNewLargeCost = parseNum($('#set_dieNewLarge').value);
+
   $$('[data-graph-index]').forEach(inp => {
     const i = Number(inp.dataset.graphIndex);
     if(data.graphicsOptions[i] && data.graphicsOptions[i].type === 'fixed'){
@@ -2244,7 +2468,13 @@ function initEvents(){
   });
 
   document.addEventListener('keydown', e => {
-    if(e.key === 'Escape') closeAdmin();
+    if(e.key === 'Escape'){
+      if(!$('#dieModal').classList.contains('hidden')){
+        cancelDieModal();
+      } else {
+        closeAdmin();
+      }
+    }
   });
 }
 
