@@ -399,7 +399,7 @@
       <div class="logo"></div>
       <div>
         <h1>Configuratore Stampa</h1>
-        <p>Logica semplificata · lavorazioni extra · fustella nuova/esistente</p>
+        <p>Logica semplificata · grafica snella · piccole tirature corrette</p>
       </div>
     </div>
     <div class="topActions">
@@ -647,7 +647,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v9';
+const STORAGE_KEY = 'configuratore_stampa_v10';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -661,6 +661,7 @@ const DEFAULT_DATA = {
 
     smallMaxSheets: 3,
     smallSheetCost: 3,
+    smallDuplexFixed: 5,
 
     midMaxSheets: 30,
     midRate: 0.70,
@@ -719,12 +720,11 @@ const DEFAULT_DATA = {
   ],
 
   graphicsOptions: [
-    { id:'client', label:'Grafica Fornita dal cliente', cost:0, type:'fixed' },
-    { id:'star1', label:'Grafica ★', cost:0, type:'fixed' },
-    { id:'star2', label:'Grafica ★★', cost:5, type:'fixed' },
-    { id:'star3', label:'Grafica ★★★', cost:10, type:'fixed' },
-    { id:'star4', label:'Grafica ★★★★', cost:30, type:'fixed' },
-    { id:'hourly', label:'Grafica ad ore', cost:0, type:'hourly' }
+    { id:'client', label:'Grafica fornita dal cliente', cost:0, type:'fixed', note:'' },
+    { id:'simple', label:'Grafica Semplice', cost:5, type:'fixed', note:'5 min. circa' },
+    { id:'medium', label:'Grafica Media', cost:10, type:'fixed', note:'15 min. circa' },
+    { id:'complex', label:'Grafica Articolata', cost:30, type:'fixed', note:'25/30 min. circa' },
+    { id:'hourly', label:'Grafica ad ore', cost:0, type:'hourly', note:'50€ prima ora, poi 30€' }
   ],
 
   extras: [
@@ -806,7 +806,7 @@ const state = {
   },
 
   dieIsNew: false,
-  dieNewSize: 'medium', // small | medium | large
+  dieNewSize: 'medium',
 
   graphicsType: 'client',
   graphicHours: 1,
@@ -1144,11 +1144,28 @@ function evaluate(qty = state.qty){
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
 
+    let smallInfo = `Per ${s.smallMaxSheets} fogli o meno: ${fmtMoney(s.smallSheetCost)} a foglio.`;
+
+    if(state.sides === 2){
+      smallInfo += ` Fronte/retro aggiunge ${fmtMoney(s.smallDuplexFixed)} una volta, senza raddoppiare il costo stampa.`;
+    }
+
     details.push({
       label: printLabel,
-      info: `Prezzo di ${fmtMoney(s.smallSheetCost)} a foglio perché la lavorazione rientra sotto la soglia di ${s.smallMaxSheets} fogli impostata in Admin.`,
+      info: smallInfo,
       value: smallCost
     });
+
+    if(state.sides === 2){
+      const duplexFixed = parseNum(s.smallDuplexFixed);
+      if(duplexFixed > 0){
+        productionCost += duplexFixed;
+        details.push({
+          label:'Fronte/retro piccola tiratura',
+          value:duplexFixed
+        });
+      }
+    }
   } else {
     const rate = chosen.sheets <= s.midMaxSheets ? s.midRate : s.largeRate;
     const printCost = units * rate;
@@ -1342,24 +1359,24 @@ function renderGraphicsControls(){
 
   const containers = [$('#graphicsControl'), $('#wGraphicsControl')];
 
-  const options = data.graphicsOptions.map(o => ({
-    id: o.id,
-    label: o.label
-  }));
-
   const barHtml = `
     <div class="graphicsBar">
-      ${options.map(o => `
-        <button type="button"
-          class="graphicsBtn ${state.graphicsType === o.id ? 'active' : ''}"
-          onclick="setGraphicsType('${o.id}')">
-          ${o.label}
-        </button>
-      `).join('')}
+      ${data.graphicsOptions.map(o => {
+        const costText = o.type === 'hourly' ? 'tariffa oraria' : fmtMoney(o.cost);
+        const title = `${o.label} · ${costText}${o.note ? ' · ' + o.note : ''}`;
+        return `
+          <button type="button"
+            class="graphicsBtn ${state.graphicsType === o.id ? 'active' : ''}"
+            title="${escapeAttr(title)}"
+            onclick="setGraphicsType('${o.id}')">
+            ${o.label}
+          </button>
+        `;
+      }).join('')}
     </div>
 
     <select class="graphicsSelectMobile" onchange="setGraphicsType(this.value)">
-      ${options.map(o => `
+      ${data.graphicsOptions.map(o => `
         <option value="${o.id}" ${state.graphicsType === o.id ? 'selected' : ''}>${o.label}</option>
       `).join('')}
     </select>
@@ -2012,6 +2029,7 @@ function editSummaryItem(el){
 
   if(key === 'extras'){
     const enabledExtras = data.extras.filter(e => e.enabled);
+    const wasDie = state.extras.die;
 
     strong.outerHTML = `
       <div class="inlineEditor" onclick="event.stopPropagation()">
@@ -2133,9 +2151,15 @@ function saveExtrasSummary(){
   });
 
   const wasDie = state.extras.die;
+  const dieNewlySelected = newExtras.die && !wasDie;
+
+  if(dieNewlySelected){
+    newExtras.die = false;
+  }
+
   state.extras = newExtras;
 
-  if(state.extras.die && !wasDie){
+  if(dieNewlySelected){
     openDieModal();
     return;
   }
@@ -2194,6 +2218,9 @@ function renderAdmin(){
       <label>Costo piccola tiratura €/foglio
         <input type="number" step="0.01" id="set_smallSheetCost" value="${s.smallSheetCost}">
       </label>
+      <label>Fronte/retro piccola tiratura €
+        <input type="number" step="0.01" id="set_smallDuplexFixed" value="${s.smallDuplexFixed}">
+      </label>
 
       <label>Soglia media tiratura (fogli)
         <input type="number" step="1" id="set_midMaxSheets" value="${s.midMaxSheets}">
@@ -2234,6 +2261,11 @@ function renderAdmin(){
       </label>
     </div>
 
+    <div class="adminNote">
+      Il costo “Fronte/retro piccola tiratura” si applica solo quando i fogli sono entro la soglia piccola e la stampa è fronte/retro.<br>
+      Non raddoppia il costo stampa e non si applica quando le stampe superano la soglia piccola.
+    </div>
+
     <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
     <div class="adminGrid">
       <label>Sinistra
@@ -2263,17 +2295,13 @@ function renderAdmin(){
       </label>
     </div>
 
-    <div class="adminNote">
-      I margini fustella vengono aggiunti al formato di ogni singolo elemento quando la fustella è attiva.<br>
-      Il costo “Fustella nuova” viene aggiunto solo se viene scelta l’opzione “Nuova”.
-    </div>
-
     <h3 style="margin-top:20px">Costi grafica</h3>
     <table class="adminTable">
       <thead>
         <tr>
           <th>Voce</th>
           <th>Costo €</th>
+          <th>Nota</th>
         </tr>
       </thead>
       <tbody>
@@ -2287,6 +2315,7 @@ function renderAdmin(){
                 : `<input type="number" step="0.01" data-graph-index="${i}" value="${g.cost}">`
               }
             </td>
+            <td>${g.note || ''}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -2352,6 +2381,7 @@ function saveAdmin(){
   s.fixedCut = parseNum($('#set_fixedCut').value);
   s.smallMaxSheets = Math.max(1, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
+  s.smallDuplexFixed = parseNum($('#set_smallDuplexFixed').value);
   s.midMaxSheets = Math.max(1, Math.round(parseNum($('#set_midMaxSheets').value)));
   s.midRate = parseNum($('#set_midRate').value);
   s.largeRate = parseNum($('#set_largeRate').value);
