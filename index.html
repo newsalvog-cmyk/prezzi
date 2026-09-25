@@ -240,7 +240,7 @@
     border-radius:12px;
     font-size:12px;
     line-height:1.35;
-    width:230px;
+    width:240px;
     opacity:0;
     pointer-events:none;
     transition:.18s;
@@ -266,6 +266,14 @@
     transform:translateX(-50%) translateY(0);
   }
 
+  .starBadge{
+    color:var(--primary);
+    font-size:14px;
+    display:inline-flex;
+    align-items:center;
+    margin-left:2px;
+  }
+
   .descGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
   .descItem{
     padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.80);
@@ -274,7 +282,14 @@
   .descItem.editable{cursor:default}
   .descItem.editable:hover{border-color:rgba(4,162,156,.24)}
   .descItem span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
-  .descItem strong{font-size:14px;font-weight:600}
+  .descItem strong{
+    font-size:14px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
 
   .priceBox{
     margin-top:16px;padding:18px;border-radius:24px;
@@ -476,7 +491,7 @@
 
           <div id="wGraphicHoursWrap" class="singleField hidden">
             <label>Ore di grafica
-              <input id="wGraphicHours" type="number" min="1" step="1" value="1" onchange="setGraphicHours(this.value)">
+              <input id="wGraphicHours" type="text" inputmode="decimal" value="1" onchange="setGraphicHours(this.value)">
             </label>
           </div>
 
@@ -564,7 +579,7 @@
 
           <div id="graphicHoursWrap" class="singleField hidden">
             <label>Ore di grafica
-              <input id="graphicHours" type="number" min="1" step="1" value="1" onchange="setGraphicHours(this.value)">
+              <input id="graphicHours" type="text" inputmode="decimal" value="1" onchange="setGraphicHours(this.value)">
             </label>
           </div>
 
@@ -603,7 +618,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v7';
+const STORAGE_KEY = 'configuratore_stampa_v8';
 let lastCalc = null;
 
 const DEFAULT_DATA = {
@@ -630,7 +645,12 @@ const DEFAULT_DATA = {
     printUnit: 'sheet',
 
     hourlyFirstHour: 50,
-    hourlyNextHours: 30
+    hourlyNextHours: 30,
+
+    dieLeftMm: 2,
+    dieRightMm: 2,
+    dieTopMm: 2,
+    dieBottomMm: 30
   },
 
   papers: [
@@ -829,6 +849,13 @@ function displayDimension(mm){
     : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
 }
 
+function displayHours(h){
+  const n = parseNum(h);
+  return Number.isInteger(n)
+    ? String(n)
+    : n.toLocaleString('it-IT', { maximumFractionDigits:2 });
+}
+
 function parseDimensionWithUnit(value, unit){
   const n = parseNum(value);
   return unit === 'cm' ? Math.round(n * 10) : Math.round(n);
@@ -866,8 +893,9 @@ function getGraphicsCost(){
   if(!opt) return 0;
 
   if(opt.type === 'hourly'){
-    const h = Math.max(0, Math.round(state.graphicHours));
+    const h = Math.max(0, parseNum(state.graphicHours));
     if(h <= 0) return 0;
+
     return data.settings.hourlyFirstHour + Math.max(0, h - 1) * data.settings.hourlyNextHours;
   }
 
@@ -879,8 +907,9 @@ function getGraphicsLabel(){
   if(!opt) return '';
 
   if(opt.type === 'hourly'){
-    const h = Math.max(0, Math.round(state.graphicHours));
-    return `${opt.label} (${h} ${h === 1 ? 'ora' : 'ore'})`;
+    const h = Math.max(0, parseNum(state.graphicHours));
+    const label = h.toLocaleString('it-IT', { maximumFractionDigits:2 });
+    return `${opt.label} (${label} ${h === 1 ? 'ora' : 'ore'})`;
   }
 
   return opt.label;
@@ -890,6 +919,33 @@ function normalizeExtras(){
   data.extras.forEach(e => {
     if(!(e.id in state.extras)) state.extras[e.id] = false;
   });
+}
+
+function getDieMargins(){
+  const s = data.settings;
+  return {
+    left: parseNum(s.dieLeftMm),
+    right: parseNum(s.dieRightMm),
+    top: parseNum(s.dieTopMm),
+    bottom: parseNum(s.dieBottomMm)
+  };
+}
+
+function isDieActive(){
+  const dieExtra = data.extras.find(e => e.id === 'die');
+  return !!(dieExtra && dieExtra.enabled && state.extras.die);
+}
+
+function getEffectiveItem(){
+  const margins = getDieMargins();
+  const active = isDieActive();
+
+  return {
+    w: state.widthMm + (active ? margins.left + margins.right : 0),
+    h: state.heightMm + (active ? margins.top + margins.bottom : 0),
+    active,
+    margins
+  };
 }
 
 function layoutPaper(item, paper){
@@ -905,7 +961,7 @@ function layoutPaper(item, paper){
     const copies = cols * rows;
 
     if(copies > 0){
-      const unused = paper.w * paper.h - copies * item.w * item.h;
+      const unused = paper.w * paper.h - copies * o.w * o.h;
       if(!best || copies > best.copies || (copies === best.copies && unused < best.unused)){
         best = {
           cols,
@@ -943,8 +999,15 @@ function evaluate(qty = state.qty){
     h: state.heightMm
   };
 
-  if(item.w <= 0 || item.h <= 0 || qty <= 0){
-    return { valid:false, item, qty };
+  const effective = getEffectiveItem();
+
+  const layoutItem = {
+    w: effective.w,
+    h: effective.h
+  };
+
+  if(item.w <= 0 || item.h <= 0 || layoutItem.w <= 0 || layoutItem.h <= 0 || qty <= 0){
+    return { valid:false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
   }
 
   const type = getType();
@@ -954,38 +1017,41 @@ function evaluate(qty = state.qty){
     const paper = data.papers.find(p => p.id === pid);
     if(!paper) continue;
 
-    const layout = layoutPaper(item, paper);
+    const layout = layoutPaper(layoutItem, paper);
     if(!layout) continue;
 
     const sheets = Math.ceil(qty / layout.copies);
     const paperArea = paper.w * paper.h;
     const totalArea = sheets * paperArea;
-    const itemArea = item.w * item.h * qty;
-    const wasteArea = Math.max(0, totalArea - itemArea);
-    const wastePct = totalArea ? wasteArea / totalArea * 100 : 0;
 
     candidates.push({
       paper,
       layout,
       sheets,
-      totalArea,
-      wasteArea,
-      wastePct
+      totalArea
     });
   }
 
   if(!candidates.length){
-    return { valid:false, item, qty };
+    return { valid:false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
   }
 
   candidates.sort((a,b) => {
     if(a.totalArea !== b.totalArea) return a.totalArea - b.totalArea;
-    if(a.wasteArea !== b.wasteArea) return a.wasteArea - b.wasteArea;
     return (a.paper.order || 99) - (b.paper.order || 99);
   });
 
   const chosen = candidates[0];
   const producedPieces = chosen.sheets * chosen.layout.copies;
+
+  const wasteArea = Math.max(
+    0,
+    chosen.totalArea - (producedPieces * chosen.layout.cellW * chosen.layout.cellH)
+  );
+  const wastePct = chosen.totalArea ? wasteArea / chosen.totalArea * 100 : 0;
+
+  chosen.wasteArea = wasteArea;
+  chosen.wastePct = wastePct;
 
   const s = data.settings;
 
@@ -1054,6 +1120,9 @@ function evaluate(qty = state.qty){
   return {
     valid:true,
     item,
+    effectiveItem: layoutItem,
+    dieActive: effective.active,
+    dieMargins: effective.margins,
     qty,
     candidates,
     chosen,
@@ -1203,11 +1272,11 @@ function renderGraphicsControls(){
   $('#graphicHoursWrap').classList.toggle('hidden', !showHours);
   $('#wGraphicHoursWrap').classList.toggle('hidden', !showHours);
 
-  $('#graphicHours').value = state.graphicHours;
-  $('#wGraphicHours').value = state.graphicHours;
+  $('#graphicHours').value = displayHours(state.graphicHours);
+  $('#wGraphicHours').value = displayHours(state.graphicHours);
 
   const note = opt?.type === 'hourly'
-    ? `Prima ora ${fmtMoney(data.settings.hourlyFirstHour)}, poi ${fmtMoney(data.settings.hourlyNextHours)} all'ora.`
+    ? `Prima ora ${fmtMoney(data.settings.hourlyFirstHour)}, poi ${fmtMoney(data.settings.hourlyNextHours)} all'ora. Puoi inserire anche decimali, esempio 1,5.`
     : '';
 
   $('#graphicsNote').textContent = note;
@@ -1229,6 +1298,10 @@ function renderPreviewInto(calc, container){
   const chosen = calc.chosen;
   const orientation = chosen.layout.rotated ? 'Orizzontale' : 'Verticale';
   const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits:3 });
+
+  const dieNote = calc.dieActive
+    ? ` · Fustella attiva: margini aggiunti al calcolo`
+    : '';
 
   container.innerHTML = `
     <div class="heroStats">
@@ -1252,7 +1325,7 @@ function renderPreviewInto(calc, container){
     </div>
 
     <p class="muted" style="text-align:center;margin-top:14px">
-      Scarto ${chosen.wastePct.toFixed(1)}% · Carta totale ${totalSqm} m² · Area utile foglio ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm
+      Scarto ${chosen.wastePct.toFixed(1)}% · Carta totale ${totalSqm} m² · Area utile foglio ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm${dieNote}
     </p>
   `;
 }
@@ -1277,8 +1350,20 @@ function renderSummaryInto(calc, container){
     ? `${fmtNum(state.qty)} pz`
     : `${fmtNum(state.qty)} pz${calc.producedPieces !== state.qty ? ` (${fmtNum(calc.producedPieces)} lavorati)` : ''}`;
 
+  let formatValue = `${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}`;
+
+  if(calc.dieActive){
+    const m = calc.dieMargins;
+    const effW = calc.effectiveItem.w;
+    const effH = calc.effectiveItem.h;
+
+    const dieTip = `Fustella attiva: per il conteggio delle stampe vengono aggiunti margini: sinistra ${fmtNum(m.left)} mm, destra ${fmtNum(m.right)} mm, alto ${fmtNum(m.top)} mm, basso ${fmtNum(m.bottom)} mm. Formato utile per l'imposizione: ${formatDim(effW)} × ${formatDim(effH)}.`;
+
+    formatValue += ` <span class="starBadge">★</span><span class="info" tabindex="0" data-tip="${escapeAttr(dieTip)}">i</span>`;
+  }
+
   let items = [
-    { key:'format', label:'Formato finito', value:`${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}` },
+    { key:'format', label:'Formato finito', value:formatValue },
     { key:'qty', label:'Quantità ordinata', value:qtyText },
     { key:'paperType', label:'Carta', value:paperText },
     { key:'weight', label:'Grammatura', value:weightText }
@@ -1514,9 +1599,7 @@ function setGraphicsType(id){
 }
 
 function setGraphicHours(value){
-  state.graphicHours = Math.max(1, Math.round(parseNum(value)));
-  $('#graphicHours').value = state.graphicHours;
-  $('#wGraphicHours').value = state.graphicHours;
+  state.graphicHours = Math.max(0, parseNum(value));
   refresh();
 }
 
@@ -1719,7 +1802,7 @@ function editSummaryItem(el){
     strong.outerHTML = `
       <div class="inlineEditor" onclick="event.stopPropagation()">
         <select id="sumGraphics" onchange="toggleSummaryGraphicsHours()">${options}</select>
-        <input id="sumHours" type="number" min="1" step="1" value="${state.graphicHours}" class="${isHourly ? '' : 'hidden'}">
+        <input id="sumHours" type="text" inputmode="decimal" value="${displayHours(state.graphicHours)}" class="${isHourly ? '' : 'hidden'}">
         <div class="inlineActions">
           <button class="btn primary" onclick="saveGraphicsSummary()">Salva</button>
           <button class="btn" onclick="refresh()">Annulla</button>
@@ -1837,7 +1920,7 @@ function saveGraphicsSummary(){
 
   const hours = $('#sumHours');
   if(hours && !hours.classList.contains('hidden')){
-    state.graphicHours = Math.max(1, Math.round(parseNum(hours.value)));
+    state.graphicHours = Math.max(0, parseNum(hours.value));
   }
 
   refresh();
@@ -1945,6 +2028,26 @@ function renderAdmin(){
       </label>
     </div>
 
+    <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
+    <div class="adminGrid">
+      <label>Sinistra
+        <input type="number" step="1" id="set_dieLeft" value="${s.dieLeftMm}">
+      </label>
+      <label>Destra
+        <input type="number" step="1" id="set_dieRight" value="${s.dieRightMm}">
+      </label>
+      <label>Alto
+        <input type="number" step="1" id="set_dieTop" value="${s.dieTopMm}">
+      </label>
+      <label>Basso
+        <input type="number" step="1" id="set_dieBottom" value="${s.dieBottomMm}">
+      </label>
+    </div>
+    <div class="adminNote">
+      Questi margini vengono aggiunti solo al formato utile per il calcolo dell’imposizione quando la Fustella è attiva.<br>
+      Di default il margine in basso è impostato a <strong>30 mm</strong>, cioè <strong>3 cm</strong>. Se ti serve diverso, puoi modificarlo qui.
+    </div>
+
     <h3 style="margin-top:20px">Costi grafica</h3>
     <table class="adminTable">
       <thead>
@@ -2039,6 +2142,11 @@ function saveAdmin(){
   s.printUnit = $('#set_printUnit').value;
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
   s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
+
+  s.dieLeftMm = parseNum($('#set_dieLeft').value);
+  s.dieRightMm = parseNum($('#set_dieRight').value);
+  s.dieTopMm = parseNum($('#set_dieTop').value);
+  s.dieBottomMm = parseNum($('#set_dieBottom').value);
 
   $$('[data-graph-index]').forEach(inp => {
     const i = Number(inp.dataset.graphIndex);
