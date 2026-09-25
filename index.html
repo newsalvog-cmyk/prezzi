@@ -6,13 +6,13 @@
 <title>Configuratore Stampa Cartoncini</title>
 <style>
   :root{
-    --text:#111827;
-    --muted:rgba(17,24,39,.58);
-    --line:rgba(255,255,255,.45);
-    --shadow:0 20px 60px rgba(0,0,0,.12);
+    --text:#5B5B5B;
+    --muted:rgba(91,91,91,.66);
+    --primary:#04A29C;
+    --primary-soft:rgba(4,162,156,.10);
+    --line:rgba(91,91,91,.12);
+    --shadow:0 20px 60px rgba(91,91,91,.10);
     --radius:28px;
-    --blue:#0a84ff;
-    --purple:#5856d6;
   }
 
   *{box-sizing:border-box}
@@ -23,23 +23,23 @@
     color:var(--text);
     font-weight:400;
     background:
-      radial-gradient(1200px 700px at 15% 10%, rgba(10,132,255,.12), transparent 50%),
-      radial-gradient(1000px 600px at 85% 20%, rgba(88,86,214,.14), transparent 50%),
-      linear-gradient(160deg,#f4f7ff,#eef5ff);
+      radial-gradient(1200px 700px at 15% 10%, rgba(4,162,156,.08), transparent 50%),
+      radial-gradient(1000px 600px at 85% 20%, rgba(91,91,91,.05), transparent 50%),
+      #ffffff;
     min-height:100vh;
   }
 
   .bg{position:fixed;inset:0;overflow:hidden;z-index:-1}
-  .blob{position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(70px);opacity:.32}
-  .b1{left:-120px;top:80px;background:rgba(10,132,255,.32)}
-  .b2{right:-100px;top:20px;background:rgba(88,86,214,.28)}
-  .b3{right:18%;bottom:-160px;background:rgba(52,199,89,.18)}
+  .blob{position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(70px);opacity:.16}
+  .b1{left:-120px;top:80px;background:rgba(4,162,156,.35)}
+  .b2{right:-100px;top:20px;background:rgba(91,91,91,.18)}
+  .b3{right:18%;bottom:-160px;background:rgba(4,162,156,.18)}
 
   .glass{
-    background:linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
-    backdrop-filter:blur(24px) saturate(160%);
-    -webkit-backdrop-filter:blur(24px) saturate(160%);
-    border:1px solid var(--line);
+    background:linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.72));
+    backdrop-filter:blur(24px) saturate(140%);
+    -webkit-backdrop-filter:blur(24px) saturate(140%);
+    border:1px solid rgba(255,255,255,.65);
     box-shadow:var(--shadow);
     border-radius:var(--radius);
   }
@@ -53,12 +53,12 @@
   .brand{display:flex;align-items:center;gap:14px}
   .logo{
     width:46px;height:46px;border-radius:16px;
-    background:linear-gradient(135deg,var(--blue),var(--purple));
+    background:linear-gradient(135deg,var(--primary),#79c7c3);
     position:relative;overflow:hidden;flex:0 0 auto;
   }
   .logo:after{
     content:"";position:absolute;inset:8px;border-radius:10px;
-    background:rgba(255,255,255,.32);
+    background:rgba(255,255,255,.35);
   }
 
   h1{margin:0;font-size:22px;letter-spacing:-.02em;font-weight:600}
@@ -79,12 +79,12 @@
   .card{padding:20px}
 
   .heroStats{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px
   }
   .heroStat{
     padding:14px 16px;border-radius:22px;
-    background:rgba(255,255,255,.42);
-    border:1px solid rgba(255,255,255,.45);
+    background:rgba(255,255,255,.72);
+    border:1px solid rgba(91,91,91,.08);
   }
   .heroValue{display:block;font-size:28px;font-weight:600}
   .heroLabel{display:block;margin-top:4px;color:var(--muted);font-size:12px}
@@ -92,33 +92,88 @@
   .sheets{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
   .sheetFig{margin:0;min-width:280px;flex:1;max-width:430px}
   .sheetWrap{
-    padding:14px;border-radius:26px;background:rgba(255,255,255,.4);
-    border:1px solid rgba(255,255,255,.45);
+    padding:14px;border-radius:26px;background:rgba(255,255,255,.72);
+    border:1px solid rgba(91,91,91,.08);
   }
   .sheetFig svg{width:100%;height:auto;display:block}
   .sheetFig figcaption{text-align:center;margin-top:10px;color:var(--muted);font-size:13px}
-  .paper{fill:#e9ebf0;stroke:rgba(0,0,0,.08)}
-  .printable{fill:#fff;stroke:rgba(0,0,0,.08)}
-  .copy{fill:rgba(10,132,255,.13);stroke:rgba(10,132,255,.35);stroke-width:1.2}
-  .copy.back{fill:rgba(88,86,214,.13);stroke:rgba(88,86,214,.35)}
+  .paper{fill:#f3f3f3;stroke:rgba(91,91,91,.12)}
+  .printable{fill:#fff;stroke:rgba(91,91,91,.12)}
+  .copy{fill:rgba(4,162,156,.10);stroke:rgba(4,162,156,.42);stroke-width:1.2}
+  .copy.back{fill:rgba(91,91,91,.08);stroke:rgba(91,91,91,.34)}
 
-  label{display:block;font-size:13px;font-weight:500;color:rgba(17,24,39,.7)}
+  label{display:block;font-size:13px;font-weight:500;color:rgba(91,91,91,.82)}
   input,select,textarea{
     width:100%;margin-top:6px;padding:12px 13px;border-radius:16px;
-    border:1px solid rgba(17,24,39,.09);
-    background:rgba(255,255,255,.6);
-    outline:none;font:inherit;font-weight:400;
+    border:1px solid rgba(91,91,91,.12);
+    background:rgba(255,255,255,.86);
+    outline:none;font:inherit;font-weight:400;color:var(--text);
+  }
+  input:focus,select:focus,textarea:focus{
+    border-color:rgba(4,162,156,.38);
+    box-shadow:0 0 0 4px rgba(4,162,156,.08);
   }
 
   .fieldRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-  .fieldRow3{display:grid;grid-template-columns:130px 1fr 1fr;gap:12px;margin-bottom:12px}
+  .fieldRow3{display:grid;grid-template-columns:1fr 1fr 180px;gap:12px;margin-bottom:12px;align-items:end}
   .singleField{margin-bottom:12px}
   .fieldName{margin:16px 0 8px;font-size:13px;font-weight:600}
 
+  .unitControl{display:flex;flex-direction:column;gap:8px}
+  .unitLabel{font-size:13px;font-weight:500;color:rgba(91,91,91,.82)}
+  .unitToggle{
+    display:flex;gap:6px;padding:6px;border-radius:18px;
+    background:rgba(255,255,255,.78);
+    border:1px solid rgba(91,91,91,.10);
+  }
+  .unitToggle button{
+    flex:1;border:none;cursor:pointer;font:inherit;font-weight:500;
+    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(91,91,91,.72);
+    transition:.18s background,.18s color;
+  }
+  .unitToggle button.active{
+    background:var(--primary);
+    color:#fff;
+  }
+
+  .graphicsBarWrap{position:relative}
+  .graphicsBar{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:8px;
+    border-radius:18px;
+    background:rgba(255,255,255,.78);
+    border:1px solid rgba(91,91,91,.10);
+    scrollbar-width:none;
+  }
+  .graphicsBar::-webkit-scrollbar{display:none}
+  .graphicsBtn{
+    flex:0 0 auto;
+    border:none;
+    cursor:pointer;
+    font:inherit;
+    font-weight:500;
+    padding:10px 12px;
+    border-radius:13px;
+    background:transparent;
+    color:rgba(91,91,91,.72);
+    white-space:nowrap;
+    transition:.18s background,.18s color;
+  }
+  .graphicsBtn:hover{
+    background:rgba(4,162,156,.06);
+  }
+  .graphicsBtn.active{
+    background:var(--primary);
+    color:#fff;
+  }
+  .graphicsSelectMobile{display:none}
+
   .segmented{
     display:flex;gap:6px;padding:6px;border-radius:18px;
-    background:rgba(255,255,255,.42);
-    border:1px solid rgba(255,255,255,.45);
+    background:rgba(255,255,255,.72);
+    border:1px solid rgba(91,91,91,.10);
     flex-wrap:wrap;
   }
 
@@ -128,92 +183,153 @@
   }
 
   .segBtn{
-    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(17,24,39,.64)
+    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(91,91,91,.72)
   }
   .segBtn.active{
-    background:rgba(255,255,255,.82);color:var(--text);
-    box-shadow:0 8px 20px rgba(0,0,0,.07);
+    background:var(--primary);color:white;
+    box-shadow:0 8px 20px rgba(4,162,156,.16);
   }
 
   .btn{
     padding:11px 14px;border-radius:16px;
-    background:rgba(255,255,255,.62);
-    border:1px solid rgba(255,255,255,.5);
+    background:rgba(255,255,255,.82);
+    border:1px solid rgba(91,91,91,.12);
+    color:var(--text);
   }
   .btn.primary{
-    color:white;background:linear-gradient(135deg,var(--blue),var(--purple));
+    color:white;background:var(--primary);
     border:none;
+    box-shadow:0 14px 30px rgba(4,162,156,.16);
   }
   .btn.active{
-    background:linear-gradient(135deg,var(--blue),var(--purple));
+    background:var(--primary);
     color:white;border:none;
   }
   .btn:disabled{opacity:.5;pointer-events:none}
+  .btn:active,.segBtn:active,.graphicsBtn:active,.unitToggle button:active{transform:scale(.985)}
 
   .checkGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .extraItem{display:flex;align-items:center;gap:8px}
   .check{
+    flex:1;
     display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:16px;
-    background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.45);
+    background:rgba(255,255,255,.78);border:1px solid rgba(91,91,91,.10);
     font-size:14px;font-weight:500;cursor:pointer;
   }
-  .check input{width:auto;margin-top:3px}
+  .check input{width:auto;margin-top:3px;accent-color:var(--primary)}
   .check span{display:block;line-height:1.35}
+
+  .info{
+    position:relative;
+    width:20px;height:20px;border-radius:50%;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:600;cursor:help;flex:0 0 auto;
+    user-select:none;
+  }
+  .info::after{
+    content:attr(data-tip);
+    position:absolute;
+    bottom:135%;
+    left:50%;
+    transform:translateX(-50%) translateY(4px);
+    background:#5B5B5B;
+    color:#fff;
+    padding:9px 11px;
+    border-radius:12px;
+    font-size:12px;
+    line-height:1.35;
+    width:230px;
+    opacity:0;
+    pointer-events:none;
+    transition:.18s;
+    z-index:40;
+  }
+  .info::before{
+    content:"";
+    position:absolute;
+    bottom:110%;
+    left:50%;
+    transform:translateX(-50%);
+    border:6px solid transparent;
+    border-top-color:#5B5B5B;
+    opacity:0;
+    transition:.18s;
+    z-index:40;
+  }
+  .info:hover::after,
+  .info:focus::after,
+  .info:hover::before,
+  .info:focus::before{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
 
   .descGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
   .descItem{
-    padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.42);
-    border:1px solid rgba(255,255,255,.45)
+    padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.80);
+    border:1px solid rgba(91,91,91,.10);
   }
+  .descItem.editable{cursor:default}
+  .descItem.editable:hover{border-color:rgba(4,162,156,.24)}
   .descItem span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
   .descItem strong{font-size:14px;font-weight:600}
 
   .priceBox{
     margin-top:16px;padding:18px;border-radius:24px;
-    background:linear-gradient(135deg,rgba(10,132,255,.10),rgba(88,86,214,.10));
-    border:1px solid rgba(255,255,255,.45)
+    background:linear-gradient(135deg,rgba(4,162,156,.08),rgba(91,91,91,.04));
+    border:1px solid rgba(91,91,91,.10)
   }
   .priceLabel{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
-  .price{font-size:38px;font-weight:600;margin-top:6px}
+  .price{font-size:38px;font-weight:600;margin-top:6px;color:var(--primary)}
   .breakdown{margin-top:14px;display:grid;gap:8px}
   .breakRow{
     display:flex;justify-content:space-between;gap:12px;padding:10px 12px;
-    border-radius:14px;background:rgba(255,255,255,.45);font-weight:500
+    border-radius:14px;background:rgba(255,255,255,.78);font-weight:500
   }
+  .breakRow span{
+    display:flex;align-items:center;gap:6px;flex:1;
+  }
+
+  .inlineEditor{display:grid;gap:8px;margin-top:8px}
+  .inlineEditor input,.inlineEditor select{margin-top:0;padding:10px 11px;border-radius:13px}
+  .inlineActions{display:flex;gap:8px;flex-wrap:wrap}
 
   .wizard{display:flex;justify-content:center;padding:10px 0 30px}
   .wizardCard{width:min(920px,100%);padding:24px}
   .wizardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
-  .progress{height:8px;border-radius:999px;background:rgba(17,24,39,.08);overflow:hidden;margin:14px 0 22px}
+  .progress{height:8px;border-radius:999px;background:rgba(91,91,91,.10);overflow:hidden;margin:14px 0 22px}
   #progressFill{
     height:100%;width:16.6%;border-radius:999px;
-    background:linear-gradient(90deg,var(--blue),var(--purple));
+    background:var(--primary);
     transition:width .25s ease;
   }
   .wStep{min-height:340px}
   .wizardNav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
   .error{
-    padding:16px;border-radius:18px;background:rgba(255,59,48,.1);
-    border:1px solid rgba(255,59,48,.18);color:#b30000;font-weight:500
+    padding:16px;border-radius:18px;background:rgba(200,70,60,.08);
+    border:1px solid rgba(200,70,60,.16);color:#b30000;font-weight:500
   }
 
   .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
-  .modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.28);backdrop-filter:blur(8px)}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(91,91,91,.28);backdrop-filter:blur(8px)}
   .modal-panel{
     position:relative;width:min(1180px,100%);max-height:88vh;overflow:auto;
-    padding:20px;background:linear-gradient(135deg, rgba(255,255,255,.86), rgba(255,255,255,.68));
+    padding:20px;background:linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
     border-radius:28px;
   }
   .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
   .adminGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .adminTable{width:100%;border-collapse:collapse;margin-top:10px}
-  .adminTable th,.adminTable td{padding:8px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:middle}
+  .adminTable th,.adminTable td{padding:8px;border-bottom:1px solid rgba(91,91,91,.08);vertical-align:middle}
   .adminTable input,.adminTable select{padding:9px 10px;border-radius:12px}
   .adminNote{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.45}
   .adminActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 
   .toast{
     position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
-    padding:12px 16px;border-radius:16px;background:rgba(17,24,39,.9);color:white;
+    padding:12px 16px;border-radius:16px;background:#5B5B5B;color:white;
     opacity:0;pointer-events:none;transition:.25s;z-index:200;font-weight:500
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -226,10 +342,16 @@
     .checkGrid{grid-template-columns:1fr}
   }
 
+  @media (max-width:768px){
+    .graphicsBar{display:none}
+    .graphicsSelectMobile{display:block;width:100%}
+  }
+
   @media print{
-    .bg,.topActions,.controls,.modal,.toast,.btn,#wizardView{display:none!important}
+    header.topbar,.topActions,.controls,.modal,.toast,.btn,#wizardView,.info::after,.info::before{display:none!important}
     body{background:white}
     .glass{box-shadow:none;background:white;backdrop-filter:none;border-color:#ddd}
+    .preview{padding:0}
   }
 </style>
 </head>
@@ -245,7 +367,7 @@
       <div class="logo"></div>
       <div>
         <h1>Configuratore Stampa</h1>
-        <p>Logica semplificata · lavorazioni extra · grafica separata · mm/cm</p>
+        <p>Logica semplificata · lavorazioni extra · grafica separata</p>
       </div>
     </div>
     <div class="topActions">
@@ -275,18 +397,21 @@
           <h3>1 · Formato cartoncino</h3>
 
           <div class="fieldRow3">
-            <label>Unità
-              <select id="wUnit" onchange="setUnit(this.value)">
-                <option value="cm">cm</option>
-                <option value="mm">mm</option>
-              </select>
-            </label>
             <label>Larghezza
               <input id="wWidth" type="text" inputmode="decimal" value="14,8">
             </label>
+
             <label>Altezza
               <input id="wHeight" type="text" inputmode="decimal" value="21">
             </label>
+
+            <div class="unitControl">
+              <span class="unitLabel">Unità</span>
+              <div class="unitToggle">
+                <button type="button" data-unit="cm" onclick="setUnit('cm')">cm</button>
+                <button type="button" data-unit="mm" onclick="setUnit('mm')">mm</button>
+              </div>
+            </div>
           </div>
 
           <div id="wStep1Error" class="error hidden"></div>
@@ -297,7 +422,7 @@
 
           <div class="singleField">
             <label>Quantità
-              <input id="wQty" type="number" value="1000">
+              <input id="wQty" type="number" value="0">
             </label>
           </div>
 
@@ -331,7 +456,7 @@
           <div style="margin-top:16px">
             <label class="check">
               <input type="checkbox" id="wReseller" onchange="setReseller(this.checked)">
-              <span>Rivenditore (sconto 20%)</span>
+              <span>Rivenditore</span>
             </label>
           </div>
         </div>
@@ -345,9 +470,8 @@
           <h3>5 · Grafica</h3>
 
           <div class="singleField">
-            <label>Complessità grafica
-              <select id="wGraphicsType" onchange="setGraphicsType(this.value)"></select>
-            </label>
+            <label>Complessità grafica</label>
+            <div class="graphicsBarWrap" id="wGraphicsControl"></div>
           </div>
 
           <div id="wGraphicHoursWrap" class="singleField hidden">
@@ -386,23 +510,26 @@
           <h2>Configura prodotto</h2>
 
           <div class="fieldRow3">
-            <label>Unità
-              <select id="unit" onchange="setUnit(this.value)">
-                <option value="cm">cm</option>
-                <option value="mm">mm</option>
-              </select>
-            </label>
             <label>Larghezza
               <input id="width" type="text" inputmode="decimal" value="14,8">
             </label>
+
             <label>Altezza
               <input id="height" type="text" inputmode="decimal" value="21">
             </label>
+
+            <div class="unitControl">
+              <span class="unitLabel">Unità</span>
+              <div class="unitToggle">
+                <button type="button" data-unit="cm" onclick="setUnit('cm')">cm</button>
+                <button type="button" data-unit="mm" onclick="setUnit('mm')">mm</button>
+              </div>
+            </div>
           </div>
 
           <div class="singleField">
             <label>Quantità
-              <input id="qty" type="number" value="1000">
+              <input id="qty" type="number" value="0">
             </label>
           </div>
 
@@ -432,7 +559,7 @@
 
           <div class="fieldName">Grafica</div>
           <div class="singleField">
-            <select id="graphicsType" onchange="setGraphicsType(this.value)"></select>
+            <div class="graphicsBarWrap" id="graphicsControl"></div>
           </div>
 
           <div id="graphicHoursWrap" class="singleField hidden">
@@ -446,13 +573,14 @@
           <div style="margin-top:16px">
             <label class="check">
               <input type="checkbox" id="reseller" onchange="setReseller(this.checked)">
-              <span>Rivenditore (sconto 20%)</span>
+              <span>Rivenditore</span>
             </label>
           </div>
         </section>
 
         <section class="glass card summary">
           <h2>Riepilogo e prezzo</h2>
+          <div class="muted" style="margin-bottom:10px">Doppio click su una voce per modificarla.</div>
           <div id="summary"></div>
         </section>
       </section>
@@ -475,7 +603,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v4';
+const STORAGE_KEY = 'configuratore_stampa_v7';
 let lastCalc = null;
 
 const DEFAULT_DATA = {
@@ -499,7 +627,7 @@ const DEFAULT_DATA = {
     heavyThreshold: 170,
     heavyCost: 10,
 
-    printUnit: 'sheet', // sheet = lati fisici foglio | piece = lati prodotto/pezzi imposti
+    printUnit: 'sheet',
 
     hourlyFirstHour: 50,
     hourlyNextHours: 30
@@ -537,12 +665,11 @@ const DEFAULT_DATA = {
   ],
 
   graphicsOptions: [
-    { id:'client', label:'Grafica fornita dal cliente', cost:0, type:'fixed' },
-    { id:'ready', label:'Grafica pronta', cost:0, type:'fixed' },
-    { id:'very_simple', label:'Grafica semplicissima', cost:0, type:'fixed' },
-    { id:'simple', label:'Grafica semplice', cost:5, type:'fixed' },
-    { id:'normal', label:'Grafica normale', cost:10, type:'fixed' },
-    { id:'articulated', label:'Grafica articolata', cost:30, type:'fixed' },
+    { id:'client', label:'Grafica Fornita dal cliente', cost:0, type:'fixed' },
+    { id:'star1', label:'Grafica ★', cost:0, type:'fixed' },
+    { id:'star2', label:'Grafica ★★', cost:5, type:'fixed' },
+    { id:'star3', label:'Grafica ★★★', cost:10, type:'fixed' },
+    { id:'star4', label:'Grafica ★★★★', cost:30, type:'fixed' },
     { id:'hourly', label:'Grafica ad ore', cost:0, type:'hourly' }
   ],
 
@@ -555,7 +682,7 @@ const DEFAULT_DATA = {
       threshold:50,
       rate:0.30,
       unit:'sheet',
-      mode:'over' // over = solo oltre soglia | all = tutta la quantità se superi soglia
+      mode:'over'
     },
     {
       id:'hole',
@@ -608,13 +735,13 @@ const state = {
   widthMm: 148,
   heightMm: 210,
 
-  qty: 1000,
+  qty: 0,
 
   paperType: 'patinata',
   weight: 170,
   specialVariant: 'Avorio rigata',
 
-  sides: 2,
+  sides: 1,
 
   extras: {
     lam:false,
@@ -702,16 +829,35 @@ function displayDimension(mm){
     : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
 }
 
-function parseDimensionToMm(value){
+function parseDimensionWithUnit(value, unit){
   const n = parseNum(value);
-  return state.unit === 'cm' ? Math.round(n * 10) : Math.round(n);
+  return unit === 'cm' ? Math.round(n * 10) : Math.round(n);
+}
+
+function parseDimensionToMm(value){
+  return parseDimensionWithUnit(value, state.unit);
+}
+
+function escapeAttr(str){
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function getType(){
   return data.paperTypes.find(t => t.id === state.paperType) || data.paperTypes[0];
 }
 
+function normalizeGraphics(){
+  if(!data.graphicsOptions.some(o => o.id === state.graphicsType)){
+    state.graphicsType = data.graphicsOptions[0].id;
+  }
+}
+
 function getGraphicOption(){
+  normalizeGraphics();
   return data.graphicsOptions.find(o => o.id === state.graphicsType) || data.graphicsOptions[0];
 }
 
@@ -847,24 +993,28 @@ function evaluate(qty = state.qty){
     ? producedPieces * state.sides
     : chosen.sheets * state.sides;
 
+  const printLabel = s.printUnit === 'piece'
+    ? `Stampe (${fmtNum(producedPieces)} pezzi, ${fmtNum(units)} stampe)`
+    : `Stampe (${fmtNum(chosen.sheets)} fogli, ${fmtNum(units)} stampe)`;
+
   let productionCost = 0;
   let details = [];
 
   if(chosen.sheets <= s.smallMaxSheets){
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
-    details.push({ label:`Fogli piccoli (${chosen.sheets} × ${fmtMoney(s.smallSheetCost)})`, value: smallCost });
+
+    details.push({
+      label: printLabel,
+      info: `Prezzo di ${fmtMoney(s.smallSheetCost)} a foglio perché la lavorazione rientra sotto la soglia di ${s.smallMaxSheets} fogli impostata in Admin.`,
+      value: smallCost
+    });
   } else {
     const rate = chosen.sheets <= s.midMaxSheets ? s.midRate : s.largeRate;
     const printCost = units * rate;
 
     productionCost += printCost;
-    details.push({
-      label: s.printUnit === 'piece'
-        ? `Lati prodotto (${fmtNum(units)} × ${fmtMoney(rate)})`
-        : `Lati foglio (${fmtNum(units)} × ${fmtMoney(rate)})`,
-      value: printCost
-    });
+    details.push({ label: printLabel, value: printCost });
 
     if(units > s.extraThreshold){
       productionCost += s.extraCost;
@@ -873,12 +1023,12 @@ function evaluate(qty = state.qty){
 
     if(state.weight > s.heavyThreshold){
       productionCost += s.heavyCost;
-      details.push({ label:'Maggiorazione cartoncino', value:s.heavyCost });
+      details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
     }
   }
 
   productionCost += s.fixedCut;
-  details.push({ label:'Taglio fisso', value:s.fixedCut });
+  details.push({ label:'Taglio', value:s.fixedCut });
 
   const graphicsCost = getGraphicsCost();
   details.push({ label:`Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
@@ -889,12 +1039,7 @@ function evaluate(qty = state.qty){
     const cost = getExtraCost(extra, chosen.sheets, producedPieces);
     if(cost > 0){
       extrasTotal += cost;
-
-      const baseLabel = extra.unit === 'sheet'
-        ? `${fmtNum(chosen.sheets)} fogli`
-        : `${fmtNum(producedPieces)} pezzi`;
-
-      details.push({ label:`${extra.label} (${baseLabel})`, value: cost });
+      details.push({ label: extra.label, value: cost });
     }
   });
 
@@ -930,6 +1075,12 @@ function svgSheet(chosen, label, isBack = false){
   const mx = (paper.w - paper.printW) / 2;
   const my = (paper.h - paper.printH) / 2;
 
+  const gridW = layout.cols * layout.cellW;
+  const gridH = layout.rows * layout.cellH;
+
+  const offsetX = mx + (paper.printW - gridW) / 2;
+  const offsetY = my + (paper.printH - gridH) / 2;
+
   let cells = '';
   const maxDraw = 600;
   const count = Math.min(layout.copies, maxDraw);
@@ -939,8 +1090,8 @@ function svgSheet(chosen, label, isBack = false){
     const c = i % layout.cols;
     if(r >= layout.rows) break;
 
-    const x = mx + c * layout.cellW;
-    const y = my + r * layout.cellH;
+    const x = offsetX + c * layout.cellW;
+    const y = offsetY + r * layout.cellH;
 
     cells += `<rect x="${x}" y="${y}" width="${layout.cellW}" height="${layout.cellH}" rx="7" class="copy ${isBack ? 'back' : ''}"></rect>`;
   }
@@ -972,9 +1123,10 @@ function updateSegmented(){
   });
 }
 
-function updateUnitSelects(){
-  $('#unit').value = state.unit;
-  $('#wUnit').value = state.unit;
+function updateUnitControls(){
+  $$('[data-unit]').forEach(b => {
+    b.classList.toggle('active', b.dataset.unit === state.unit);
+  });
 }
 
 function updateDimensionInputs(){
@@ -991,17 +1143,20 @@ function renderExtrasOptions(){
 
   const html = enabledExtras.length ? enabledExtras.map(e => {
     const base = e.unit === 'sheet' ? 'fogli' : 'pezzi';
+    const modeText = e.mode === 'all'
+      ? 'applica la tariffa a tutta la quantità quando superi la soglia'
+      : 'applica la tariffa solo alla parte oltre la soglia';
+
+    const tip = `Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)} · ${modeText}`;
+
     return `
-      <label class="check">
-        <input type="checkbox" ${state.extras[e.id] ? 'checked' : ''} onchange="toggleExtra('${e.id}', this.checked)">
-        <span>
-          ${e.label}
-          <br>
-          <small class="muted">
-            Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)}
-          </small>
-        </span>
-      </label>
+      <div class="extraItem">
+        <label class="check">
+          <input type="checkbox" ${state.extras[e.id] ? 'checked' : ''} onchange="toggleExtra('${e.id}', this.checked)">
+          <span>${e.label}</span>
+        </label>
+        <span class="info" tabindex="0" data-tip="${escapeAttr(tip)}">i</span>
+      </div>
     `;
   }).join('') : `<div class="muted">Nessuna lavorazione extra disponibile</div>`;
 
@@ -1010,13 +1165,37 @@ function renderExtrasOptions(){
   });
 }
 
-function renderGraphicsSelects(){
-  const options = data.graphicsOptions.map(o => `
-    <option value="${o.id}" ${o.id === state.graphicsType ? 'selected' : ''}>${o.label}</option>
-  `).join('');
+function renderGraphicsControls(){
+  normalizeGraphics();
 
-  $('#graphicsType').innerHTML = options;
-  $('#wGraphicsType').innerHTML = options;
+  const containers = [$('#graphicsControl'), $('#wGraphicsControl')];
+
+  const options = data.graphicsOptions.map(o => ({
+    id: o.id,
+    label: o.label
+  }));
+
+  const barHtml = `
+    <div class="graphicsBar">
+      ${options.map(o => `
+        <button type="button"
+          class="graphicsBtn ${state.graphicsType === o.id ? 'active' : ''}"
+          onclick="setGraphicsType('${o.id}')">
+          ${o.label}
+        </button>
+      `).join('')}
+    </div>
+
+    <select class="graphicsSelectMobile" onchange="setGraphicsType(this.value)">
+      ${options.map(o => `
+        <option value="${o.id}" ${state.graphicsType === o.id ? 'selected' : ''}>${o.label}</option>
+      `).join('')}
+    </select>
+  `;
+
+  containers.forEach(el => {
+    if(el) el.innerHTML = barHtml;
+  });
 
   const opt = getGraphicOption();
   const showHours = opt && opt.type === 'hourly';
@@ -1062,14 +1241,6 @@ function renderPreviewInto(calc, container){
         <span class="heroLabel">Fogli necessari</span>
       </div>
       <div class="heroStat">
-        <span class="heroValue">${fmtNum(calc.producedPieces)}</span>
-        <span class="heroLabel">Pezzi lavorati</span>
-      </div>
-      <div class="heroStat">
-        <span class="heroValue">${chosen.wastePct.toFixed(1)}%</span>
-        <span class="heroLabel">Scarto</span>
-      </div>
-      <div class="heroStat">
         <span class="heroValue" style="font-size:20px;line-height:1.15;padding-top:6px">${chosen.paper.label}</span>
         <span class="heroLabel">Foglio scelto · ${orientation}</span>
       </div>
@@ -1081,7 +1252,7 @@ function renderPreviewInto(calc, container){
     </div>
 
     <p class="muted" style="text-align:center;margin-top:14px">
-      Carta totale: ${totalSqm} m² · Area utile foglio: ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm
+      Scarto ${chosen.wastePct.toFixed(1)}% · Carta totale ${totalSqm} m² · Area utile foglio ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm
     </p>
   `;
 }
@@ -1095,56 +1266,100 @@ function renderSummaryInto(calc, container){
   }
 
   const type = getType();
-  const paperText = type.kind === 'special'
-    ? `${type.label} · ${state.specialVariant} · 280 g`
-    : `${type.label} · ${state.weight} g`;
+  const paperText = type.label;
+  const weightText = type.kind === 'special' ? '280 g' : `${state.weight} g`;
 
   const extraLabels = data.extras
     .filter(e => e.enabled && state.extras[e.id])
     .map(e => e.label);
 
+  const qtyText = state.qty <= 0
+    ? `${fmtNum(state.qty)} pz`
+    : `${fmtNum(state.qty)} pz${calc.producedPieces !== state.qty ? ` (${fmtNum(calc.producedPieces)} lavorati)` : ''}`;
+
+  let items = [
+    { key:'format', label:'Formato finito', value:`${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}` },
+    { key:'qty', label:'Quantità ordinata', value:qtyText },
+    { key:'paperType', label:'Carta', value:paperText },
+    { key:'weight', label:'Grammatura', value:weightText }
+  ];
+
+  if(type.kind === 'special'){
+    items.push({ key:'specialVariant', label:'Variante', value:state.specialVariant });
+  }
+
+  items.push(
+    { key:'sides', label:'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' },
+    { key:'extras', label:'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' },
+    { key:'graphics', label:'Grafica', value:getGraphicsLabel() },
+    { key:'reseller', label:'Rivenditore', value: state.reseller ? 'Sì' : 'No' }
+  );
+
+  const priceHtml = calc.isQtyZero
+    ? `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">—</div>
+        <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
+      </div>
+    `
+    : `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">${fmtMoney(calc.total)}</div>
+        <div class="muted">
+          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
+          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
+        </div>
+      </div>
+
+      <div class="breakdown">
+        ${calc.details.map(d => `
+          <div class="breakRow">
+            <span>
+              ${d.label}
+              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
+            </span>
+            <strong>${fmtMoney(d.value)}</strong>
+          </div>
+        `).join('')}
+        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
+        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
+      </div>
+    `;
+
   container.innerHTML = `
     <div class="descGrid">
-      <div class="descItem"><span>Formato finito</span><strong>${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}</strong></div>
-      <div class="descItem"><span>Quantità ordinata</span><strong>${fmtNum(calc.qty)} pz</strong></div>
-      <div class="descItem"><span>Pezzi lavorati</span><strong>${fmtNum(calc.producedPieces)} pz</strong></div>
-      <div class="descItem"><span>Carta</span><strong>${paperText}</strong></div>
-      <div class="descItem"><span>Foglio</span><strong>${calc.chosen.paper.label}</strong></div>
-      <div class="descItem"><span>Stampa</span><strong>${state.sides === 2 ? 'Fronte/retro' : 'Solo fronte'}</strong></div>
-      <div class="descItem"><span>Lavorazioni extra</span><strong>${extraLabels.length ? extraLabels.join(', ') : 'Nessuna'}</strong></div>
-      <div class="descItem"><span>Grafica</span><strong>${getGraphicsLabel()}</strong></div>
-    </div>
-
-    <div class="priceBox">
-      <div class="priceLabel">Totale IVA esclusa</div>
-      <div class="price">${fmtMoney(calc.total)}</div>
-      <div class="muted">
-        ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
-        ${state.reseller ? `Sconto rivenditore ${data.settings.resellerDiscount}% applicato` : 'Cliente standard'}
-      </div>
-    </div>
-
-    <div class="breakdown">
-      ${calc.details.map(d => `
-        <div class="breakRow"><span>${d.label}</span><strong>${fmtMoney(d.value)}</strong></div>
+      ${items.map(it => `
+        <div class="descItem editable" data-edit="${it.key}" ondblclick="editSummaryItem(this)" title="Doppio click per modificare">
+          <span>${it.label}</span>
+          <strong>${it.value}</strong>
+        </div>
       `).join('')}
-      ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
-      <div class="breakRow"><span>Costo pezzo</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
     </div>
+
+    ${priceHtml}
   `;
 }
 
 function refresh(){
   normalizeExtras();
+  normalizeGraphics();
 
-  let calc = evaluate(state.qty);
+  const effectiveQty = state.qty > 0 ? state.qty : 1;
+  let calc = evaluate(effectiveQty);
+
+  if(calc && state.qty <= 0){
+    calc.isQtyZero = true;
+  }
+
   lastCalc = calc;
 
   renderTopbar();
   updateSegmented();
-  updateUnitSelects();
+  updateUnitControls();
   renderExtrasOptions();
-  renderGraphicsSelects();
+  renderGraphicsControls();
 
   if($('#reseller')) $('#reseller').checked = state.reseller;
   if($('#wReseller')) $('#wReseller').checked = state.reseller;
@@ -1164,7 +1379,8 @@ function syncInputsFromState(){
   $('#wQty').value = state.qty;
 
   updatePaperSelects();
-  renderGraphicsSelects();
+  renderGraphicsControls();
+  updateUnitControls();
 }
 
 function updatePaperSelects(){
@@ -1247,20 +1463,13 @@ function printNormal(){
 
 function setUnit(unit){
   state.unit = unit;
-  updateUnitSelects();
+  updateUnitControls();
   updateDimensionInputs();
   refresh();
 }
 
-function setQty(q){
-  state.qty = Number(q);
-  $('#qty').value = state.qty;
-  $('#wQty').value = state.qty;
-  refresh();
-}
-
 function handleQtyChange(value){
-  const q = Math.max(1, Math.round(parseNum(value)));
+  const q = Math.max(0, Math.round(parseNum(value)));
   state.qty = q;
   $('#qty').value = state.qty;
   $('#wQty').value = state.qty;
@@ -1300,7 +1509,7 @@ function toggleExtra(id, checked){
 
 function setGraphicsType(id){
   state.graphicsType = id;
-  renderGraphicsSelects();
+  renderGraphicsControls();
   refresh();
 }
 
@@ -1313,10 +1522,12 @@ function setGraphicHours(value){
 
 function canProceedStep(step){
   if(step === 1){
-    return lastCalc && lastCalc.valid && state.widthMm > 0 && state.heightMm > 0;
+    const layoutCalc = evaluate(1);
+    return layoutCalc && layoutCalc.valid && state.widthMm > 0 && state.heightMm > 0;
   }
   if(step === 2){
-    return lastCalc && lastCalc.valid && state.qty > 0;
+    const calc = evaluate(state.qty);
+    return state.qty > 0 && calc && calc.valid;
   }
   return true;
 }
@@ -1368,11 +1579,13 @@ function renderWizardDynamic(calc){
   error2.classList.add('hidden');
 
   if(state.wizardStep === 1){
+    const layoutCalc = evaluate(1);
+
     if(state.widthMm <= 0 || state.heightMm <= 0){
       error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
-    } else if(!calc || !calc.valid){
+    } else if(!layoutCalc || !layoutCalc.valid){
       error1.textContent = 'Il formato inserito non sta in nessuno dei fogli disponibili.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
@@ -1380,7 +1593,8 @@ function renderWizardDynamic(calc){
   }
 
   if(state.wizardStep === 2){
-    if(!calc || !calc.valid || state.qty <= 0){
+    const realCalc = evaluate(state.qty);
+    if(state.qty <= 0 || !realCalc || !realCalc.valid){
       error2.textContent = 'Quantità o configurazione non valida.';
       error2.classList.remove('hidden');
       nextBtn.disabled = true;
@@ -1391,6 +1605,253 @@ function renderWizardDynamic(calc){
     renderSummaryInto(calc, $('#wizardSummary'));
     renderPreviewInto(calc, $('#wizardPreview'));
   }
+}
+
+function editSummaryItem(el){
+  if(document.querySelector('.inlineEditor')) return;
+
+  const key = el.dataset.edit;
+  const strong = el.querySelector('strong');
+  if(!strong) return;
+
+  if(key === 'qty'){
+    strong.outerHTML = `
+      <input type="number" class="inlineEditor" value="${state.qty}" onchange="setQtyFromSummary(this.value)">
+    `;
+    el.querySelector('input').focus();
+    return;
+  }
+
+  if(key === 'paperType'){
+    const options = data.paperTypes.map(t => `
+      <option value="${t.id}" ${t.id === state.paperType ? 'selected' : ''}>${t.label}</option>
+    `).join('');
+
+    strong.outerHTML = `
+      <select class="inlineEditor" onchange="setPaperTypeFromSummary(this.value)">${options}</select>
+    `;
+    el.querySelector('select').focus();
+    return;
+  }
+
+  if(key === 'weight'){
+    const type = getType();
+
+    if(type.kind === 'special'){
+      strong.outerHTML = `<input class="inlineEditor" value="280 g" disabled>`;
+      return;
+    }
+
+    const options = type.weights.map(w => `
+      <option value="${w}" ${Number(w) === Number(state.weight) ? 'selected' : ''}>${w} g</option>
+    `).join('');
+
+    strong.outerHTML = `
+      <select class="inlineEditor" onchange="setWeightFromSummary(this.value)">${options}</select>
+    `;
+    el.querySelector('select').focus();
+    return;
+  }
+
+  if(key === 'specialVariant'){
+    const type = getType();
+    const options = (type.variants || []).map(v => `
+      <option ${v === state.specialVariant ? 'selected' : ''}>${v}</option>
+    `).join('');
+
+    strong.outerHTML = `
+      <select class="inlineEditor" onchange="setVariantFromSummary(this.value)">${options}</select>
+    `;
+    el.querySelector('select').focus();
+    return;
+  }
+
+  if(key === 'sides'){
+    strong.outerHTML = `
+      <select class="inlineEditor" onchange="setSidesFromSummary(this.value)">
+        <option value="1" ${state.sides === 1 ? 'selected' : ''}>Solo fronte</option>
+        <option value="2" ${state.sides === 2 ? 'selected' : ''}>Fronte/retro</option>
+      </select>
+    `;
+    el.querySelector('select').focus();
+    return;
+  }
+
+  if(key === 'reseller'){
+    strong.outerHTML = `
+      <label class="check" style="margin-top:8px">
+        <input type="checkbox" ${state.reseller ? 'checked' : ''} onchange="setResellerFromSummary(this.checked)">
+        <span>Rivenditore</span>
+      </label>
+    `;
+    el.querySelector('input').focus();
+    return;
+  }
+
+  if(key === 'format'){
+    strong.outerHTML = `
+      <div class="inlineEditor" onclick="event.stopPropagation()">
+        <select id="sumUnit" onchange="updateFormatEditorValues()">
+          <option value="cm" ${state.unit === 'cm' ? 'selected' : ''}>cm</option>
+          <option value="mm" ${state.unit === 'mm' ? 'selected' : ''}>mm</option>
+        </select>
+        <div class="fieldRow">
+          <input id="sumWidth" type="text" value="${displayDimension(state.widthMm)}">
+          <input id="sumHeight" type="text" value="${displayDimension(state.heightMm)}">
+        </div>
+        <div class="inlineActions">
+          <button class="btn primary" onclick="saveFormatSummary()">Salva</button>
+          <button class="btn" onclick="refresh()">Annulla</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if(key === 'graphics'){
+    const options = data.graphicsOptions.map(o => `
+      <option value="${o.id}" ${o.id === state.graphicsType ? 'selected' : ''}>${o.label}</option>
+    `).join('');
+
+    const opt = getGraphicOption();
+    const isHourly = opt.type === 'hourly';
+
+    strong.outerHTML = `
+      <div class="inlineEditor" onclick="event.stopPropagation()">
+        <select id="sumGraphics" onchange="toggleSummaryGraphicsHours()">${options}</select>
+        <input id="sumHours" type="number" min="1" step="1" value="${state.graphicHours}" class="${isHourly ? '' : 'hidden'}">
+        <div class="inlineActions">
+          <button class="btn primary" onclick="saveGraphicsSummary()">Salva</button>
+          <button class="btn" onclick="refresh()">Annulla</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if(key === 'extras'){
+    const enabledExtras = data.extras.filter(e => e.enabled);
+
+    strong.outerHTML = `
+      <div class="inlineEditor" onclick="event.stopPropagation()">
+        ${enabledExtras.map(e => `
+          <label class="check">
+            <input type="checkbox" class="sumExtra" value="${e.id}" ${state.extras[e.id] ? 'checked' : ''}>
+            <span>${e.label}</span>
+          </label>
+        `).join('')}
+        <div class="inlineActions">
+          <button class="btn primary" onclick="saveExtrasSummary()">Salva</button>
+          <button class="btn" onclick="refresh()">Annulla</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+}
+
+function setQtyFromSummary(value){
+  state.qty = Math.max(0, Math.round(parseNum(value)));
+  refresh();
+}
+
+function setPaperTypeFromSummary(value){
+  state.paperType = value;
+  updatePaperSelects();
+  refresh();
+}
+
+function setWeightFromSummary(value){
+  state.weight = parseNum(value);
+  refresh();
+}
+
+function setVariantFromSummary(value){
+  state.specialVariant = value;
+  refresh();
+}
+
+function setSidesFromSummary(value){
+  state.sides = Number(value);
+  refresh();
+}
+
+function setResellerFromSummary(checked){
+  state.reseller = checked;
+  refresh();
+}
+
+function updateFormatEditorValues(){
+  const unitSel = $('#sumUnit');
+  const wInput = $('#sumWidth');
+  const hInput = $('#sumHeight');
+
+  if(!unitSel || !wInput || !hInput) return;
+
+  const oldUnit = state.unit;
+  const newUnit = unitSel.value;
+
+  if(oldUnit === newUnit) return;
+
+  const wMm = parseDimensionWithUnit(wInput.value, oldUnit);
+  const hMm = parseDimensionWithUnit(hInput.value, oldUnit);
+
+  const display = (mm, unit) => {
+    const v = unit === 'cm' ? mm / 10 : mm;
+    return Number.isInteger(v) ? String(v) : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
+  };
+
+  wInput.value = display(wMm, newUnit);
+  hInput.value = display(hMm, newUnit);
+}
+
+function saveFormatSummary(){
+  const unit = $('#sumUnit').value;
+  const width = $('#sumWidth').value;
+  const height = $('#sumHeight').value;
+
+  state.unit = unit;
+  state.widthMm = parseDimensionWithUnit(width, unit);
+  state.heightMm = parseDimensionWithUnit(height, unit);
+
+  updateUnitControls();
+  updateDimensionInputs();
+  refresh();
+}
+
+function toggleSummaryGraphicsHours(){
+  const sel = $('#sumGraphics');
+  const hours = $('#sumHours');
+  if(!sel || !hours) return;
+
+  const opt = data.graphicsOptions.find(o => o.id === sel.value);
+  if(opt && opt.type === 'hourly'){
+    hours.classList.remove('hidden');
+  } else {
+    hours.classList.add('hidden');
+  }
+}
+
+function saveGraphicsSummary(){
+  state.graphicsType = $('#sumGraphics').value;
+
+  const hours = $('#sumHours');
+  if(hours && !hours.classList.contains('hidden')){
+    state.graphicHours = Math.max(1, Math.round(parseNum(hours.value)));
+  }
+
+  refresh();
+}
+
+function saveExtrasSummary(){
+  const checks = $$('.sumExtra');
+  state.extras = {};
+
+  checks.forEach(c => {
+    state.extras[c.value] = c.checked;
+  });
+
+  refresh();
 }
 
 function openAdmin(){
@@ -1434,24 +1895,24 @@ function renderAdmin(){
         <input type="number" step="0.1" id="set_resellerDiscount" value="${s.resellerDiscount}">
       </label>
 
-      <label>Taglio fisso €
+      <label>Taglio €
         <input type="number" step="0.01" id="set_fixedCut" value="${s.fixedCut}">
       </label>
 
-      <label>Fogli piccoli max
+      <label>Soglia piccola tiratura (fogli)
         <input type="number" step="1" id="set_smallMaxSheets" value="${s.smallMaxSheets}">
       </label>
-      <label>Costo foglio piccolo €
+      <label>Costo piccola tiratura €/foglio
         <input type="number" step="0.01" id="set_smallSheetCost" value="${s.smallSheetCost}">
       </label>
 
-      <label>Fogli medi max
+      <label>Soglia media tiratura (fogli)
         <input type="number" step="1" id="set_midMaxSheets" value="${s.midMaxSheets}">
       </label>
-      <label>Tariffa medi €/lato
+      <label>Tariffa media €/lato
         <input type="number" step="0.01" id="set_midRate" value="${s.midRate}">
       </label>
-      <label>Tariffa grandi €/lato
+      <label>Tariffa grande €/lato
         <input type="number" step="0.01" id="set_largeRate" value="${s.largeRate}">
       </label>
 
@@ -1462,10 +1923,10 @@ function renderAdmin(){
         <input type="number" step="0.01" id="set_extraCost" value="${s.extraCost}">
       </label>
 
-      <label>Soglia cartoncino (g)
+      <label>Soglia costo aggiuntivo carta (g)
         <input type="number" step="1" id="set_heavyThreshold" value="${s.heavyThreshold}">
       </label>
-      <label>Maggiorazione cartoncino €
+      <label>Costo aggiuntivo carta €
         <input type="number" step="0.01" id="set_heavyCost" value="${s.heavyCost}">
       </label>
 
