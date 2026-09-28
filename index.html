@@ -8,400 +8,927 @@
 <link rel="icon" type="image/png" href="favicon.png">
 
 <style>
-  :root{
-    --text:#5B5B5B;
-    --muted:rgba(91,91,91,.66);
-    --primary:#04A29C;
-    --primary-soft:rgba(4,162,156,.10);
-    --line:rgba(91,91,91,.12);
-    --shadow:0 20px 60px rgba(91,91,91,.10);
-    --radius:28px;
+  :root {
+    --text: #5B5B5B;
+    --muted: rgba(91, 91, 91, .66);
+    --primary: #04A29C;
+    --primary-soft: rgba(4, 162, 156, .10);
+    --line: rgba(91, 91, 91, .12);
+    --shadow: 0 20px 60px rgba(91, 91, 91, .10);
+    --radius: 28px;
   }
 
-  *{box-sizing:border-box}
+  * {
+    box-sizing: border-box;
+  }
 
-  body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
-    color:var(--text);
-    font-weight:400;
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    font-weight: 400;
     background:
-      radial-gradient(1200px 700px at 15% 10%, rgba(4,162,156,.08), transparent 50%),
-      radial-gradient(1000px 600px at 85% 20%, rgba(91,91,91,.05), transparent 50%),
+      radial-gradient(1200px 700px at 15% 10%, rgba(4, 162, 156, .08), transparent 50%),
+      radial-gradient(1000px 600px at 85% 20%, rgba(91, 91, 91, .05), transparent 50%),
       #ffffff;
-    min-height:100vh;
+    min-height: 100vh;
   }
 
-  .bg{position:fixed;inset:0;overflow:hidden;z-index:-1}
-  .blob{position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(70px);opacity:.16}
-  .b1{left:-120px;top:80px;background:rgba(4,162,156,.35)}
-  .b2{right:-100px;top:20px;background:rgba(91,91,91,.18)}
-  .b3{right:18%;bottom:-160px;background:rgba(4,162,156,.18)}
-
-  .glass{
-    background:linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.72));
-    backdrop-filter:blur(24px) saturate(140%);
-    -webkit-backdrop-filter:blur(24px) saturate(140%);
-    border:1px solid rgba(255,255,255,.65);
-    box-shadow:var(--shadow);
-    border-radius:var(--radius);
+  .bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
   }
 
-  header.topbar{
-    position:sticky;top:14px;z-index:20;
-    display:flex;justify-content:space-between;align-items:center;gap:16px;
-    padding:16px 20px;margin:14px auto 0;max-width:1340px;
+  .blob {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: .16;
   }
 
-  .topbarLeft{display:flex;align-items:center;gap:14px}
-
-  .refreshBtn{
-    width:44px;height:44px;padding:0;font-size:22px;
-    display:flex;align-items:center;justify-content:center;
+  .b1 {
+    left: -120px;
+    top: 80px;
+    background: rgba(4, 162, 156, .35);
   }
 
-  .brand{display:flex;align-items:center;gap:14px}
-
-  .logoImg{
-    width:200px;
-    height:50px;
-    border-radius:16px;
-    object-fit:contain;
-    flex:0 0 auto;
+  .b2 {
+    right: -100px;
+    top: 20px;
+    background: rgba(91, 91, 91, .18);
   }
 
-  h1{margin:0;font-size:22px;letter-spacing:-.02em;font-weight:600}
-  header p{margin:2px 0 0;color:var(--muted);font-size:13px}
-  h2{margin:0 0 14px;font-size:20px;font-weight:600}
-  h3{margin:0 0 12px;font-size:16px;font-weight:600}
-
-  main{max-width:1340px;margin:18px auto 40px;padding:0 14px}
-  .hidden{display:none!important}
-  .muted{color:var(--muted)}
-  small{font-size:12px}
-
-  .topActions{display:flex;gap:10px;flex-wrap:wrap}
-
-  #normalView{display:grid;gap:18px}
-  .preview{padding:22px}
-  .grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:start}
-  .card{padding:20px}
-
-  .heroStats{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px
-  }
-  .heroStat{
-    padding:14px 16px;border-radius:22px;
-    background:rgba(255,255,255,.72);
-    border:1px solid rgba(91,91,91,.08);
-  }
-  .heroValue{display:block;font-size:28px;font-weight:600}
-  .heroLabel{display:block;margin-top:4px;color:var(--muted);font-size:12px}
-
-  .sheets{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
-  .sheetFig{margin:0;min-width:280px;flex:1;max-width:430px}
-  .sheetWrap{
-    padding:14px;border-radius:26px;background:rgba(255,255,255,.72);
-    border:1px solid rgba(91,91,91,.08);
-  }
-  .sheetFig svg{width:100%;height:auto;display:block}
-  .sheetFig figcaption{text-align:center;margin-top:10px;color:var(--muted);font-size:13px}
-  .paper{fill:#f3f3f3;stroke:rgba(91,91,91,.12)}
-  .printable{fill:#fff;stroke:rgba(91,91,91,.12)}
-  .copy{fill:rgba(4,162,156,.10);stroke:rgba(4,162,156,.42);stroke-width:1.2}
-  .copy.back{fill:rgba(91,91,91,.08);stroke:rgba(91,91,91,.34)}
-
-  label{display:block;font-size:13px;font-weight:500;color:rgba(91,91,91,.82)}
-  input,select,textarea{
-    width:100%;margin-top:6px;padding:12px 13px;border-radius:16px;
-    border:1px solid rgba(91,91,91,.12);
-    background:rgba(255,255,255,.86);
-    outline:none;font:inherit;font-weight:400;color:var(--text);
-  }
-  input:focus,select:focus,textarea:focus{
-    border-color:rgba(4,162,156,.38);
-    box-shadow:0 0 0 4px rgba(4,162,156,.08);
+  .b3 {
+    right: 18%;
+    bottom: -160px;
+    background: rgba(4, 162, 156, .18);
   }
 
-  .fieldRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-  .fieldRow3{display:grid;grid-template-columns:1fr 1fr 180px;gap:12px;margin-bottom:12px;align-items:end}
-  .singleField{margin-bottom:12px}
-  .fieldName{margin:16px 0 8px;font-size:13px;font-weight:600}
-
-  .unitControl{display:flex;flex-direction:column;gap:8px}
-  .unitLabel{font-size:13px;font-weight:500;color:rgba(91,91,91,.82)}
-  .unitToggle{
-    display:flex;gap:6px;padding:6px;border-radius:18px;
-    background:rgba(255,255,255,.78);
-    border:1px solid rgba(91,91,91,.10);
-  }
-  .unitToggle button{
-    flex:1;border:none;cursor:pointer;font:inherit;font-weight:500;
-    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(91,91,91,.72);
-    transition:.18s background,.18s color;
-  }
-  .unitToggle button.active{
-    background:var(--primary);
-    color:#fff;
+  .glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .72));
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, .65);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
   }
 
-  .graphicsBarWrap{position:relative}
-  .graphicsBar{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    padding:8px;
-    border-radius:18px;
-    background:rgba(255,255,255,.78);
-    border:1px solid rgba(91,91,91,.10);
-    scrollbar-width:none;
-  }
-  .graphicsBar::-webkit-scrollbar{display:none}
-  .graphicsBtn{
-    flex:0 0 auto;
-    border:none;
-    cursor:pointer;
-    font:inherit;
-    font-weight:500;
-    padding:10px 12px;
-    border-radius:13px;
-    background:transparent;
-    color:rgba(91,91,91,.72);
-    white-space:nowrap;
-    transition:.18s background,.18s color;
-  }
-  .graphicsBtn:hover{
-    background:rgba(4,162,156,.06);
-  }
-  .graphicsBtn.active{
-    background:var(--primary);
-    color:#fff;
-  }
-  .graphicsSelectMobile{display:none}
-
-  .segmented{
-    display:flex;gap:6px;padding:6px;border-radius:18px;
-    background:rgba(255,255,255,.72);
-    border:1px solid rgba(91,91,91,.10);
-    flex-wrap:wrap;
+  header.topbar {
+    position: sticky;
+    top: 14px;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    margin: 14px auto 0;
+    max-width: 1340px;
   }
 
-  .btn,.segBtn{
-    border:none;cursor:pointer;font:inherit;font-weight:500;
-    transition:.18s transform,.18s background,.18s box-shadow;
+  .topbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
-  .segBtn{
-    padding:10px 12px;border-radius:13px;background:transparent;color:rgba(91,91,91,.72)
-  }
-  .segBtn.active{
-    background:var(--primary);color:white;
-    box-shadow:0 8px 20px rgba(4,162,156,.16);
-  }
-
-  .btn{
-    padding:11px 14px;border-radius:16px;
-    background:rgba(255,255,255,.82);
-    border:1px solid rgba(91,91,91,.12);
-    color:var(--text);
-  }
-  .btn.primary{
-    color:white;background:var(--primary);
-    border:none;
-    box-shadow:0 14px 30px rgba(4,162,156,.16);
-  }
-  .btn.active{
-    background:var(--primary);
-    color:white;border:none;
-  }
-  .btn:disabled{opacity:.5;pointer-events:none}
-  .btn:active,.segBtn:active,.graphicsBtn:active,.unitToggle button:active{transform:scale(.985)}
-
-  .checkGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .extraItem{display:flex;align-items:center;gap:8px}
-  .check{
-    flex:1;
-    display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:16px;
-    background:rgba(255,255,255,.78);border:1px solid rgba(91,91,91,.10);
-    font-size:14px;font-weight:500;cursor:pointer;
-  }
-  .check input{width:auto;margin-top:3px;accent-color:var(--primary)}
-  .check span{display:block;line-height:1.35}
-
-  .miniBadge{
-    border:none;
-    background:var(--primary-soft);
-    color:var(--primary);
-    padding:7px 10px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    white-space:nowrap;
+  .refreshBtn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .info{
-    position:relative;
-    width:20px;height:20px;border-radius:50%;
-    background:var(--primary-soft);
-    color:var(--primary);
-    display:inline-flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:600;cursor:help;flex:0 0 auto;
-    user-select:none;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
-  .info::after{
-    content:attr(data-tip);
-    position:absolute;
-    bottom:135%;
-    left:50%;
-    transform:translateX(-50%) translateY(4px);
-    background:#5B5B5B;
-    color:#fff;
-    padding:9px 11px;
-    border-radius:12px;
-    font-size:12px;
-    line-height:1.35;
-    width:250px;
-    opacity:0;
-    pointer-events:none;
-    transition:.18s;
-    z-index:60;
+
+  .logoImg {
+    width: 200px;
+    height: 50px;
+    border-radius: 16px;
+    object-fit: contain;
+    flex: 0 0 auto;
   }
-  .info::before{
-    content:"";
-    position:absolute;
-    bottom:110%;
-    left:50%;
-    transform:translateX(-50%);
-    border:6px solid transparent;
-    border-top-color:#5B5B5B;
-    opacity:0;
-    transition:.18s;
-    z-index:60;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -.02em;
+    font-weight: 600;
   }
+
+  header p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  h2 {
+    margin: 0 0 14px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1340px;
+    margin: 18px auto 40px;
+    padding: 0 14px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  small {
+    font-size: 12px;
+  }
+
+  .topActions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  #normalView {
+    display: grid;
+    gap: 18px;
+  }
+
+  .preview {
+    padding: 22px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.08fr .92fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .heroStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .heroStat {
+    padding: 14px 16px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(91, 91, 91, .08);
+  }
+
+  .heroValue {
+    display: block;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  .heroLabel {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .sheets {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .sheetFig {
+    margin: 0;
+    min-width: 280px;
+    flex: 1;
+    max-width: 430px;
+  }
+
+  .sheetWrap {
+    padding: 14px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(91, 91, 91, .08);
+  }
+
+  .sheetFig svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .sheetFig figcaption {
+    text-align: center;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .paper {
+    fill: #f3f3f3;
+    stroke: rgba(91, 91, 91, .12);
+  }
+
+  .printable {
+    fill: #fff;
+    stroke: rgba(91, 91, 91, .12);
+  }
+
+  .copy {
+    fill: rgba(4, 162, 156, .10);
+    stroke: rgba(4, 162, 156, .42);
+    stroke-width: 1.2;
+  }
+
+  .copy.back {
+    fill: rgba(91, 91, 91, .08);
+    stroke: rgba(91, 91, 91, .34);
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(91, 91, 91, .82);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 13px;
+    border-radius: 16px;
+    border: 1px solid rgba(91, 91, 91, .12);
+    background: rgba(255, 255, 255, .86);
+    outline: none;
+    font: inherit;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: rgba(4, 162, 156, .38);
+    box-shadow: 0 0 0 4px rgba(4, 162, 156, .08);
+  }
+
+  .fieldRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .fieldRow3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 180px;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: end;
+  }
+
+  .singleField {
+    margin-bottom: 12px;
+  }
+
+  .fieldName {
+    margin: 16px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .unitControl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .unitLabel {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(91, 91, 91, .82);
+  }
+
+  .unitToggle {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(91, 91, 91, .10);
+  }
+
+  .unitToggle button {
+    flex: 1;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: transparent;
+    color: rgba(91, 91, 91, .72);
+    transition: .18s background, .18s color;
+  }
+
+  .unitToggle button.active {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .graphicsBarWrap {
+    position: relative;
+  }
+
+  .graphicsBar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(91, 91, 91, .10);
+    scrollbar-width: none;
+  }
+
+  .graphicsBar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .graphicsBtn {
+    flex: 0 0 auto;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: transparent;
+    color: rgba(91, 91, 91, .72);
+    white-space: nowrap;
+    transition: .18s background, .18s color;
+  }
+
+  .graphicsBtn:hover {
+    background: rgba(4, 162, 156, .06);
+  }
+
+  .graphicsBtn.active {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .graphicsSelectMobile {
+    display: none;
+  }
+
+  .segmented {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(91, 91, 91, .10);
+    flex-wrap: wrap;
+  }
+
+  .btn,
+  .segBtn {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 500;
+    transition: .18s transform, .18s background, .18s box-shadow;
+  }
+
+  .segBtn {
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: transparent;
+    color: rgba(91, 91, 91, .72);
+  }
+
+  .segBtn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 8px 20px rgba(4, 162, 156, .16);
+  }
+
+  .btn {
+    padding: 11px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .82);
+    border: 1px solid rgba(91, 91, 91, .12);
+    color: var(--text);
+  }
+
+  .btn.primary {
+    color: white;
+    background: var(--primary);
+    border: none;
+    box-shadow: 0 14px 30px rgba(4, 162, 156, .16);
+  }
+
+  .btn.active {
+    background: var(--primary);
+    color: white;
+    border: none;
+  }
+
+  .btn:disabled {
+    opacity: .5;
+    pointer-events: none;
+  }
+
+  .btn:active,
+  .segBtn:active,
+  .graphicsBtn:active,
+  .unitToggle button:active {
+    transform: scale(.985);
+  }
+
+  .checkGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .extraItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .check {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(91, 91, 91, .10);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .check input {
+    width: auto;
+    margin-top: 3px;
+    accent-color: var(--primary);
+  }
+
+  .check span {
+    display: block;
+    line-height: 1.35;
+  }
+
+  .miniBadge {
+    border: none;
+    background: var(--primary-soft);
+    color: var(--primary);
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .info {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: help;
+    flex: 0 0 auto;
+    user-select: none;
+  }
+
+  .info::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 135%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #5B5B5B;
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.35;
+    width: 250px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .18s;
+    z-index: 60;
+  }
+
+  .info::before {
+    content: "";
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #5B5B5B;
+    opacity: 0;
+    transition: .18s;
+    z-index: 60;
+  }
+
   .info:hover::after,
   .info:focus::after,
   .info:hover::before,
-  .info:focus::before{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
+  .info:focus::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 
-  .starBadge{
-    color:var(--primary);
-    font-size:14px;
-    display:inline-flex;
-    align-items:center;
-    margin-left:2px;
+  .starBadge {
+    color: var(--primary);
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 2px;
   }
 
-  .descGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
-  .descItem{
-    padding:12px 13px;border-radius:18px;background:rgba(255,255,255,.80);
-    border:1px solid rgba(91,91,91,.10);
-  }
-  .descItem.editable{cursor:default}
-  .descItem.editable:hover{border-color:rgba(4,162,156,.24)}
-  .descItem span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
-  .descItem strong{
-    font-size:14px;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    flex-wrap:wrap;
+  .descGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 12px;
   }
 
-  .priceBox{
-    margin-top:16px;padding:18px;border-radius:24px;
-    background:linear-gradient(135deg,rgba(4,162,156,.08),rgba(91,91,91,.04));
-    border:1px solid rgba(91,91,91,.10)
-  }
-  .priceLabel{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
-  .price{font-size:38px;font-weight:600;margin-top:6px;color:var(--primary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .priceOriginal{
-    font-size:22px;
-    color:var(--muted);
-    text-decoration:line-through;
-    font-weight:400;
-  }
-  .breakdown{margin-top:14px;display:grid;gap:8px}
-  .breakRow{
-    display:flex;justify-content:space-between;gap:12px;padding:10px 12px;
-    border-radius:14px;background:rgba(255,255,255,.78);font-weight:500
-  }
-  .breakRow span{
-    display:flex;align-items:center;gap:6px;flex:1;
+  .descItem {
+    padding: 12px 13px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .80);
+    border: 1px solid rgba(91, 91, 91, .10);
   }
 
-  .inlineEditor{display:grid;gap:8px;margin-top:8px}
-  .inlineEditor input,.inlineEditor select{margin-top:0;padding:10px 11px;border-radius:13px}
-  .inlineActions{display:flex;gap:8px;flex-wrap:wrap}
-
-  .wizard{display:flex;justify-content:center;padding:10px 0 30px}
-  .wizardCard{width:min(920px,100%);padding:24px}
-  .wizardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
-  .progress{height:8px;border-radius:999px;background:rgba(91,91,91,.10);overflow:hidden;margin:14px 0 22px}
-  #progressFill{
-    height:100%;width:16.6%;border-radius:999px;
-    background:var(--primary);
-    transition:width .25s ease;
-  }
-  .wStep{min-height:340px}
-  .wizardNav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
-  .error{
-    padding:16px;border-radius:18px;background:rgba(200,70,60,.08);
-    border:1px solid rgba(200,70,60,.16);color:#b30000;font-weight:500
+  .descItem.editable {
+    cursor: default;
   }
 
-  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
-  .modal-backdrop{position:absolute;inset:0;background:rgba(91,91,91,.28);backdrop-filter:blur(8px)}
-  .modal-panel{
-    position:relative;width:min(1180px,100%);max-height:88vh;overflow:auto;
-    padding:20px;background:linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
-    border-radius:28px;
-  }
-  .modal-panel.small{
-    width:min(620px,100%);
-  }
-  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-  .adminGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .adminTable{width:100%;border-collapse:collapse;margin-top:10px}
-  .adminTable th,.adminTable td{padding:8px;border-bottom:1px solid rgba(91,91,91,.08);vertical-align:middle}
-  .adminTable input,.adminTable select{padding:9px 10px;border-radius:12px}
-  .adminNote{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.45}
-  .adminActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-
-  .dieSizeOptions{display:grid;gap:10px;margin-top:14px}
-
-  .toast{
-    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
-    padding:12px 16px;border-radius:16px;background:#5B5B5B;color:white;
-    opacity:0;pointer-events:none;transition:.25s;z-index:200;font-weight:500
-  }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  @media (max-width:980px){
-    .grid{grid-template-columns:1fr}
-    .heroStats{grid-template-columns:repeat(2,1fr)}
-    .adminGrid{grid-template-columns:1fr}
-    .fieldRow3{grid-template-columns:1fr}
-    .checkGrid{grid-template-columns:1fr}
+  .descItem.editable:hover {
+    border-color: rgba(4, 162, 156, .24);
   }
 
-  @media (max-width:768px){
-    .graphicsBar{display:none}
-    .graphicsSelectMobile{display:block;width:100%}
+  .descItem span {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    margin-bottom: 4px;
   }
 
-  @media print{
-    header.topbar,.topActions,.controls,.modal,.toast,.btn,#wizardView,.info::after,.info::before{display:none!important}
-    body{background:white}
-    .glass{box-shadow:none;background:white;backdrop-filter:none;border-color:#ddd}
-    .preview{padding:0}
+  .descItem strong {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .priceBox {
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(4, 162, 156, .08), rgba(91, 91, 91, .04));
+    border: 1px solid rgba(91, 91, 91, .10);
+  }
+
+  .priceLabel {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .price {
+    font-size: 38px;
+    font-weight: 600;
+    margin-top: 6px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .priceOriginal {
+    font-size: 22px;
+    color: var(--muted);
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .breakdown {
+    margin-top: 14px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .breakRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .78);
+    font-weight: 500;
+  }
+
+  .breakRow span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .inlineEditor {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .inlineEditor input,
+  .inlineEditor select {
+    margin-top: 0;
+    padding: 10px 11px;
+    border-radius: 13px;
+  }
+
+  .inlineActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .wizard {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 30px;
+  }
+
+  .wizardCard {
+    width: min(920px, 100%);
+    padding: 24px;
+  }
+
+  .wizardHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .progress {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(91, 91, 91, .10);
+    overflow: hidden;
+    margin: 14px 0 22px;
+  }
+
+  #progressFill {
+    height: 100%;
+    width: 16.6%;
+    border-radius: 999px;
+    background: var(--primary);
+    transition: width .25s ease;
+  }
+
+  .wStep {
+    min-height: 340px;
+  }
+
+  .wizardNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .error {
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(200, 70, 60, .08);
+    border: 1px solid rgba(200, 70, 60, .16);
+    color: #b30000;
+    font-weight: 500;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(91, 91, 91, .28);
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-panel {
+    position: relative;
+    width: min(1180px, 100%);
+    max-height: 88vh;
+    overflow: auto;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .84));
+    border-radius: 28px;
+  }
+
+  .modal-panel.small {
+    width: min(620px, 100%);
+  }
+
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .adminGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .adminTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .adminTable th,
+  .adminTable td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(91, 91, 91, .08);
+    vertical-align: middle;
+  }
+
+  .adminTable input,
+  .adminTable select {
+    padding: 9px 10px;
+    border-radius: 12px;
+  }
+
+  .adminNote {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .adminActions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .dieSizeOptions {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(20px);
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: #5B5B5B;
+    color: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+    z-index: 200;
+    font-weight: 500;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 980px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .heroStats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .adminGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .fieldRow3 {
+      grid-template-columns: 1fr;
+    }
+
+    .checkGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .graphicsBar {
+      display: none;
+    }
+
+    .graphicsSelectMobile {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  @media print {
+    header.topbar,
+    .topActions,
+    .controls,
+    .modal,
+    .toast,
+    .btn,
+    #wizardView,
+    .info::after,
+    .info::before {
+      display: none !important;
+    }
+
+    body {
+      background: white;
+    }
+
+    .glass {
+      box-shadow: none;
+      background: white;
+      backdrop-filter: none;
+      border-color: #ddd;
+    }
+
+    .preview {
+      padding: 0;
+    }
   }
 </style>
 </head>
+
 <body>
   <div class="bg">
     <div class="blob b1"></div>
@@ -432,7 +959,6 @@
   </header>
 
   <main>
-
     <!-- WIZARD -->
     <section id="wizardView" class="wizard">
       <div class="glass wizardCard">
@@ -443,7 +969,9 @@
           </div>
         </div>
 
-        <div class="progress"><div id="progressFill"></div></div>
+        <div class="progress">
+          <div id="progressFill"></div>
+        </div>
 
         <div id="wStep1" class="wStep">
           <h3>1 · Dimensione Lavoro</h3>
@@ -681,9 +1209,9 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v17';
+const STORAGE_KEY = 'configuratore_stampa_v19';
 let lastCalc = null;
-let dieTemp = { isNew:false, size:'medium' };
+let dieTemp = { isNew: false, size: 'medium' };
 
 const DEFAULT_DATA = {
   settings: {
@@ -696,12 +1224,13 @@ const DEFAULT_DATA = {
 
     smallMaxSheets: 3,
     smallSheetCost: 3,
+
+    duplexSmallMaxSheets: 5,
     smallDuplexFixed: 5,
 
     standardSheetRate: 0.70,
-    standardSheetThreshold: 50,
+    standardSheetThreshold: 20,
     discountedSheetRate: 0.50,
-    customerCutSheetThreshold: 60,
 
     heavyThreshold: 170,
     heavyCost: 10,
@@ -720,95 +1249,50 @@ const DEFAULT_DATA = {
   },
 
   papers: [
-    { id:'p3244', label:'32×44 cm', w:320, h:440, printW:310, printH:430, order:1 },
-    { id:'p3245', label:'32×45 cm', w:320, h:450, printW:310, printH:440, order:2 },
-    { id:'p33488', label:'33×48,8 cm', w:330, h:488, printW:320, printH:478, order:3 }
+    { id: 'p3244', label: '32×44 cm', w: 320, h: 440, printW: 310, printH: 430, order: 1 },
+    { id: 'p3245', label: '32×45 cm', w: 320, h: 450, printW: 310, printH: 440, order: 2 },
+    { id: 'p33488', label: '33×48,8 cm', w: 330, h: 488, printW: 320, printH: 478, order: 3 }
   ],
 
   paperTypes: [
     {
-      id:'patinata',
-      label:'Patinata',
-      kind:'standard',
-      formats:['p3244','p3245','p33488'],
-      weights:[80,90,135,150,170,200,300,350,400]
+      id: 'patinata',
+      label: 'Patinata',
+      kind: 'standard',
+      formats: ['p3244', 'p3245', 'p33488'],
+      weights: [80, 90, 135, 150, 170, 200, 300, 350, 400]
     },
     {
-      id:'usomano',
-      label:'Usomano',
-      kind:'standard',
-      formats:['p3244','p3245','p33488'],
-      weights:[80,90,135,150,170,200,300,350,400]
+      id: 'usomano',
+      label: 'Usomano',
+      kind: 'standard',
+      formats: ['p3244', 'p3245', 'p33488'],
+      weights: [80, 90, 135, 150, 170, 200, 300, 350, 400]
     },
     {
-      id:'speciale',
-      label:'Carte speciali',
-      kind:'special',
-      formats:['p33488'],
-      weights:[280],
-      variants:['Avorio rigata','Avorio liscio','Martellata bianca','Martellata avorio','Corn Mais','Colorata']
+      id: 'speciale',
+      label: 'Carte speciali',
+      kind: 'special',
+      formats: ['p33488'],
+      weights: [280],
+      variants: ['Avorio rigata', 'Avorio liscio', 'Martellata bianca', 'Martellata avorio', 'Corn Mais', 'Colorata']
     }
   ],
 
   graphicsOptions: [
-    { id:'client', label:'Grafica fornita dal cliente', cost:0, type:'fixed', note:'' },
-    { id:'simple', label:'Grafica Semplice', cost:5, type:'fixed', note:'5 min. circa' },
-    { id:'medium', label:'Grafica Media', cost:10, type:'fixed', note:'15 min. circa' },
-    { id:'complex', label:'Grafica Articolata', cost:30, type:'fixed', note:'25/30 min. circa' },
-    { id:'hourly', label:'Grafica ad ore', cost:0, type:'hourly', note:'50€ prima ora, poi 30€' }
+    { id: 'client', label: 'Grafica fornita dal cliente', cost: 0, type: 'fixed', note: '' },
+    { id: 'simple', label: 'Grafica Semplice', cost: 5, type: 'fixed', note: '5 min. circa' },
+    { id: 'medium', label: 'Grafica Media', cost: 10, type: 'fixed', note: '15 min. circa' },
+    { id: 'complex', label: 'Grafica Articolata', cost: 30, type: 'fixed', note: '25/30 min. circa' },
+    { id: 'hourly', label: 'Grafica ad ore', cost: 0, type: 'hourly', note: '50€ prima ora, poi 30€' }
   ],
 
   extras: [
-    {
-      id:'lam',
-      label:'Plastificazione',
-      enabled:true,
-      fixed:20,
-      threshold:50,
-      rate:0.30,
-      unit:'sheet',
-      mode:'over'
-    },
-    {
-      id:'hole',
-      label:'Foro',
-      enabled:true,
-      fixed:10,
-      threshold:50,
-      rate:0.05,
-      unit:'piece',
-      mode:'over'
-    },
-    {
-      id:'round',
-      label:'Angoli arrotondati',
-      enabled:true,
-      fixed:10,
-      threshold:50,
-      rate:0.05,
-      unit:'piece',
-      mode:'over'
-    },
-    {
-      id:'crease',
-      label:'Cordonatura',
-      enabled:true,
-      fixed:10,
-      threshold:50,
-      rate:0.02,
-      unit:'piece',
-      mode:'over'
-    },
-    {
-      id:'die',
-      label:'Fustella',
-      enabled:true,
-      fixed:30,
-      threshold:100,
-      rate:0.30,
-      unit:'sheet',
-      mode:'over'
-    }
+    { id: 'lam', label: 'Plastificazione', enabled: true, fixed: 20, threshold: 50, rate: 0.30, unit: 'sheet', mode: 'over' },
+    { id: 'hole', label: 'Foro', enabled: true, fixed: 10, threshold: 50, rate: 0.05, unit: 'piece', mode: 'over' },
+    { id: 'round', label: 'Angoli arrotondati', enabled: true, fixed: 10, threshold: 50, rate: 0.05, unit: 'piece', mode: 'over' },
+    { id: 'crease', label: 'Cordonatura', enabled: true, fixed: 10, threshold: 50, rate: 0.02, unit: 'piece', mode: 'over' },
+    { id: 'die', label: 'Fustella', enabled: true, fixed: 30, threshold: 100, rate: 0.30, unit: 'sheet', mode: 'over' }
   ]
 };
 
@@ -829,11 +1313,11 @@ const state = {
   sides: 1,
 
   extras: {
-    lam:false,
-    hole:false,
-    round:false,
-    crease:false,
-    die:false
+    lam: false,
+    hole: false,
+    round: false,
+    crease: false,
+    die: false
   },
 
   dieIsNew: false,
@@ -848,17 +1332,19 @@ const state = {
   admin: false
 };
 
-function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
 
-function mergeDeep(base, extra){
+function mergeDeep(base, extra) {
   const out = clone(base);
-  if(!extra) return out;
+  if (!extra) return out;
 
-  (function merge(target, source){
+  (function merge(target, source) {
     Object.keys(source).forEach(k => {
       const v = source[k];
-      if(v && typeof v === 'object' && !Array.isArray(v)){
-        if(!target[k] || typeof target[k] !== 'object') target[k] = {};
+      if (v && typeof v === 'object' && !Array.isArray(v)) {
+        if (!target[k] || typeof target[k] !== 'object') target[k] = {};
         merge(target[k], v);
       } else {
         target[k] = v;
@@ -869,73 +1355,75 @@ function mergeDeep(base, extra){
   return out;
 }
 
-function loadData(){
+function loadData() {
   const def = clone(DEFAULT_DATA);
-  try{
+  try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return mergeDeep(def, JSON.parse(raw));
-  }catch(e){}
+    if (raw) return mergeDeep(def, JSON.parse(raw));
+  } catch (e) {}
   return def;
 }
 
 let data = loadData();
 
-function saveData(){
+function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
-function parseNum(v){
-  if(typeof v === 'number') return isFinite(v) ? v : 0;
-  if(!v) return 0;
+function parseNum(v) {
+  if (typeof v === 'number') return isFinite(v) ? v : 0;
+  if (!v) return 0;
   const n = parseFloat(String(v).trim().replace(',', '.'));
   return isNaN(n) ? 0 : n;
 }
 
-function round2(n){ return Math.round(n * 100) / 100; }
-
-function fmtMoney(n){
-  return new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR' }).format(n);
+function round2(n) {
+  return Math.round(n * 100) / 100;
 }
 
-function fmtNum(n){
+function fmtMoney(n) {
+  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
+}
+
+function fmtNum(n) {
   return new Intl.NumberFormat('it-IT').format(n);
 }
 
-function mmToCm(mm){
-  return (mm / 10).toLocaleString('it-IT', { maximumFractionDigits:2 });
+function mmToCm(mm) {
+  return (mm / 10).toLocaleString('it-IT', { maximumFractionDigits: 2 });
 }
 
-function formatDim(mm){
+function formatDim(mm) {
   return state.unit === 'cm' ? `${mmToCm(mm)} cm` : `${fmtNum(mm)} mm`;
 }
 
-function displayDimension(mm){
+function displayDimension(mm) {
   const v = state.unit === 'cm' ? mm / 10 : mm;
   return Number.isInteger(v)
     ? String(v)
-    : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
+    : v.toLocaleString('it-IT', { maximumFractionDigits: 2 });
 }
 
-function displayHours(h){
+function displayHours(h) {
   const n = parseNum(h);
   return Number.isInteger(n)
     ? String(n)
-    : n.toLocaleString('it-IT', { maximumFractionDigits:2 });
+    : n.toLocaleString('it-IT', { maximumFractionDigits: 2 });
 }
 
-function parseDimensionWithUnit(value, unit){
+function parseDimensionWithUnit(value, unit) {
   const n = parseNum(value);
   return unit === 'cm' ? Math.round(n * 10) : Math.round(n);
 }
 
-function parseDimensionToMm(value){
+function parseDimensionToMm(value) {
   return parseDimensionWithUnit(value, state.unit);
 }
 
-function escapeAttr(str){
+function escapeAttr(str) {
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
@@ -949,16 +1437,16 @@ function escapeAttr(str){
 // - Se resto <= 2.50 → arrotonda in DIFETTO, mostra barrato
 // - Se resto > 2.50 → arrotonda in ECCESSO, NON mostra barrato
 // ============================================================
-function roundPriceToFive(total){
-  if(total <= 0) return { display: total, original: total, rounded: false, direction: null };
+function roundPriceToFive(total) {
+  if (total <= 0) return { display: total, original: total, rounded: false, direction: null };
 
   const remainder = total % 5;
 
-  if(remainder === 0){
+  if (remainder === 0) {
     return { display: total, original: total, rounded: false, direction: null };
   }
 
-  if(remainder <= 2.5){
+  if (remainder <= 2.5) {
     // Arrotonda in DIFETTO → mostra originale barrato
     const rounded = Math.floor(total / 5) * 5;
     return { display: rounded, original: total, rounded: true, direction: 'down' };
@@ -969,28 +1457,28 @@ function roundPriceToFive(total){
   }
 }
 
-function getType(){
+function getType() {
   return data.paperTypes.find(t => t.id === state.paperType) || data.paperTypes[0];
 }
 
-function normalizeGraphics(){
-  if(!data.graphicsOptions.some(o => o.id === state.graphicsType)){
+function normalizeGraphics() {
+  if (!data.graphicsOptions.some(o => o.id === state.graphicsType)) {
     state.graphicsType = data.graphicsOptions[0].id;
   }
 }
 
-function getGraphicOption(){
+function getGraphicOption() {
   normalizeGraphics();
   return data.graphicsOptions.find(o => o.id === state.graphicsType) || data.graphicsOptions[0];
 }
 
-function getGraphicsCost(){
+function getGraphicsCost() {
   const opt = getGraphicOption();
-  if(!opt) return 0;
+  if (!opt) return 0;
 
-  if(opt.type === 'hourly'){
+  if (opt.type === 'hourly') {
     const h = Math.max(0, parseNum(state.graphicHours));
-    if(h <= 0) return 0;
+    if (h <= 0) return 0;
 
     return data.settings.hourlyFirstHour + Math.max(0, h - 1) * data.settings.hourlyNextHours;
   }
@@ -998,26 +1486,26 @@ function getGraphicsCost(){
   return opt.cost || 0;
 }
 
-function getGraphicsLabel(){
+function getGraphicsLabel() {
   const opt = getGraphicOption();
-  if(!opt) return '';
+  if (!opt) return '';
 
-  if(opt.type === 'hourly'){
+  if (opt.type === 'hourly') {
     const h = Math.max(0, parseNum(state.graphicHours));
-    const label = h.toLocaleString('it-IT', { maximumFractionDigits:2 });
+    const label = h.toLocaleString('it-IT', { maximumFractionDigits: 2 });
     return `${opt.label} (${label} ${h === 1 ? 'ora' : 'ore'})`;
   }
 
   return opt.label;
 }
 
-function normalizeExtras(){
+function normalizeExtras() {
   data.extras.forEach(e => {
-    if(!(e.id in state.extras)) state.extras[e.id] = false;
+    if (!(e.id in state.extras)) state.extras[e.id] = false;
   });
 }
 
-function getDieMargins(){
+function getDieMargins() {
   const s = data.settings;
   return {
     left: parseNum(s.dieLeftMm),
@@ -1027,35 +1515,35 @@ function getDieMargins(){
   };
 }
 
-function isDieActive(){
+function isDieActive() {
   const dieExtra = data.extras.find(e => e.id === 'die');
   return !!(dieExtra && dieExtra.enabled && state.extras.die);
 }
 
-function getDieNewCost(size){
+function getDieNewCost(size) {
   const s = data.settings;
-  if(size === 'small') return parseNum(s.dieNewSmallCost);
-  if(size === 'large') return parseNum(s.dieNewLargeCost);
+  if (size === 'small') return parseNum(s.dieNewSmallCost);
+  if (size === 'large') return parseNum(s.dieNewLargeCost);
   return parseNum(s.dieNewMediumCost);
 }
 
-function getDieNewSizeLabel(size){
-  if(size === 'small') return 'Piccola (meno di A6)';
-  if(size === 'large') return 'Grande (A4 circa)';
+function getDieNewSizeLabel(size) {
+  if (size === 'small') return 'Piccola (meno di A6)';
+  if (size === 'large') return 'Grande (A4 circa)';
   return 'Media (meno di A5)';
 }
 
-function guessDieSize(){
+function guessDieSize() {
   const area = state.widthMm * state.heightMm;
   const a6 = 105 * 148;
   const a5 = 148 * 210;
 
-  if(area > 0 && area <= a6) return 'small';
-  if(area > 0 && area <= a5) return 'medium';
+  if (area > 0 && area <= a6) return 'small';
+  if (area > 0 && area <= a5) return 'medium';
   return 'large';
 }
 
-function getEffectiveItem(){
+function getEffectiveItem() {
   const margins = getDieMargins();
   const active = isDieActive();
 
@@ -1067,28 +1555,28 @@ function getEffectiveItem(){
   };
 }
 
-function layoutPaper(item, paper){
+function layoutPaper(item, paper) {
   const eps = 0.01;
-  const opts = [{ w:item.w, h:item.h, rotated:false }];
-  if(item.w !== item.h) opts.push({ w:item.h, h:item.w, rotated:true });
+  const opts = [{ w: item.w, h: item.h, rotated: false }];
+  if (item.w !== item.h) opts.push({ w: item.h, h: item.w, rotated: true });
 
   let best = null;
 
-  for(const o of opts){
+  for (const o of opts) {
     const cols = Math.floor((paper.printW + eps) / o.w);
     const rows = Math.floor((paper.printH + eps) / o.h);
     const copies = cols * rows;
 
-    if(copies > 0){
+    if (copies > 0) {
       const unused = paper.w * paper.h - copies * o.w * o.h;
-      if(!best || copies > best.copies || (copies === best.copies && unused < best.unused)){
+      if (!best || copies > best.copies || (copies === best.copies && unused < best.unused)) {
         best = {
           cols,
           rows,
           copies,
-          rotated:o.rotated,
-          cellW:o.w,
-          cellH:o.h,
+          rotated: o.rotated,
+          cellW: o.w,
+          cellH: o.h,
           unused
         };
       }
@@ -1098,13 +1586,13 @@ function layoutPaper(item, paper){
   return best;
 }
 
-function getExtraCost(extra, sheets, producedPieces){
-  if(!extra.enabled || !state.extras[extra.id]) return 0;
+function getExtraCost(extra, sheets, producedPieces) {
+  if (!extra.enabled || !state.extras[extra.id]) return 0;
 
   const count = extra.unit === 'sheet' ? sheets : producedPieces;
   let variable = 0;
 
-  if(count > extra.threshold){
+  if (count > extra.threshold) {
     const billable = extra.mode === 'all' ? count : Math.max(0, count - extra.threshold);
     variable = billable * extra.rate;
   }
@@ -1112,7 +1600,7 @@ function getExtraCost(extra, sheets, producedPieces){
   return extra.fixed + variable;
 }
 
-function evaluate(qty = state.qty){
+function evaluate(qty = state.qty) {
   const item = {
     w: state.widthMm,
     h: state.heightMm
@@ -1125,9 +1613,9 @@ function evaluate(qty = state.qty){
     h: effective.h
   };
 
-  if(item.w <= 0 || item.h <= 0 || layoutItem.w <= 0 || layoutItem.h <= 0 || qty <= 0){
+  if (item.w <= 0 || item.h <= 0 || layoutItem.w <= 0 || layoutItem.h <= 0 || qty <= 0) {
     return {
-      valid:false,
+      valid: false,
       item,
       qty,
       effectiveItem: layoutItem,
@@ -1139,12 +1627,12 @@ function evaluate(qty = state.qty){
   const type = getType();
   const candidates = [];
 
-  for(const pid of type.formats){
+  for (const pid of type.formats) {
     const paper = data.papers.find(p => p.id === pid);
-    if(!paper) continue;
+    if (!paper) continue;
 
     const layout = layoutPaper(layoutItem, paper);
-    if(!layout) continue;
+    if (!layout) continue;
 
     const sheets = Math.ceil(qty / layout.copies);
     const paperArea = paper.w * paper.h;
@@ -1158,9 +1646,9 @@ function evaluate(qty = state.qty){
     });
   }
 
-  if(!candidates.length){
+  if (!candidates.length) {
     return {
-      valid:false,
+      valid: false,
       item,
       qty,
       effectiveItem: layoutItem,
@@ -1169,8 +1657,8 @@ function evaluate(qty = state.qty){
     };
   }
 
-  candidates.sort((a,b) => {
-    if(a.totalArea !== b.totalArea) return a.totalArea - b.totalArea;
+  candidates.sort((a, b) => {
+    if (a.totalArea !== b.totalArea) return a.totalArea - b.totalArea;
     return (a.paper.order || 99) - (b.paper.order || 99);
   });
 
@@ -1191,63 +1679,84 @@ function evaluate(qty = state.qty){
   let productionCost = 0;
   let details = [];
 
-  if(s.smallMaxSheets > 0 && chosen.sheets <= s.smallMaxSheets){
+  // ============================================================
+  // LOGICA COSTO STAMPA
+  // Fogli 1-3: €3/foglio (piccola tiratura)
+  // Fogli 4-5: €0,70/foglio (tariffa standard)
+  // Fogli 1-5 con fronte/retro: +€5 fisso (una tantum)
+  // Fogli 6-20: €0,70 per lato stampato
+  // Fogli 21+: €0,50 per lato stampato
+  // ============================================================
+
+  if (s.smallMaxSheets > 0 && chosen.sheets <= s.smallMaxSheets) {
+    // Fogli 1-3: tariffa piccola
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
-
-    let smallInfo = `Per ${s.smallMaxSheets} fogli o meno: ${fmtMoney(s.smallSheetCost)} a foglio.`;
-
-    if(state.sides === 2){
-      smallInfo += ` Fronte/retro aggiunge ${fmtMoney(s.smallDuplexFixed)} una volta, senza raddoppiare il costo stampa.`;
-    }
-
     details.push({
       label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.smallSheetCost)})`,
-      info: smallInfo,
       value: smallCost
     });
 
-    if(state.sides === 2){
-      const duplexFixed = parseNum(s.smallDuplexFixed);
-      if(duplexFixed > 0){
-        productionCost += duplexFixed;
-        details.push({
-          label:'Fronte/retro piccola tiratura',
-          value:duplexFixed
-        });
-      }
+    // Fronte/retro per piccola tiratura (1-5 fogli)
+    if (state.sides === 2 && chosen.sheets <= s.duplexSmallMaxSheets) {
+      productionCost += s.smallDuplexFixed;
+      details.push({
+        label: 'Fronte/retro (piccola tiratura)',
+        value: s.smallDuplexFixed
+      });
     }
-  } else {
-    const threshold = state.customerCut
-      ? parseNum(s.customerCutSheetThreshold)
-      : parseNum(s.standardSheetThreshold);
 
+  } else if (chosen.sheets <= s.duplexSmallMaxSheets) {
+    // Fogli 4-5: tariffa standard per foglio
+    const rate = parseNum(s.standardSheetRate);
+    const printCost = chosen.sheets * rate;
+    productionCost += printCost;
+    details.push({
+      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(rate)})`,
+      value: printCost
+    });
+
+    // Fronte/retro fisso per fogli 1-5
+    if (state.sides === 2) {
+      productionCost += s.smallDuplexFixed;
+      details.push({
+        label: 'Fronte/retro (piccola tiratura)',
+        value: s.smallDuplexFixed
+      });
+    }
+
+  } else {
+    // Fogli 6+: tariffa per LATO STAMPATO
+    const threshold = parseNum(s.standardSheetThreshold);
     const rate = chosen.sheets > threshold
       ? parseNum(s.discountedSheetRate)
       : parseNum(s.standardSheetRate);
 
-    const printCost = chosen.sheets * rate;
+    const sides = state.sides;
+    const printCost = chosen.sheets * sides * rate;
     productionCost += printCost;
 
+    const latiLabel = sides === 2 ? '2 lati' : '1 lato';
     details.push({
-      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(rate)})`,
-      info: `Tariffa per foglio: ${fmtMoney(rate)}. Soglia: ${fmtNum(threshold)} fogli${state.customerCut ? ' con taglio a carico del cliente' : ''}.`,
+      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`,
       value: printCost
     });
-
-    let applyHeavy = state.weight > s.heavyThreshold;
-
-    if(applyHeavy){
-      productionCost += s.heavyCost;
-      details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
-    }
   }
 
+  // Costo aggiuntivo carta: SEMPRE applicato se la grammatura supera la soglia
+  let applyHeavy = state.weight > s.heavyThreshold;
+
+  if (applyHeavy) {
+    productionCost += s.heavyCost;
+    details.push({ label: 'Costo aggiuntivo Carta', value: s.heavyCost });
+  }
+
+  // Costo taglio: sempre applicato, cambia solo l'importo
   const cutCost = state.customerCut
     ? parseNum(s.customerCutFixedCost)
     : parseNum(s.fixedCut);
 
-  if(cutCost > 0){
+  if (cutCost > 0) {
     productionCost += cutCost;
     details.push({
       label: state.customerCut ? 'Taglio (a carico cliente)' : 'Taglio',
@@ -1255,26 +1764,29 @@ function evaluate(qty = state.qty){
     });
   }
 
+  // Grafica
   const graphicsCost = getGraphicsCost();
-  details.push({ label:`Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
+  details.push({ label: `Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
 
+  // Lavorazioni extra
   let extrasTotal = 0;
 
   data.extras.forEach(extra => {
     const cost = getExtraCost(extra, chosen.sheets, producedPieces);
-    if(cost > 0){
+    if (cost > 0) {
       extrasTotal += cost;
       details.push({ label: extra.label, value: cost });
     }
   });
 
-  if(isDieActive() && state.dieIsNew){
+  // Fustella nuova
+  if (isDieActive() && state.dieIsNew) {
     const size = state.dieNewSize || 'medium';
     const newDieCost = getDieNewCost(size);
     extrasTotal += newDieCost;
     details.push({
-      label:`Fustella nuova (${getDieNewSizeLabel(size)})`,
-      value:newDieCost
+      label: `Fustella nuova (${getDieNewSizeLabel(size)})`,
+      value: newDieCost
     });
   }
 
@@ -1284,14 +1796,15 @@ function evaluate(qty = state.qty){
   total -= discount;
 
   const minApplied = total < s.minOrder;
-  if(minApplied) total = s.minOrder;
+  if (minApplied) total = s.minOrder;
 
   total = round2(total);
 
+  // Arrotondamento a multipli di 5
   const priceInfo = roundPriceToFive(total);
 
   return {
-    valid:true,
+    valid: true,
     item,
     effectiveItem: layoutItem,
     dieActive: effective.active,
@@ -1312,7 +1825,7 @@ function evaluate(qty = state.qty){
   };
 }
 
-function svgSheet(chosen, label, isBack = false){
+function svgSheet(chosen, label, isBack = false) {
   const { paper, layout } = chosen;
   const mx = (paper.w - paper.printW) / 2;
   const my = (paper.h - paper.printH) / 2;
@@ -1327,10 +1840,10 @@ function svgSheet(chosen, label, isBack = false){
   const maxDraw = 600;
   const count = Math.min(layout.copies, maxDraw);
 
-  for(let i=0; i<count; i++){
+  for (let i = 0; i < count; i++) {
     const r = Math.floor(i / layout.cols);
     const c = i % layout.cols;
-    if(r >= layout.rows) break;
+    if (r >= layout.rows) break;
 
     const x = offsetX + c * layout.cellW;
     const y = offsetY + r * layout.cellH;
@@ -1352,33 +1865,33 @@ function svgSheet(chosen, label, isBack = false){
   `;
 }
 
-function renderTopbar(){
+function renderTopbar() {
   $('#adminBtn').textContent = state.admin ? 'Pannello' : 'Admin';
   $('#logoutBtn').classList.toggle('hidden', !state.admin);
   $('#viewStepBtn').classList.toggle('active', state.uiMode === 'wizard');
   $('#viewNormalBtn').classList.toggle('active', state.uiMode === 'normal');
 }
 
-function updateSegmented(){
+function updateSegmented() {
   $$('#sidesOptions button, #wSidesOptions button').forEach(b => {
     b.classList.toggle('active', Number(b.dataset.sides) === Number(state.sides));
   });
 }
 
-function updateUnitControls(){
+function updateUnitControls() {
   $$('[data-unit]').forEach(b => {
     b.classList.toggle('active', b.dataset.unit === state.unit);
   });
 }
 
-function updateDimensionInputs(){
+function updateDimensionInputs() {
   $('#width').value = displayDimension(state.widthMm);
   $('#height').value = displayDimension(state.heightMm);
   $('#wWidth').value = displayDimension(state.widthMm);
   $('#wHeight').value = displayDimension(state.heightMm);
 }
 
-function renderExtrasOptions(){
+function renderExtrasOptions() {
   const containers = [$('#extrasOptions'), $('#wExtrasOptions')];
 
   const enabledExtras = data.extras.filter(e => e.enabled);
@@ -1393,12 +1906,12 @@ function renderExtrasOptions(){
     let labelHtml = e.label;
     let dieBadge = '';
 
-    if(e.id === 'die'){
-      if(state.extras.die){
+    if (e.id === 'die') {
+      if (state.extras.die) {
         labelHtml += ` <span class="starBadge">★</span>`;
         tip += ` · Margini applicati a ogni singolo elemento sul foglio.`;
 
-        if(state.dieIsNew){
+        if (state.dieIsNew) {
           const size = state.dieNewSize || 'medium';
           tip += ` · Fustella nuova: ${getDieNewSizeLabel(size)} ${fmtMoney(getDieNewCost(size))}.`;
           dieBadge = `<button type="button" class="miniBadge" onclick="openDieModal()">Nuova</button>`;
@@ -1422,11 +1935,11 @@ function renderExtrasOptions(){
   }).join('') : `<div class="muted">Nessuna lavorazione extra disponibile</div>`;
 
   containers.forEach(el => {
-    if(el) el.innerHTML = html;
+    if (el) el.innerHTML = html;
   });
 }
 
-function renderGraphicsControls(){
+function renderGraphicsControls() {
   normalizeGraphics();
 
   const containers = [$('#graphicsControl'), $('#wGraphicsControl')];
@@ -1455,7 +1968,7 @@ function renderGraphicsControls(){
   `;
 
   containers.forEach(el => {
-    if(el) el.innerHTML = barHtml;
+    if (el) el.innerHTML = barHtml;
   });
 
   const opt = getGraphicOption();
@@ -1475,10 +1988,10 @@ function renderGraphicsControls(){
   $('#wGraphicsNote').textContent = note;
 }
 
-function renderPreviewInto(calc, container){
-  if(!container) return;
+function renderPreviewInto(calc, container) {
+  if (!container) return;
 
-  if(!calc || !calc.valid){
+  if (!calc || !calc.valid) {
     container.innerHTML = `
       <div class="error">
         Il formato inserito non sta in nessuno dei fogli disponibili.
@@ -1489,7 +2002,7 @@ function renderPreviewInto(calc, container){
 
   const chosen = calc.chosen;
   const orientation = chosen.layout.rotated ? 'Orizzontale' : 'Verticale';
-  const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits:3 });
+  const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits: 3 });
 
   const dieNote = calc.dieActive
     ? ` · Fustella ${state.dieIsNew ? 'nuova' : 'esistente'}: margini applicati a ogni elemento`
@@ -1522,7 +2035,7 @@ function renderPreviewInto(calc, container){
   `;
 }
 
-function buildBreakdownHtml(calc){
+function buildBreakdownHtml(calc) {
   return `
     <div class="breakdown">
       ${calc.details.map(d => `
@@ -1540,7 +2053,7 @@ function buildBreakdownHtml(calc){
   `;
 }
 
-function buildPriceHtml(calc){
+function buildPriceHtml(calc) {
   const pi = calc.priceInfo;
   const mutedLine = `
     <div class="muted">
@@ -1549,7 +2062,7 @@ function buildPriceHtml(calc){
     </div>
   `;
 
-  if(calc.isQtyZero){
+  if (calc.isQtyZero) {
     return `
       <div class="priceBox">
         <div class="priceLabel">Totale IVA esclusa</div>
@@ -1559,7 +2072,7 @@ function buildPriceHtml(calc){
     `;
   }
 
-  if(!pi.rounded){
+  if (!pi.rounded) {
     // Prezzo già multiplo di 5 → mostra normale
     return `
       <div class="priceBox">
@@ -1571,7 +2084,7 @@ function buildPriceHtml(calc){
     `;
   }
 
-  if(pi.direction === 'down'){
+  if (pi.direction === 'down') {
     // Arrotondato in DIFETTO → mostra originale barrato + prezzo arrotondato + (i)
     return `
       <div class="priceBox">
@@ -1587,7 +2100,7 @@ function buildPriceHtml(calc){
     `;
   }
 
-  if(pi.direction === 'up'){
+  if (pi.direction === 'up') {
     // Arrotondato in ECCESSO → mostra SOLO prezzo arrotondato + (i), NIENTE barrato
     return `
       <div class="priceBox">
@@ -1603,10 +2116,10 @@ function buildPriceHtml(calc){
   }
 }
 
-function renderSummaryInto(calc, container){
-  if(!container) return;
+function renderSummaryInto(calc, container) {
+  if (!container) return;
 
-  if(!calc || !calc.valid){
+  if (!calc || !calc.valid) {
     container.innerHTML = `<div class="error">Configurazione non valida.</div>`;
     return;
   }
@@ -1618,7 +2131,7 @@ function renderSummaryInto(calc, container){
   const extraLabels = data.extras
     .filter(e => e.enabled && state.extras[e.id])
     .map(e => {
-      if(e.id === 'die'){
+      if (e.id === 'die') {
         return state.dieIsNew
           ? `Fustella nuova (${getDieNewSizeLabel(state.dieNewSize || 'medium')})`
           : 'Fustella esistente';
@@ -1632,7 +2145,7 @@ function renderSummaryInto(calc, container){
 
   let formatValue = `${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}`;
 
-  if(calc.dieActive){
+  if (calc.dieActive) {
     const m = calc.dieMargins;
     const effW = calc.effectiveItem.w;
     const effH = calc.effectiveItem.h;
@@ -1647,22 +2160,22 @@ function renderSummaryInto(calc, container){
   }
 
   let items = [
-    { key:'format', label:'Formato finito', value:formatValue },
-    { key:'qty', label:'Quantità ordinata', value:qtyText },
-    { key:'paperType', label:'Carta', value:paperText },
-    { key:'weight', label:'Grammatura', value:weightText }
+    { key: 'format', label: 'Formato finito', value: formatValue },
+    { key: 'qty', label: 'Quantità ordinata', value: qtyText },
+    { key: 'paperType', label: 'Carta', value: paperText },
+    { key: 'weight', label: 'Grammatura', value: weightText }
   ];
 
-  if(type.kind === 'special'){
-    items.push({ key:'specialVariant', label:'Variante', value:state.specialVariant });
+  if (type.kind === 'special') {
+    items.push({ key: 'specialVariant', label: 'Variante', value: state.specialVariant });
   }
 
   items.push(
-    { key:'sides', label:'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' },
-    { key:'extras', label:'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' },
-    { key:'graphics', label:'Grafica', value:getGraphicsLabel() },
-    { key:'reseller', label:'Rivenditore', value: state.reseller ? 'Sì' : 'No' },
-    { key:'customerCut', label:'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
+    { key: 'sides', label: 'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' },
+    { key: 'extras', label: 'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' },
+    { key: 'graphics', label: 'Grafica', value: getGraphicsLabel() },
+    { key: 'reseller', label: 'Rivenditore', value: state.reseller ? 'Sì' : 'No' },
+    { key: 'customerCut', label: 'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
   );
 
   const priceHtml = buildPriceHtml(calc);
@@ -1681,14 +2194,14 @@ function renderSummaryInto(calc, container){
   `;
 }
 
-function refresh(){
+function refresh() {
   normalizeExtras();
   normalizeGraphics();
 
   const effectiveQty = state.qty > 0 ? state.qty : 1;
   let calc = evaluate(effectiveQty);
 
-  if(calc && state.qty <= 0){
+  if (calc && state.qty <= 0) {
     calc.isQtyZero = true;
   }
 
@@ -1700,13 +2213,13 @@ function refresh(){
   renderExtrasOptions();
   renderGraphicsControls();
 
-  if($('#reseller')) $('#reseller').checked = state.reseller;
-  if($('#wReseller')) $('#wReseller').checked = state.reseller;
+  if ($('#reseller')) $('#reseller').checked = state.reseller;
+  if ($('#wReseller')) $('#wReseller').checked = state.reseller;
 
-  if($('#customerCut')) $('#customerCut').checked = state.customerCut;
-  if($('#wCustomerCut')) $('#wCustomerCut').checked = state.customerCut;
+  if ($('#customerCut')) $('#customerCut').checked = state.customerCut;
+  if ($('#wCustomerCut')) $('#wCustomerCut').checked = state.customerCut;
 
-  if(state.uiMode === 'normal'){
+  if (state.uiMode === 'normal') {
     renderPreviewInto(calc, $('#preview'));
     renderSummaryInto(calc, $('#summary'));
   } else {
@@ -1714,7 +2227,7 @@ function refresh(){
   }
 }
 
-function syncInputsFromState(){
+function syncInputsFromState() {
   updateDimensionInputs();
 
   $('#qty').value = state.qty;
@@ -1725,8 +2238,8 @@ function syncInputsFromState(){
   updateUnitControls();
 }
 
-function updatePaperSelects(){
-  if(!data.paperTypes.some(t => t.id === state.paperType)){
+function updatePaperSelects() {
+  if (!data.paperTypes.some(t => t.id === state.paperType)) {
     state.paperType = data.paperTypes[0].id;
   }
 
@@ -1739,7 +2252,7 @@ function updatePaperSelects(){
 
   const type = getType();
 
-  if(type.kind === 'special'){
+  if (type.kind === 'special') {
     state.weight = 280;
 
     $('#weight').innerHTML = `<option value="280" selected>280 g</option>`;
@@ -1750,7 +2263,7 @@ function updatePaperSelects(){
     $('#variantWrap').classList.remove('hidden');
     $('#wVariantWrap').classList.remove('hidden');
 
-    if(!type.variants.includes(state.specialVariant) && type.variants.length){
+    if (!type.variants.includes(state.specialVariant) && type.variants.length) {
       state.specialVariant = type.variants[0];
     }
 
@@ -1770,7 +2283,7 @@ function updatePaperSelects(){
     $('#variantWrap').classList.add('hidden');
     $('#wVariantWrap').classList.add('hidden');
 
-    if(!type.weights.includes(state.weight)){
+    if (!type.weights.includes(state.weight)) {
       state.weight = type.weights[0];
     }
 
@@ -1783,7 +2296,7 @@ function updatePaperSelects(){
   }
 }
 
-function showWizard(){
+function showWizard() {
   state.uiMode = 'wizard';
   $('#normalView').classList.add('hidden');
   $('#wizardView').classList.remove('hidden');
@@ -1791,26 +2304,26 @@ function showWizard(){
   refresh();
 }
 
-function showNormal(){
+function showNormal() {
   state.uiMode = 'normal';
   $('#wizardView').classList.add('hidden');
   $('#normalView').classList.remove('hidden');
   refresh();
 }
 
-function printNormal(){
-  if(state.uiMode !== 'normal') showNormal();
+function printNormal() {
+  if (state.uiMode !== 'normal') showNormal();
   setTimeout(() => window.print(), 80);
 }
 
-function setUnit(unit){
+function setUnit(unit) {
   state.unit = unit;
   updateUnitControls();
   updateDimensionInputs();
   refresh();
 }
 
-function handleQtyChange(value){
+function handleQtyChange(value) {
   const q = Math.max(0, Math.round(parseNum(value)));
   state.qty = q;
   $('#qty').value = state.qty;
@@ -1818,40 +2331,40 @@ function handleQtyChange(value){
   refresh();
 }
 
-function handleDimensionInput(field, value, sourceInput){
+function handleDimensionInput(field, value, sourceInput) {
   const mm = parseDimensionToMm(value);
 
-  if(field === 'width'){
+  if (field === 'width') {
     state.widthMm = mm;
-    if(sourceInput !== $('#width')) $('#width').value = value;
-    if(sourceInput !== $('#wWidth')) $('#wWidth').value = value;
+    if (sourceInput !== $('#width')) $('#width').value = value;
+    if (sourceInput !== $('#wWidth')) $('#wWidth').value = value;
   } else {
     state.heightMm = mm;
-    if(sourceInput !== $('#height')) $('#height').value = value;
-    if(sourceInput !== $('#wHeight')) $('#wHeight').value = value;
+    if (sourceInput !== $('#height')) $('#height').value = value;
+    if (sourceInput !== $('#wHeight')) $('#wHeight').value = value;
   }
 
   refresh();
 }
 
-function setSides(n){
+function setSides(n) {
   state.sides = Number(n);
   refresh();
 }
 
-function setReseller(checked){
+function setReseller(checked) {
   state.reseller = checked;
   refresh();
 }
 
-function setCustomerCut(checked){
+function setCustomerCut(checked) {
   state.customerCut = checked;
   refresh();
 }
 
-function toggleExtra(id, checked){
-  if(id === 'die'){
-    if(checked){
+function toggleExtra(id, checked) {
+  if (id === 'die') {
+    if (checked) {
       openDieModal();
       return;
     }
@@ -1865,7 +2378,7 @@ function toggleExtra(id, checked){
   refresh();
 }
 
-function openDieModal(){
+function openDieModal() {
   dieTemp.isNew = state.dieIsNew;
   dieTemp.size = state.dieNewSize || guessDieSize();
 
@@ -1873,12 +2386,12 @@ function openDieModal(){
   $('#dieModal').classList.remove('hidden');
 }
 
-function cancelDieModal(){
+function cancelDieModal() {
   $('#dieModal').classList.add('hidden');
   refresh();
 }
 
-function confirmDieModal(){
+function confirmDieModal() {
   state.extras.die = true;
   state.dieIsNew = dieTemp.isNew;
   state.dieNewSize = dieTemp.isNew ? dieTemp.size : null;
@@ -1887,17 +2400,17 @@ function confirmDieModal(){
   refresh();
 }
 
-function setDieTempNew(mode){
+function setDieTempNew(mode) {
   dieTemp.isNew = mode === 'new';
   renderDieModal();
 }
 
-function setDieTempSize(size){
+function setDieTempSize(size) {
   dieTemp.size = size;
   renderDieModal();
 }
 
-function renderDieModal(){
+function renderDieModal() {
   const costs = {
     small: getDieNewCost('small'),
     medium: getDieNewCost('medium'),
@@ -1938,43 +2451,43 @@ function renderDieModal(){
   `;
 }
 
-function setGraphicsType(id){
+function setGraphicsType(id) {
   state.graphicsType = id;
   renderGraphicsControls();
   refresh();
 }
 
-function setGraphicHours(value){
+function setGraphicHours(value) {
   state.graphicHours = Math.max(0, parseNum(value));
   refresh();
 }
 
-function canProceedStep(step){
-  if(step === 1){
+function canProceedStep(step) {
+  if (step === 1) {
     const layoutCalc = evaluate(1);
     return layoutCalc && layoutCalc.valid && state.widthMm > 0 && state.heightMm > 0;
   }
-  if(step === 2){
+  if (step === 2) {
     const calc = evaluate(state.qty);
     return state.qty > 0 && calc && calc.valid;
   }
   return true;
 }
 
-function wizardBack(){
-  if(state.wizardStep > 1){
+function wizardBack() {
+  if (state.wizardStep > 1) {
     state.wizardStep--;
     refresh();
   }
 }
 
-function wizardNext(){
-  if(!canProceedStep(state.wizardStep)){
+function wizardNext() {
+  if (!canProceedStep(state.wizardStep)) {
     toast('Completa lo step corrente');
     return;
   }
 
-  if(state.wizardStep < 6){
+  if (state.wizardStep < 6) {
     state.wizardStep++;
     refresh();
   } else {
@@ -1982,15 +2495,15 @@ function wizardNext(){
   }
 }
 
-function finishWizard(){
+function finishWizard() {
   showNormal();
 }
 
-function renderWizardDynamic(calc){
+function renderWizardDynamic(calc) {
   $('#wizardStepLabel').textContent = `Step ${state.wizardStep} di 6`;
   $('#progressFill').style.width = `${(state.wizardStep / 6) * 100}%`;
 
-  for(let i=1; i<=6; i++){
+  for (let i = 1; i <= 6; i++) {
     $(`#wStep${i}`).classList.toggle('hidden', state.wizardStep !== i);
   }
 
@@ -2007,43 +2520,43 @@ function renderWizardDynamic(calc){
   error1.classList.add('hidden');
   error2.classList.add('hidden');
 
-  if(state.wizardStep === 1){
+  if (state.wizardStep === 1) {
     const layoutCalc = evaluate(1);
 
-    if(state.widthMm <= 0 || state.heightMm <= 0){
+    if (state.widthMm <= 0 || state.heightMm <= 0) {
       error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
-    } else if(!layoutCalc || !layoutCalc.valid){
+    } else if (!layoutCalc || !layoutCalc.valid) {
       error1.textContent = 'Il formato inserito non sta in nessuno dei fogli disponibili.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
     }
   }
 
-  if(state.wizardStep === 2){
+  if (state.wizardStep === 2) {
     const realCalc = evaluate(state.qty);
-    if(state.qty <= 0 || !realCalc || !realCalc.valid){
+    if (state.qty <= 0 || !realCalc || !realCalc.valid) {
       error2.textContent = 'Quantità o configurazione non valida.';
       error2.classList.remove('hidden');
       nextBtn.disabled = true;
     }
   }
 
-  if(state.wizardStep === 6){
+  if (state.wizardStep === 6) {
     renderSummaryInto(calc, $('#wizardSummary'));
     renderPreviewInto(calc, $('#wizardPreview'));
   }
 }
 
-function editSummaryItem(el){
-  if(document.querySelector('.inlineEditor')) return;
+function editSummaryItem(el) {
+  if (document.querySelector('.inlineEditor')) return;
 
   const key = el.dataset.edit;
   const strong = el.querySelector('strong');
-  if(!strong) return;
+  if (!strong) return;
 
-  if(key === 'qty'){
+  if (key === 'qty') {
     strong.outerHTML = `
       <input type="number" class="inlineEditor" value="${state.qty}" onchange="setQtyFromSummary(this.value)">
     `;
@@ -2051,7 +2564,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'paperType'){
+  if (key === 'paperType') {
     const options = data.paperTypes.map(t => `
       <option value="${t.id}" ${t.id === state.paperType ? 'selected' : ''}>${t.label}</option>
     `).join('');
@@ -2063,10 +2576,10 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'weight'){
+  if (key === 'weight') {
     const type = getType();
 
-    if(type.kind === 'special'){
+    if (type.kind === 'special') {
       strong.outerHTML = `<input class="inlineEditor" value="280 g" disabled>`;
       return;
     }
@@ -2082,7 +2595,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'specialVariant'){
+  if (key === 'specialVariant') {
     const type = getType();
     const options = (type.variants || []).map(v => `
       <option ${v === state.specialVariant ? 'selected' : ''}>${v}</option>
@@ -2095,7 +2608,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'sides'){
+  if (key === 'sides') {
     strong.outerHTML = `
       <select class="inlineEditor" onchange="setSidesFromSummary(this.value)">
         <option value="1" ${state.sides === 1 ? 'selected' : ''}>Solo fronte</option>
@@ -2106,7 +2619,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'reseller'){
+  if (key === 'reseller') {
     strong.outerHTML = `
       <label class="check" style="margin-top:8px">
         <input type="checkbox" ${state.reseller ? 'checked' : ''} onchange="setResellerFromSummary(this.checked)">
@@ -2117,7 +2630,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'customerCut'){
+  if (key === 'customerCut') {
     strong.outerHTML = `
       <label class="check" style="margin-top:8px">
         <input type="checkbox" ${state.customerCut ? 'checked' : ''} onchange="setCustomerCutFromSummary(this.checked)">
@@ -2128,7 +2641,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'format'){
+  if (key === 'format') {
     strong.outerHTML = `
       <div class="inlineEditor" onclick="event.stopPropagation()">
         <select id="sumUnit" onchange="updateFormatEditorValues()">
@@ -2148,7 +2661,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'graphics'){
+  if (key === 'graphics') {
     const options = data.graphicsOptions.map(o => `
       <option value="${o.id}" ${o.id === state.graphicsType ? 'selected' : ''}>${o.label}</option>
     `).join('');
@@ -2169,7 +2682,7 @@ function editSummaryItem(el){
     return;
   }
 
-  if(key === 'extras'){
+  if (key === 'extras') {
     const enabledExtras = data.extras.filter(e => e.enabled);
     const wasDie = state.extras.die;
 
@@ -2191,70 +2704,70 @@ function editSummaryItem(el){
   }
 }
 
-function setQtyFromSummary(value){
+function setQtyFromSummary(value) {
   state.qty = Math.max(0, Math.round(parseNum(value)));
   refresh();
 }
 
-function setPaperTypeFromSummary(value){
+function setPaperTypeFromSummary(value) {
   state.paperType = value;
   updatePaperSelects();
   refresh();
 }
 
-function setWeightFromSummary(value){
+function setWeightFromSummary(value) {
   state.weight = parseNum(value);
   refresh();
 }
 
-function setVariantFromSummary(value){
+function setVariantFromSummary(value) {
   state.specialVariant = value;
   refresh();
 }
 
-function setSidesFromSummary(value){
+function setSidesFromSummary(value) {
   state.sides = Number(value);
   refresh();
 }
 
-function setResellerFromSummary(checked){
+function setResellerFromSummary(checked) {
   state.reseller = checked;
   refresh();
 }
 
-function setCustomerCutFromSummary(checked){
+function setCustomerCutFromSummary(checked) {
   state.customerCut = checked;
   refresh();
 }
 
-function updateFormatEditorValues(){
+function updateFormatEditorValues() {
   const unitSel = $('#sumUnit');
   const wInput = $('#sumWidth');
   const hInput = $('#sumHeight');
 
-  if(!unitSel || !wInput || !hInput) return;
+  if (!unitSel || !wInput || !hInput) return;
 
   const oldUnit = state.unit;
   const newUnit = unitSel.value;
 
-  if(oldUnit === newUnit) return;
+  if (oldUnit === newUnit) return;
 
   const wMm = parseDimensionWithUnit(wInput.value, oldUnit);
   const hMm = parseDimensionWithUnit(hInput.value, oldUnit);
 
   const display = (mm, unit) => {
     const v = unit === 'cm' ? mm / 10 : mm;
-    return Number.isInteger(v) ? String(v) : v.toLocaleString('it-IT', { maximumFractionDigits:2 });
+    return Number.isInteger(v) ? String(v) : v.toLocaleString('it-IT', { maximumFractionDigits: 2 });
   };
 
   wInput.value = display(wMm, newUnit);
   hInput.value = display(hMm, newUnit);
 }
 
-function saveFormatSummary(){
+function saveFormatSummary() {
   const unit = $('#sumUnit').value;
   const width = $('#sumWidth').value;
-  const height = $('#sumHeight').value;
+  const height = $('#sumHeight'].value;
 
   state.unit = unit;
   state.widthMm = parseDimensionWithUnit(width, unit);
@@ -2265,31 +2778,31 @@ function saveFormatSummary(){
   refresh();
 }
 
-function toggleSummaryGraphicsHours(){
+function toggleSummaryGraphicsHours() {
   const sel = $('#sumGraphics');
   const hours = $('#sumHours');
-  if(!sel || !hours) return;
+  if (!sel || !hours) return;
 
   const opt = data.graphicsOptions.find(o => o.id === sel.value);
-  if(opt && opt.type === 'hourly'){
+  if (opt && opt.type === 'hourly') {
     hours.classList.remove('hidden');
   } else {
     hours.classList.add('hidden');
   }
 }
 
-function saveGraphicsSummary(){
+function saveGraphicsSummary() {
   state.graphicsType = $('#sumGraphics').value;
 
   const hours = $('#sumHours');
-  if(hours && !hours.classList.contains('hidden')){
+  if (hours && !hours.classList.contains('hidden')) {
     state.graphicHours = Math.max(0, parseNum(hours.value));
   }
 
   refresh();
 }
 
-function saveExtrasSummary(){
+function saveExtrasSummary() {
   const checks = $$('.sumExtra');
   const newExtras = {};
 
@@ -2300,13 +2813,13 @@ function saveExtrasSummary(){
   const wasDie = state.extras.die;
   const dieNewlySelected = newExtras.die && !wasDie;
 
-  if(dieNewlySelected){
+  if (dieNewlySelected) {
     newExtras.die = false;
   }
 
   state.extras = newExtras;
 
-  if(dieNewlySelected){
+  if (dieNewlySelected) {
     openDieModal();
     return;
   }
@@ -2314,11 +2827,11 @@ function saveExtrasSummary(){
   refresh();
 }
 
-function openAdmin(){
-  if(!state.admin){
+function openAdmin() {
+  if (!state.admin) {
     const pin = prompt('PIN amministratore:');
-    if(pin !== data.settings.pin){
-      if(pin !== null) alert('PIN errato');
+    if (pin !== data.settings.pin) {
+      if (pin !== null) alert('PIN errato');
       return;
     }
     state.admin = true;
@@ -2329,17 +2842,17 @@ function openAdmin(){
   refresh();
 }
 
-function closeAdmin(){
+function closeAdmin() {
   $('#adminModal').classList.add('hidden');
 }
 
-function logoutAdmin(){
+function logoutAdmin() {
   state.admin = false;
   closeAdmin();
   refresh();
 }
 
-function renderAdmin(){
+function renderAdmin() {
   const s = data.settings;
 
   $('#adminContent').innerHTML = `
@@ -2368,21 +2881,22 @@ function renderAdmin(){
       <label>Costo piccola tiratura €/foglio
         <input type="number" step="0.01" id="set_smallSheetCost" value="${s.smallSheetCost}">
       </label>
-      <label>Fronte/retro piccola tiratura €
+
+      <label>Soglia fronte/retro fisso (fogli)
+        <input type="number" step="1" id="set_duplexSmallMaxSheets" value="${s.duplexSmallMaxSheets}">
+      </label>
+      <label>Fronte/retro fisso €
         <input type="number" step="0.01" id="set_smallDuplexFixed" value="${s.smallDuplexFixed}">
       </label>
 
-      <label>Costo standard €/foglio
+      <label>Costo standard €/lato
         <input type="number" step="0.01" id="set_standardSheetRate" value="${s.standardSheetRate}">
       </label>
       <label>Soglia standard (fogli)
         <input type="number" step="1" id="set_standardSheetThreshold" value="${s.standardSheetThreshold}">
       </label>
-      <label>Costo oltre soglia €/foglio
+      <label>Costo oltre soglia €/lato
         <input type="number" step="0.01" id="set_discountedSheetRate" value="${s.discountedSheetRate}">
-      </label>
-      <label>Soglia con taglio cliente (fogli)
-        <input type="number" step="1" id="set_customerCutSheetThreshold" value="${s.customerCutSheetThreshold}">
       </label>
 
       <label>Soglia costo aggiuntivo carta (g)
@@ -2401,16 +2915,16 @@ function renderAdmin(){
     </div>
 
     <div class="adminNote">
-      Logica arrotondamento prezzo a multipli di 5:<br>
-      - Se il prezzo è già multiplo di 5 → nessun arrotondamento.<br>
-      - Se il resto è da 0,01 a 2,50 → arrotonda in DIFETTO e mostra il prezzo originale barrato.<br>
-      - Se il resto è da 2,51 in poi → arrotonda in ECCESSO e mostra SOLO il prezzo arrotondato (senza barrato).<br>
-      - In entrambi i casi l'icona (i) mostra il prezzo effettivo.<br><br>
-      Logica taglio:<br>
-      - senza taglio cliente: costo pieno (default €10);<br>
-      - con taglio cliente: costo ridotto (default €5).<br><br>
-      Il costo aggiuntivo carta viene SEMPRE applicato quando la grammatura supera la soglia.<br><br>
-      Se vuoi disattivare la fascia piccola 1–3 fogli, imposta "Soglia piccola tiratura" a 0.
+      <strong>Logica costo stampa:</strong><br>
+      - Fogli 1–3: costo fisso per foglio (default €3/foglio).<br>
+      - Fogli 4–5: costo standard per foglio (default €0,70/foglio).<br>
+      - Fogli 1–5 con fronte/retro: +€${s.smallDuplexFixed} fisso.<br>
+      - Fogli 6–${s.standardSheetThreshold}: €${s.standardSheetRate} per lato stampato.<br>
+      - Fogli ${s.standardSheetThreshold + 1}+: €${s.discountedSheetRate} per lato stampato.<br><br>
+      <strong>Arrotondamento prezzo:</strong><br>
+      - Già multiplo di 5 → nessun arrotondamento.<br>
+      - Resto 0,01–2,50 → arrotonda in DIFETTO, mostra barrato.<br>
+      - Resto 2,51+ → arrotonda in ECCESSO, mostra solo prezzo arrotondato + (i).
     </div>
 
     <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
@@ -2452,14 +2966,14 @@ function renderAdmin(){
         </tr>
       </thead>
       <tbody>
-        ${data.graphicsOptions.map((g,i) => `
+        ${data.graphicsOptions.map((g, i) => `
           <tr>
             <td>${g.label}</td>
             <td>
               ${
                 g.type === 'hourly'
-                ? `<span class="muted">Tariffa oraria</span>`
-                : `<input type="number" step="0.01" data-graph-index="${i}" value="${g.cost}">`
+                  ? `<span class="muted">Tariffa oraria</span>`
+                  : `<input type="number" step="0.01" data-graph-index="${i}" value="${g.cost}">`
               }
             </td>
             <td>${g.note || ''}</td>
@@ -2482,10 +2996,10 @@ function renderAdmin(){
         </tr>
       </thead>
       <tbody id="extrasBody">
-        ${data.extras.map((e,i) => `
+        ${data.extras.map((e, i) => `
           <tr>
             <td><input type="checkbox" class="ex_enabled" ${e.enabled ? 'checked' : ''}></td>
-            <td><input type="text" class="ex_label" value="${String(e.label || '').replace(/"/g,'&quot;')}"></td>
+            <td><input type="text" class="ex_label" value="${String(e.label || '').replace(/"/g, '&quot;')}"></td>
             <td><input type="number" step="0.01" class="ex_fixed" value="${e.fixed}"></td>
             <td><input type="number" step="1" class="ex_threshold" value="${e.threshold}"></td>
             <td><input type="number" step="0.001" class="ex_rate" value="${e.rate}"></td>
@@ -2519,10 +3033,10 @@ function renderAdmin(){
   `;
 }
 
-function saveAdmin(){
+function saveAdmin() {
   const s = data.settings;
 
-  s.pin = $('#set_pin').value || '1234';
+  s.pin = $('#set_pin'].value || '1234';
   s.minOrder = parseNum($('#set_minOrder').value);
   s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
   s.fixedCut = parseNum($('#set_fixedCut').value);
@@ -2530,12 +3044,12 @@ function saveAdmin(){
 
   s.smallMaxSheets = Math.max(0, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
+  s.duplexSmallMaxSheets = Math.max(0, Math.round(parseNum($('#set_duplexSmallMaxSheets').value)));
   s.smallDuplexFixed = parseNum($('#set_smallDuplexFixed').value);
 
   s.standardSheetRate = parseNum($('#set_standardSheetRate').value);
   s.standardSheetThreshold = parseNum($('#set_standardSheetThreshold').value);
   s.discountedSheetRate = parseNum($('#set_discountedSheetRate').value);
-  s.customerCutSheetThreshold = parseNum($('#set_customerCutSheetThreshold').value);
 
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
   s.heavyCost = parseNum($('#set_heavyCost').value);
@@ -2554,14 +3068,14 @@ function saveAdmin(){
 
   $$('[data-graph-index]').forEach(inp => {
     const i = Number(inp.dataset.graphIndex);
-    if(data.graphicsOptions[i] && data.graphicsOptions[i].type === 'fixed'){
+    if (data.graphicsOptions[i] && data.graphicsOptions[i].type === 'fixed') {
       data.graphicsOptions[i].cost = parseNum(inp.value);
     }
   });
 
   const rows = $$('#extrasBody tr');
-  rows.forEach((tr,i) => {
-    if(!data.extras[i]) return;
+  rows.forEach((tr, i) => {
+    if (!data.extras[i]) return;
 
     data.extras[i].enabled = tr.querySelector('.ex_enabled').checked;
     data.extras[i].label = tr.querySelector('.ex_label').value;
@@ -2577,8 +3091,8 @@ function saveAdmin(){
   toast('Impostazioni salvate');
 }
 
-function resetData(){
-  if(confirm('Vuoi davvero ripristinare tutti i dati predefiniti?')){
+function resetData() {
+  if (confirm('Vuoi davvero ripristinare tutti i dati predefiniti?')) {
     data = clone(DEFAULT_DATA);
     saveData();
     updatePaperSelects();
@@ -2588,14 +3102,14 @@ function resetData(){
   }
 }
 
-function toast(msg){
+function toast(msg) {
   const t = $('#toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function initEvents(){
+function initEvents() {
   $('#wWidth').addEventListener('input', e => {
     handleDimensionInput('width', e.target.value, e.target);
   });
@@ -2648,8 +3162,8 @@ function initEvents(){
   });
 
   document.addEventListener('keydown', e => {
-    if(e.key === 'Escape'){
-      if(!$('#dieModal').classList.contains('hidden')){
+    if (e.key === 'Escape') {
+      if (!$('#dieModal').classList.contains('hidden')) {
         cancelDieModal();
       } else {
         closeAdmin();
