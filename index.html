@@ -675,7 +675,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v12';
+const STORAGE_KEY = 'configuratore_stampa_v13';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -685,7 +685,7 @@ const DEFAULT_DATA = {
     minOrder: 5,
     resellerDiscount: 20,
 
-    fixedCut: 0,
+    fixedCut: 10,
 
     smallMaxSheets: 3,
     smallSheetCost: 3,
@@ -2315,7 +2315,7 @@ function renderAdmin(){
       Logica attuale:<br>
       - senza taglio cliente: €0,70 a foglio fino alla soglia standard, poi €0,50 oltre la soglia;<br>
       - con taglio cliente: €0,70 a foglio fino alla soglia taglio cliente, poi €0,50 oltre la soglia.<br><br>
-      Se vuoi disattivare la fascia piccola 1–3 fogli, imposta “Soglia piccola tiratura” a 0.
+      Se vuoi disattivare la fascia piccola 1–3 fogli, imposta "Soglia piccola tiratura" a 0.
     </div>
 
     <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
@@ -2418,8 +2418,8 @@ function renderAdmin(){
 
     <div class="adminNote">
       <strong>Nota pezzi:</strong> le lavorazioni a pezzo vengono calcolate su fogli × copie per foglio, cioè sui cartoncini realmente presenti nella produzione.<br><br>
-      <strong>Nota soglia:</strong> “Solo oltre soglia” applica la tariffa variabile solo alla parte che supera la soglia.
-      “Tutta la quantità” applica la tariffa variabile a tutta la quantità quando la soglia viene superata.
+      <strong>Nota soglia:</strong> "Solo oltre soglia" applica la tariffa variabile solo alla parte che supera la soglia.
+      "Tutta la quantità" applica la tariffa variabile a tutta la quantità quando la soglia viene superata.
     </div>
   `;
 }
