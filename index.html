@@ -675,7 +675,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v13';
+const STORAGE_KEY = 'configuratore_stampa_v14';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -686,6 +686,7 @@ const DEFAULT_DATA = {
     resellerDiscount: 20,
 
     fixedCut: 10,
+    customerCutFixedCost: 5,
 
     smallMaxSheets: 3,
     smallSheetCost: 3,
@@ -817,7 +818,7 @@ const state = {
   qty: 0,
 
   paperType: 'patinata',
-  weight: 170,
+  weight: 350,
   specialVariant: 'Avorio rigata',
 
   sides: 1,
@@ -1216,9 +1217,16 @@ function evaluate(qty = state.qty){
     }
   }
 
-  if(!state.customerCut && parseNum(s.fixedCut) > 0){
-    productionCost += parseNum(s.fixedCut);
-    details.push({ label:'Taglio', value:parseNum(s.fixedCut) });
+  const cutCost = state.customerCut
+    ? parseNum(s.customerCutFixedCost)
+    : parseNum(s.fixedCut);
+
+  if(cutCost > 0){
+    productionCost += cutCost;
+    details.push({
+      label: state.customerCut ? 'Taglio (a carico cliente)' : 'Taglio',
+      value: cutCost
+    });
   }
 
   const graphicsCost = getGraphicsCost();
@@ -1922,7 +1930,7 @@ function renderWizardDynamic(calc){
     const layoutCalc = evaluate(1);
 
     if(state.widthMm <= 0 || state.heightMm <= 0){
-      error1.textContent = 'Inserisci larghezza e altezza.';
+      error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
     } else if(!layoutCalc || !layoutCalc.valid){
@@ -2269,6 +2277,9 @@ function renderAdmin(){
       <label>Taglio €
         <input type="number" step="0.01" id="set_fixedCut" value="${s.fixedCut}">
       </label>
+      <label>Taglio con cliente €
+        <input type="number" step="0.01" id="set_customerCutFixedCost" value="${s.customerCutFixedCost}">
+      </label>
 
       <label>Soglia piccola tiratura (fogli)
         <input type="number" step="1" id="set_smallMaxSheets" value="${s.smallMaxSheets}">
@@ -2312,7 +2323,11 @@ function renderAdmin(){
     </div>
 
     <div class="adminNote">
-      Logica attuale:<br>
+      Logica attuale del taglio:<br>
+      - senza taglio cliente: costo pieno (default €10);<br>
+      - con taglio cliente: costo ridotto (default €5).<br><br>
+      Tutto il resto del calcolo rimane identico nei due casi.<br><br>
+      Logica stampe:<br>
       - senza taglio cliente: €0,70 a foglio fino alla soglia standard, poi €0,50 oltre la soglia;<br>
       - con taglio cliente: €0,70 a foglio fino alla soglia taglio cliente, poi €0,50 oltre la soglia.<br><br>
       Se vuoi disattivare la fascia piccola 1–3 fogli, imposta "Soglia piccola tiratura" a 0.
@@ -2431,6 +2446,7 @@ function saveAdmin(){
   s.minOrder = parseNum($('#set_minOrder').value);
   s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
   s.fixedCut = parseNum($('#set_fixedCut').value);
+  s.customerCutFixedCost = parseNum($('#set_customerCutFixedCost').value);
 
   s.smallMaxSheets = Math.max(0, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
