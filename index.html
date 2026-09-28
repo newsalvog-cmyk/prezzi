@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <link rel="icon" type="image/png" href="favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prezziario Digitale - Made by Salvo G.</title>
+<title>Configuratore Stampa Cartoncini</title>
+
+<link rel="icon" type="image/png" href="favicon.png">
+
 <style>
   :root{
     --text:#5B5B5B;
@@ -59,14 +61,13 @@
   }
 
   .brand{display:flex;align-items:center;gap:14px}
-  .logo{
-    width:46px;height:46px;border-radius:16px;
-    background:linear-gradient(135deg,var(--primary),#79c7c3);
-    position:relative;overflow:hidden;flex:0 0 auto;
-  }
-  .logo:after{
-    content:"";position:absolute;inset:8px;border-radius:10px;
-    background:rgba(255,255,255,.35);
+
+  .logoImg{
+    width:46px;
+    height:46px;
+    border-radius:16px;
+    object-fit:contain;
+    flex:0 0 auto;
   }
 
   h1{margin:0;font-size:22px;letter-spacing:-.02em;font-weight:600}
@@ -407,7 +408,7 @@
       <button class="btn refreshBtn" onclick="window.location.reload()" title="Ricarica la pagina">⟳</button>
 
       <div class="brand">
-        <div class="logo"></div>
+        <img src="logo.png" alt="Logo" class="logoImg">
         <div>
           <h1>Configuratore Stampa</h1>
           <p>Tariffa a foglio · taglio cliente · formato libero</p>
