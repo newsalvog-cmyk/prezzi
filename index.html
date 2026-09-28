@@ -681,7 +681,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v15';
+const STORAGE_KEY = 'configuratore_stampa_v16';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -943,24 +943,16 @@ function escapeAttr(str){
     .replace(/>/g, '&gt;');
 }
 
-// Funzione arrotondamento prezzo a multipli di 5
+// ARROTONDAMENTO PREZZO: sempre per DIFETTO al multiplo di 5 inferiore
 function roundPriceToFive(total){
   if(total <= 0) return { display: total, original: total, rounded: false };
 
   const isMultipleOf5 = total % 5 === 0;
   if(isMultipleOf5) return { display: total, original: total, rounded: false };
 
-  const hasDecimals = total % 1 !== 0;
-
-  if(hasDecimals){
-    // Con decimali: arrotonda per eccesso al multiplo di 5 superiore
-    const rounded = Math.ceil(total / 5) * 5;
-    return { display: rounded, original: total, rounded: true, direction: 'up' };
-  } else {
-    // Senza decimali: arrotonda per difetto al multiplo di 5 inferiore
-    const rounded = Math.floor(total / 5) * 5;
-    return { display: rounded, original: total, rounded: true, direction: 'down' };
-  }
+  // Sempre arrotondare per DIFETTO
+  const rounded = Math.floor(total / 5) * 5;
+  return { display: rounded, original: total, rounded: true };
 }
 
 function getType(){
@@ -1284,7 +1276,7 @@ function evaluate(qty = state.qty){
 
   total = round2(total);
 
-  // Arrotondamento a multipli di 5
+  // Arrotondamento a multipli di 5 (sempre per difetto)
   const priceInfo = roundPriceToFive(total);
 
   return {
@@ -1581,7 +1573,7 @@ function renderSummaryInto(calc, container){
     { key:'customerCut', label:'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
   );
 
-  // Costruzione HTML prezzo con arrotondamento
+  // Costruzione HTML prezzo con arrotondamento SEMPRE per difetto
   const pi = calc.priceInfo;
   let priceHtml;
 
@@ -1593,42 +1585,13 @@ function renderSummaryInto(calc, container){
         <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
       </div>
     `;
-  } else if(pi.rounded && pi.direction === 'down'){
-    // Prezzo senza decimali arrotondato per difetto: mostra originale barrato + arrotondato
+  } else if(pi.rounded){
+    // Prezzo arrotondato per difetto: mostra originale barrato + arrotondato + info
     priceHtml = `
       <div class="priceBox">
         <div class="priceLabel">Totale IVA esclusa</div>
         <div class="price">
           <span class="priceOriginal">${fmtMoney(pi.original)}</span>
-          <span>${fmtMoney(pi.display)}</span>
-          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
-        </div>
-        <div class="muted">
-          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
-          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
-        </div>
-      </div>
-
-      <div class="breakdown">
-        ${calc.details.map(d => `
-          <div class="breakRow">
-            <span>
-              ${d.label}
-              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
-            </span>
-            <strong>${fmtMoney(d.value)}</strong>
-          </div>
-        `).join('')}
-        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
-        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
-      </div>
-    `;
-  } else if(pi.rounded && pi.direction === 'up'){
-    // Prezzo con decimali arrotondato per eccesso: mostra solo arrotondato + info
-    priceHtml = `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">
           <span>${fmtMoney(pi.display)}</span>
           <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
         </div>
@@ -2414,17 +2377,16 @@ function renderAdmin(){
     </div>
 
     <div class="adminNote">
-      Logica attuale del taglio:<br>
+      Logica arrotondamento prezzo:<br>
+      - Il prezzo viene SEMPRE arrotondato per DIFETTO al multiplo di 5 inferiore.<br>
+      - Esempio: 22,80€ → mostra 22,80€ barrato e 20€ come prezzo finale.<br>
+      - Esempio: 17€ → mostra 17€ barrato e 15€ come prezzo finale.<br>
+      - Se il prezzo è già multiplo di 5 (es. 20€), non viene arrotondato.<br>
+      - L'icona (i) mostra sempre il prezzo effettivo prima dell'arrotondamento.<br><br>
+      Logica taglio:<br>
       - senza taglio cliente: costo pieno (default €10);<br>
       - con taglio cliente: costo ridotto (default €5).<br><br>
-      Il costo aggiuntivo carta viene SEMPRE applicato quando la grammatura supera la soglia, indipendentemente dal taglio.<br><br>
-      Logica stampe:<br>
-      - senza taglio cliente: €0,70 a foglio fino alla soglia standard, poi €0,50 oltre la soglia;<br>
-      - con taglio cliente: €0,70 a foglio fino alla soglia taglio cliente, poi €0,50 oltre la soglia.<br><br>
-      Arrotondamento prezzo:<br>
-      - Prezzo senza decimali (es. 17€): arrotondato per difetto a 15€;<br>
-      - Prezzo con decimali (es. 17,51€): arrotondato per eccesso a 20€.<br>
-      Sempre a multipli di 5. L'icona (i) mostra il prezzo effettivo.<br><br>
+      Il costo aggiuntivo carta viene SEMPRE applicato quando la grammatura supera la soglia.<br><br>
       Se vuoi disattivare la fascia piccola 1–3 fogli, imposta "Soglia piccola tiratura" a 0.
     </div>
 
