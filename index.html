@@ -1922,7 +1922,7 @@ function renderWizardDynamic(calc){
     const layoutCalc = evaluate(1);
 
     if(state.widthMm <= 0 || state.heightMm <= 0){
-      error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
+      error1.textContent = 'Inserisci larghezza e altezza.';
       error1.classList.remove('hidden');
       nextBtn.disabled = true;
     } else if(!layoutCalc || !layoutCalc.valid){
