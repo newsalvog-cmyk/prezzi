@@ -4,9 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prezzario - Digitale</title>
-
 <link rel="icon" type="image/png" href="favicon.png">
-
 <style>
   :root {
     --text: #5B5B5B;
@@ -17,918 +15,166 @@
     --shadow: 0 20px 60px rgba(91, 91, 91, .10);
     --radius: 28px;
   }
-
-  * {
-    box-sizing: border-box;
-  }
-
+  * { box-sizing: border-box; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
     color: var(--text);
     font-weight: 400;
     background:
-      radial-gradient(1200px 700px at 15% 10%, rgba(4, 162, 156, .08), transparent 50%),
-      radial-gradient(1000px 600px at 85% 20%, rgba(91, 91, 91, .05), transparent 50%),
+      radial-gradient(1200px 700px at 15% 10%, rgba(4,162,156,.08), transparent 50%),
+      radial-gradient(1000px 600px at 85% 20%, rgba(91,91,91,.05), transparent 50%),
       #ffffff;
     min-height: 100vh;
   }
-
-  .bg {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    z-index: -1;
-  }
-
-  .blob {
-    position: absolute;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: .16;
-  }
-
-  .b1 {
-    left: -120px;
-    top: 80px;
-    background: rgba(4, 162, 156, .35);
-  }
-
-  .b2 {
-    right: -100px;
-    top: 20px;
-    background: rgba(91, 91, 91, .18);
-  }
-
-  .b3 {
-    right: 18%;
-    bottom: -160px;
-    background: rgba(4, 162, 156, .18);
-  }
-
+  .bg { position: fixed; inset: 0; overflow: hidden; z-index: -1; }
+  .blob { position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(70px); opacity: .16; }
+  .b1 { left: -120px; top: 80px; background: rgba(4,162,156,.35); }
+  .b2 { right: -100px; top: 20px; background: rgba(91,91,91,.18); }
+  .b3 { right: 18%; bottom: -160px; background: rgba(4,162,156,.18); }
   .glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .72));
+    background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.72));
     backdrop-filter: blur(24px) saturate(140%);
     -webkit-backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, .65);
+    border: 1px solid rgba(255,255,255,.65);
     box-shadow: var(--shadow);
     border-radius: var(--radius);
   }
-
   header.topbar {
-    position: sticky;
-    top: 14px;
-    z-index: 20;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    margin: 14px auto 0;
-    max-width: 1340px;
-  }
-
-  .topbarLeft {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .refreshBtn {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .logoImg {
-    width: 200px;
-    height: 50px;
-    border-radius: 16px;
-    object-fit: contain;
-    flex: 0 0 auto;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 22px;
-    letter-spacing: -.02em;
-    font-weight: 600;
-  }
-
-  header p {
-    margin: 2px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  h2 {
-    margin: 0 0 14px;
-    font-size: 20px;
-    font-weight: 600;
-  }
-
-  h3 {
-    margin: 0 0 12px;
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  main {
-    max-width: 1340px;
-    margin: 18px auto 40px;
-    padding: 0 14px;
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
-  .muted {
-    color: var(--muted);
-  }
-
-  small {
-    font-size: 12px;
-  }
-
-  .topActions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  #normalView {
-    display: grid;
-    gap: 18px;
-  }
-
-  .preview {
-    padding: 22px;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: 1.08fr .92fr;
-    gap: 18px;
-    align-items: start;
-  }
-
-  .card {
-    padding: 20px;
-  }
-
-  .heroStats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-
-  .heroStat {
-    padding: 14px 16px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, .72);
-    border: 1px solid rgba(91, 91, 91, .08);
-  }
-
-  .heroValue {
-    display: block;
-    font-size: 28px;
-    font-weight: 600;
-  }
-
-  .heroLabel {
-    display: block;
-    margin-top: 4px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .sheets {
-    display: flex;
-    gap: 18px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .sheetFig {
-    margin: 0;
-    min-width: 280px;
-    flex: 1;
-    max-width: 430px;
-  }
-
-  .sheetWrap {
-    padding: 14px;
-    border-radius: 26px;
-    background: rgba(255, 255, 255, .72);
-    border: 1px solid rgba(91, 91, 91, .08);
-  }
-
-  .sheetFig svg {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .sheetFig figcaption {
-    text-align: center;
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .paper {
-    fill: #f3f3f3;
-    stroke: rgba(91, 91, 91, .12);
-  }
-
-  .printable {
-    fill: #fff;
-    stroke: rgba(91, 91, 91, .12);
-  }
-
-  .copy {
-    fill: rgba(4, 162, 156, .10);
-    stroke: rgba(4, 162, 156, .42);
-    stroke-width: 1.2;
-  }
-
-  .copy.back {
-    fill: rgba(91, 91, 91, .08);
-    stroke: rgba(91, 91, 91, .34);
-  }
-
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: rgba(91, 91, 91, .82);
-  }
-
-  input,
-  select,
-  textarea {
-    width: 100%;
-    margin-top: 6px;
-    padding: 12px 13px;
-    border-radius: 16px;
-    border: 1px solid rgba(91, 91, 91, .12);
-    background: rgba(255, 255, 255, .86);
-    outline: none;
-    font: inherit;
-    font-weight: 400;
-    color: var(--text);
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: rgba(4, 162, 156, .38);
-    box-shadow: 0 0 0 4px rgba(4, 162, 156, .08);
-  }
-
-  .fieldRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .fieldRow3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 180px;
-    gap: 12px;
-    margin-bottom: 12px;
-    align-items: end;
-  }
-
-  .singleField {
-    margin-bottom: 12px;
-  }
-
-  .fieldName {
-    margin: 16px 0 8px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .unitControl {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .unitLabel {
-    font-size: 13px;
-    font-weight: 500;
-    color: rgba(91, 91, 91, .82);
-  }
-
-  .unitToggle {
-    display: flex;
-    gap: 6px;
-    padding: 6px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, .78);
-    border: 1px solid rgba(91, 91, 91, .10);
-  }
-
-  .unitToggle button {
-    flex: 1;
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 500;
-    padding: 10px 12px;
-    border-radius: 13px;
-    background: transparent;
-    color: rgba(91, 91, 91, .72);
-    transition: .18s background, .18s color;
-  }
-
-  .unitToggle button.active {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .graphicsBarWrap {
-    position: relative;
-  }
-
-  .graphicsBar {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 8px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, .78);
-    border: 1px solid rgba(91, 91, 91, .10);
-    scrollbar-width: none;
-  }
-
-  .graphicsBar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .graphicsBtn {
-    flex: 0 0 auto;
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 500;
-    padding: 10px 12px;
-    border-radius: 13px;
-    background: transparent;
-    color: rgba(91, 91, 91, .72);
-    white-space: nowrap;
-    transition: .18s background, .18s color;
-  }
-
-  .graphicsBtn:hover {
-    background: rgba(4, 162, 156, .06);
-  }
-
-  .graphicsBtn.active {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .graphicsSelectMobile {
-    display: none;
-  }
-
-  .segmented {
-    display: flex;
-    gap: 6px;
-    padding: 6px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, .72);
-    border: 1px solid rgba(91, 91, 91, .10);
-    flex-wrap: wrap;
-  }
-
-  .btn,
-  .segBtn {
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 500;
-    transition: .18s transform, .18s background, .18s box-shadow;
-  }
-
-  .segBtn {
-    padding: 10px 12px;
-    border-radius: 13px;
-    background: transparent;
-    color: rgba(91, 91, 91, .72);
-  }
-
-  .segBtn.active {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 8px 20px rgba(4, 162, 156, .16);
-  }
-
-  .btn {
-    padding: 11px 14px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, .82);
-    border: 1px solid rgba(91, 91, 91, .12);
-    color: var(--text);
-  }
-
-  .btn.primary {
-    color: white;
-    background: var(--primary);
-    border: none;
-    box-shadow: 0 14px 30px rgba(4, 162, 156, .16);
-  }
-
-  .btn.active {
-    background: var(--primary);
-    color: white;
-    border: none;
-  }
-
-  .btn:disabled {
-    opacity: .5;
-    pointer-events: none;
-  }
-
-  .btn:active,
-  .segBtn:active,
-  .graphicsBtn:active,
-  .unitToggle button:active {
-    transform: scale(.985);
-  }
-
-  .checkGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .extraItem {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .check {
-    flex: 1;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 11px 12px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, .78);
-    border: 1px solid rgba(91, 91, 91, .10);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
-  .check input {
-    width: auto;
-    margin-top: 3px;
-    accent-color: var(--primary);
-  }
-
-  .check span {
-    display: block;
-    line-height: 1.35;
-  }
-
-  .miniBadge {
-    border: none;
-    background: var(--primary-soft);
-    color: var(--primary);
-    padding: 7px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .info {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--primary-soft);
-    color: var(--primary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: help;
-    flex: 0 0 auto;
-    user-select: none;
-  }
-
-  .info::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: 135%;
-    left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: #5B5B5B;
-    color: #fff;
-    padding: 9px 11px;
-    border-radius: 12px;
-    font-size: 12px;
-    line-height: 1.35;
-    width: 250px;
-    opacity: 0;
-    pointer-events: none;
-    transition: .18s;
-    z-index: 60;
-  }
-
-  .info::before {
-    content: "";
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #5B5B5B;
-    opacity: 0;
-    transition: .18s;
-    z-index: 60;
-  }
-
-  .info:hover::after,
-  .info:focus::after,
-  .info:hover::before,
-  .info:focus::before {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  .starBadge {
-    color: var(--primary);
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    margin-left: 2px;
-  }
-
-  .descGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 12px;
-  }
-
-  .descItem {
-    padding: 12px 13px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, .80);
-    border: 1px solid rgba(91, 91, 91, .10);
-  }
-
-  .descItem.editable {
-    cursor: default;
-  }
-
-  .descItem.editable:hover {
-    border-color: rgba(4, 162, 156, .24);
-  }
-
-  .descItem span {
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-
-  .descItem strong {
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .priceBox {
-    margin-top: 16px;
-    padding: 18px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, rgba(4, 162, 156, .08), rgba(91, 91, 91, .04));
-    border: 1px solid rgba(91, 91, 91, .10);
-  }
-
-  .priceLabel {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  .price {
-    font-size: 38px;
-    font-weight: 600;
-    margin-top: 6px;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .priceOriginal {
-    font-size: 22px;
-    color: var(--muted);
-    text-decoration: line-through;
-    font-weight: 400;
-  }
-
-  .breakdown {
-    margin-top: 14px;
-    display: grid;
-    gap: 8px;
-  }
-
-  .breakRow {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, .78);
-    font-weight: 500;
-  }
-
-  .breakRow span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .inlineEditor {
-    display: grid;
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  .inlineEditor input,
-  .inlineEditor select {
-    margin-top: 0;
-    padding: 10px 11px;
-    border-radius: 13px;
-  }
-
-  .inlineActions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .wizard {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0 30px;
-  }
-
-  .wizardCard {
-    width: min(920px, 100%);
-    padding: 24px;
-  }
-
-  .wizardHead {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-
-  .progress {
-    height: 8px;
-    border-radius: 999px;
-    background: rgba(91, 91, 91, .10);
-    overflow: hidden;
-    margin: 14px 0 22px;
-  }
-
-  #progressFill {
-    height: 100%;
-    width: 16.6%;
-    border-radius: 999px;
-    background: var(--primary);
-    transition: width .25s ease;
-  }
-
-  .wStep {
-    min-height: 340px;
-  }
-
-  .wizardNav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-top: 22px;
-  }
-
-  .error {
-    padding: 16px;
-    border-radius: 18px;
-    background: rgba(200, 70, 60, .08);
-    border: 1px solid rgba(200, 70, 60, .16);
-    color: #b30000;
-    font-weight: 500;
-  }
-
-  .modal {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 18px;
-  }
-
-  .modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(91, 91, 91, .28);
-    backdrop-filter: blur(8px);
-  }
-
-  .modal-panel {
-    position: relative;
-    width: min(1180px, 100%);
-    max-height: 88vh;
-    overflow: auto;
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .84));
-    border-radius: 28px;
-  }
-
-  .modal-panel.small {
-    width: min(620px, 100%);
-  }
-
-  .modal-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-
-  .adminGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .adminTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-
-  .adminTable th,
-  .adminTable td {
-    padding: 8px;
-    border-bottom: 1px solid rgba(91, 91, 91, .08);
-    vertical-align: middle;
-  }
-
-  .adminTable input,
-  .adminTable select {
-    padding: 9px 10px;
-    border-radius: 12px;
-  }
-
-  .adminNote {
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .adminActions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 14px;
-  }
-
-  .dieSizeOptions {
-    display: grid;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%) translateY(20px);
-    padding: 12px 16px;
-    border-radius: 16px;
-    background: #5B5B5B;
-    color: white;
-    opacity: 0;
-    pointer-events: none;
-    transition: .25s;
-    z-index: 200;
-    font-weight: 500;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
+    position: sticky; top: 14px; z-index: 20;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 16px 20px; margin: 14px auto 0; max-width: 1340px;
+  }
+  .topbarLeft { display: flex; align-items: center; gap: 14px; }
+  .refreshBtn { width: 44px; height: 44px; padding: 0; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logoImg { width: 200px; height: 50px; border-radius: 16px; object-fit: contain; flex: 0 0 auto; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; font-weight: 600; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  h2 { margin: 0 0 14px; font-size: 20px; font-weight: 600; }
+  h3 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+  main { max-width: 1340px; margin: 18px auto 40px; padding: 0 14px; }
+  .hidden { display: none !important; }
+  .muted { color: var(--muted); }
+  small { font-size: 12px; }
+  .topActions { display: flex; gap: 10px; flex-wrap: wrap; }
+  #normalView { display: grid; gap: 18px; }
+  .preview { padding: 22px; }
+  .grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; align-items: start; }
+  .card { padding: 20px; }
+  .heroStats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 18px; }
+  .heroStat { padding: 14px 16px; border-radius: 22px; background: rgba(255,255,255,.72); border: 1px solid rgba(91,91,91,.08); }
+  .heroValue { display: block; font-size: 28px; font-weight: 600; }
+  .heroLabel { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .sheets { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+  .sheetFig { margin: 0; min-width: 280px; flex: 1; max-width: 430px; }
+  .sheetWrap { padding: 14px; border-radius: 26px; background: rgba(255,255,255,.72); border: 1px solid rgba(91,91,91,.08); }
+  .sheetFig svg { width: 100%; height: auto; display: block; }
+  .sheetFig figcaption { text-align: center; margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .paper { fill: #f3f3f3; stroke: rgba(91,91,91,.12); }
+  .printable { fill: #fff; stroke: rgba(91,91,91,.12); }
+  .copy { fill: rgba(4,162,156,.10); stroke: rgba(4,162,156,.42); stroke-width: 1.2; }
+  .copy.back { fill: rgba(91,91,91,.08); stroke: rgba(91,91,91,.34); }
+  label { display: block; font-size: 13px; font-weight: 500; color: rgba(91,91,91,.82); }
+  input, select, textarea {
+    width: 100%; margin-top: 6px; padding: 12px 13px; border-radius: 16px;
+    border: 1px solid rgba(91,91,91,.12); background: rgba(255,255,255,.86);
+    outline: none; font: inherit; font-weight: 400; color: var(--text);
+  }
+  input:focus, select:focus, textarea:focus { border-color: rgba(4,162,156,.38); box-shadow: 0 0 0 4px rgba(4,162,156,.08); }
+  .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .fieldRow3 { display: grid; grid-template-columns: 1fr 1fr 180px; gap: 12px; margin-bottom: 12px; align-items: end; }
+  .singleField { margin-bottom: 12px; }
+  .fieldName { margin: 16px 0 8px; font-size: 13px; font-weight: 600; }
+  .unitControl { display: flex; flex-direction: column; gap: 8px; }
+  .unitLabel { font-size: 13px; font-weight: 500; color: rgba(91,91,91,.82); }
+  .unitToggle { display: flex; gap: 6px; padding: 6px; border-radius: 18px; background: rgba(255,255,255,.78); border: 1px solid rgba(91,91,91,.10); }
+  .unitToggle button { flex: 1; border: none; cursor: pointer; font: inherit; font-weight: 500; padding: 10px 12px; border-radius: 13px; background: transparent; color: rgba(91,91,91,.72); transition: .18s background, .18s color; }
+  .unitToggle button.active { background: var(--primary); color: #fff; }
+  .graphicsBarWrap { position: relative; }
+  .graphicsBar { display: flex; gap: 8px; overflow-x: auto; padding: 8px; border-radius: 18px; background: rgba(255,255,255,.78); border: 1px solid rgba(91,91,91,.10); scrollbar-width: none; }
+  .graphicsBar::-webkit-scrollbar { display: none; }
+  .graphicsBtn { flex: 0 0 auto; border: none; cursor: pointer; font: inherit; font-weight: 500; padding: 10px 12px; border-radius: 13px; background: transparent; color: rgba(91,91,91,.72); white-space: nowrap; transition: .18s background, .18s color; }
+  .graphicsBtn:hover { background: rgba(4,162,156,.06); }
+  .graphicsBtn.active { background: var(--primary); color: #fff; }
+  .graphicsSelectMobile { display: none; }
+  .segmented { display: flex; gap: 6px; padding: 6px; border-radius: 18px; background: rgba(255,255,255,.72); border: 1px solid rgba(91,91,91,.10); flex-wrap: wrap; }
+  .btn, .segBtn { border: none; cursor: pointer; font: inherit; font-weight: 500; transition: .18s transform, .18s background, .18s box-shadow; }
+  .segBtn { padding: 10px 12px; border-radius: 13px; background: transparent; color: rgba(91,91,91,.72); }
+  .segBtn.active { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(4,162,156,.16); }
+  .btn { padding: 11px 14px; border-radius: 16px; background: rgba(255,255,255,.82); border: 1px solid rgba(91,91,91,.12); color: var(--text); }
+  .btn.primary { color: white; background: var(--primary); border: none; box-shadow: 0 14px 30px rgba(4,162,156,.16); }
+  .btn.active { background: var(--primary); color: white; border: none; }
+  .btn:disabled { opacity: .5; pointer-events: none; }
+  .btn:active, .segBtn:active, .graphicsBtn:active, .unitToggle button:active { transform: scale(.985); }
+  .checkGrid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .extraItem { display: flex; align-items: center; gap: 8px; }
+  .check { flex: 1; display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border-radius: 16px; background: rgba(255,255,255,.78); border: 1px solid rgba(91,91,91,.10); font-size: 14px; font-weight: 500; cursor: pointer; }
+  .check input { width: auto; margin-top: 3px; accent-color: var(--primary); }
+  .check span { display: block; line-height: 1.35; }
+  .miniBadge { border: none; background: var(--primary-soft); color: var(--primary); padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .info { position: relative; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: help; flex: 0 0 auto; user-select: none; }
+  .info::after { content: attr(data-tip); position: absolute; bottom: 135%; left: 50%; transform: translateX(-50%) translateY(4px); background: #5B5B5B; color: #fff; padding: 9px 11px; border-radius: 12px; font-size: 12px; line-height: 1.35; width: 250px; opacity: 0; pointer-events: none; transition: .18s; z-index: 60; }
+  .info::before { content: ""; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #5B5B5B; opacity: 0; transition: .18s; z-index: 60; }
+  .info:hover::after, .info:focus::after, .info:hover::before, .info:focus::before { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .starBadge { color: var(--primary); font-size: 14px; display: inline-flex; align-items: center; margin-left: 2px; }
+  .descGrid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 12px; }
+  .descItem { padding: 12px 13px; border-radius: 18px; background: rgba(255,255,255,.80); border: 1px solid rgba(91,91,91,.10); }
+  .descItem.editable { cursor: default; }
+  .descItem.editable:hover { border-color: rgba(4,162,156,.24); }
+  .descItem span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+  .descItem strong { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .priceBox { margin-top: 16px; padding: 18px; border-radius: 24px; background: linear-gradient(135deg, rgba(4,162,156,.08), rgba(91,91,91,.04)); border: 1px solid rgba(91,91,91,.10); }
+  .priceLabel { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  .price { font-size: 38px; font-weight: 600; margin-top: 6px; color: var(--primary); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .priceOriginal { font-size: 22px; color: var(--muted); text-decoration: line-through; font-weight: 400; }
+  .breakdown { margin-top: 14px; display: grid; gap: 8px; }
+  .breakRow { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.78); font-weight: 500; }
+  .breakRow span { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .inlineEditor { display: grid; gap: 8px; margin-top: 8px; }
+  .inlineEditor input, .inlineEditor select { margin-top: 0; padding: 10px 11px; border-radius: 13px; }
+  .inlineActions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .wizard { display: flex; justify-content: center; padding: 10px 0 30px; }
+  .wizardCard { width: min(920px, 100%); padding: 24px; }
+  .wizardHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+  .progress { height: 8px; border-radius: 999px; background: rgba(91,91,91,.10); overflow: hidden; margin: 14px 0 22px; }
+  #progressFill { height: 100%; width: 16.6%; border-radius: 999px; background: var(--primary); transition: width .25s ease; }
+  .wStep { min-height: 340px; }
+  .wizardNav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px; }
+  .error { padding: 16px; border-radius: 18px; background: rgba(200,70,60,.08); border: 1px solid rgba(200,70,60,.16); color: #b30000; font-weight: 500; }
+  .modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 18px; }
+  .modal-backdrop { position: absolute; inset: 0; background: rgba(91,91,91,.28); backdrop-filter: blur(8px); }
+  .modal-panel { position: relative; width: min(1180px,100%); max-height: 88vh; overflow: auto; padding: 20px; background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,255,255,.84)); border-radius: 28px; }
+  .modal-panel.small { width: min(620px,100%); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .adminGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .adminTable { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .adminTable th, .adminTable td { padding: 8px; border-bottom: 1px solid rgba(91,91,91,.08); vertical-align: middle; }
+  .adminTable input, .adminTable select { padding: 9px 10px; border-radius: 12px; }
+  .adminNote { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+  .adminActions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .dieSizeOptions { display: grid; gap: 10px; margin-top: 14px; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px); padding: 12px 16px; border-radius: 16px; background: #5B5B5B; color: white; opacity: 0; pointer-events: none; transition: .25s; z-index: 200; font-weight: 500; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   @media (max-width: 980px) {
-    .grid {
-      grid-template-columns: 1fr;
-    }
-
-    .heroStats {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .adminGrid {
-      grid-template-columns: 1fr;
-    }
-
-    .fieldRow3 {
-      grid-template-columns: 1fr;
-    }
-
-    .checkGrid {
-      grid-template-columns: 1fr;
-    }
+    .grid { grid-template-columns: 1fr; }
+    .heroStats { grid-template-columns: repeat(2,1fr); }
+    .adminGrid { grid-template-columns: 1fr; }
+    .fieldRow3 { grid-template-columns: 1fr; }
+    .checkGrid { grid-template-columns: 1fr; }
   }
-
   @media (max-width: 768px) {
-    .graphicsBar {
-      display: none;
-    }
-
-    .graphicsSelectMobile {
-      display: block;
-      width: 100%;
-    }
+    .graphicsBar { display: none; }
+    .graphicsSelectMobile { display: block; width: 100%; }
   }
-
   @media print {
-    header.topbar,
-    .topActions,
-    .controls,
-    .modal,
-    .toast,
-    .btn,
-    #wizardView,
-    .info::after,
-    .info::before {
-      display: none !important;
-    }
-
-    body {
-      background: white;
-    }
-
-    .glass {
-      box-shadow: none;
-      background: white;
-      backdrop-filter: none;
-      border-color: #ddd;
-    }
-
-    .preview {
-      padding: 0;
-    }
+    header.topbar, .topActions, .controls, .modal, .toast, .btn, #wizardView, .info::after, .info::before { display: none !important; }
+    body { background: white; }
+    .glass { box-shadow: none; background: white; backdrop-filter: none; border-color: #ddd; }
+    .preview { padding: 0; }
   }
 </style>
 </head>
-
 <body>
   <div class="bg">
     <div class="blob b1"></div>
@@ -939,7 +185,6 @@
   <header class="glass topbar">
     <div class="topbarLeft">
       <button class="btn refreshBtn" onclick="window.location.reload()" title="Ricarica la pagina">⟳</button>
-
       <div class="brand">
         <img src="logo.png" alt="Logo" class="logoImg">
         <div>
@@ -948,7 +193,6 @@
         </div>
       </div>
     </div>
-
     <div class="topActions">
       <button id="viewStepBtn" class="btn" onclick="showWizard()">Step</button>
       <button id="viewNormalBtn" class="btn" onclick="showNormal()">Configuratore</button>
@@ -968,23 +212,17 @@
             <div id="wizardStepLabel" class="muted">Step 1 di 6</div>
           </div>
         </div>
-
-        <div class="progress">
-          <div id="progressFill"></div>
-        </div>
+        <div class="progress"><div id="progressFill"></div></div>
 
         <div id="wStep1" class="wStep">
           <h3>1 · Dimensione Lavoro</h3>
-
           <div class="fieldRow3">
             <label>Larghezza
               <input id="wWidth" type="text" inputmode="decimal" value="0">
             </label>
-
             <label>Altezza
               <input id="wHeight" type="text" inputmode="decimal" value="0">
             </label>
-
             <div class="unitControl">
               <span class="unitLabel">Unità</span>
               <div class="unitToggle">
@@ -993,19 +231,16 @@
               </div>
             </div>
           </div>
-
           <div id="wStep1Error" class="error hidden"></div>
         </div>
 
         <div id="wStep2" class="wStep hidden">
           <h3>2 · Scegli la Quantità e La tipologia di Carta</h3>
-
           <div class="singleField">
             <label>Quantità
               <input id="wQty" type="number" value="0">
             </label>
           </div>
-
           <div class="fieldRow">
             <label>Carta
               <select id="wPaperType"></select>
@@ -1014,25 +249,21 @@
               <select id="wWeight"></select>
             </label>
           </div>
-
           <div id="wVariantWrap" class="singleField hidden">
             <label>Variante carta speciale
               <select id="wSpecialVariant"></select>
             </label>
           </div>
-
           <div id="wStep2Error" class="error hidden"></div>
         </div>
 
         <div id="wStep3" class="wStep hidden">
           <h3>3 · Scegli la tipologia di Stampa</h3>
-
           <div class="fieldName">Stampa</div>
           <div id="wSidesOptions" class="segmented">
             <button class="segBtn" data-sides="1" onclick="setSides(1)">Solo fronte</button>
             <button class="segBtn" data-sides="2" onclick="setSides(2)">Fronte/retro</button>
           </div>
-
           <div style="margin-top:16px">
             <label class="check">
               <input type="checkbox" id="wReseller" onchange="setReseller(this.checked)">
@@ -1048,20 +279,16 @@
 
         <div id="wStep5" class="wStep hidden">
           <h3>5 · Grafica e opzioni finali</h3>
-
           <div class="singleField">
             <label>Complessità grafica</label>
             <div class="graphicsBarWrap" id="wGraphicsControl"></div>
           </div>
-
           <div id="wGraphicHoursWrap" class="singleField hidden">
             <label>Ore di grafica
               <input id="wGraphicHours" type="text" inputmode="decimal" value="1" onchange="setGraphicHours(this.value)">
             </label>
           </div>
-
           <div class="muted" id="wGraphicsNote"></div>
-
           <div style="margin-top:16px">
             <label class="check">
               <input type="checkbox" id="wCustomerCut" onchange="setCustomerCut(this.checked)">
@@ -1091,20 +318,16 @@
       <section class="glass preview">
         <div id="preview"></div>
       </section>
-
       <section class="grid">
         <section class="glass card controls">
           <h2>Configura prodotto</h2>
-
           <div class="fieldRow3">
             <label>Larghezza
               <input id="width" type="text" inputmode="decimal" value="0">
             </label>
-
             <label>Altezza
               <input id="height" type="text" inputmode="decimal" value="0">
             </label>
-
             <div class="unitControl">
               <span class="unitLabel">Unità</span>
               <div class="unitToggle">
@@ -1113,13 +336,11 @@
               </div>
             </div>
           </div>
-
           <div class="singleField">
             <label>Quantità
               <input id="qty" type="number" value="0">
             </label>
           </div>
-
           <div class="fieldRow">
             <label>Carta
               <select id="paperType"></select>
@@ -1128,42 +349,34 @@
               <select id="weight"></select>
             </label>
           </div>
-
           <div id="variantWrap" class="singleField hidden">
             <label>Variante carta speciale
               <select id="specialVariant"></select>
             </label>
           </div>
-
           <div class="fieldName">Stampa</div>
           <div id="sidesOptions" class="segmented">
             <button class="segBtn" data-sides="1" onclick="setSides(1)">Solo fronte</button>
             <button class="segBtn" data-sides="2" onclick="setSides(2)">Fronte/retro</button>
           </div>
-
           <div class="fieldName">Lavorazioni extra</div>
           <div id="extrasOptions" class="checkGrid"></div>
-
           <div class="fieldName">Grafica</div>
           <div class="singleField">
             <div class="graphicsBarWrap" id="graphicsControl"></div>
           </div>
-
           <div id="graphicHoursWrap" class="singleField hidden">
             <label>Ore di grafica
               <input id="graphicHours" type="text" inputmode="decimal" value="1" onchange="setGraphicHours(this.value)">
             </label>
           </div>
-
           <div class="muted" id="graphicsNote"></div>
-
           <div style="margin-top:16px">
             <label class="check">
               <input type="checkbox" id="reseller" onchange="setReseller(this.checked)">
               <span>Rivenditore</span>
             </label>
           </div>
-
           <div style="margin-top:10px">
             <label class="check">
               <input type="checkbox" id="customerCut" onchange="setCustomerCut(this.checked)">
@@ -1171,7 +384,6 @@
             </label>
           </div>
         </section>
-
         <section class="glass card summary">
           <h2>Riepilogo e prezzo</h2>
           <div class="muted" style="margin-bottom:10px">Doppio click su una voce per modificarla.</div>
@@ -1201,7 +413,6 @@
         <h2>Pannello privato</h2>
         <button class="btn" onclick="closeAdmin()">Chiudi</button>
       </div>
-
       <div id="adminContent"></div>
     </div>
   </div>
@@ -1209,7 +420,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v19';
+const STORAGE_KEY = 'configuratore_stampa_v20';
 let lastCalc = null;
 let dieTemp = { isNew: false, size: 'medium' };
 
@@ -1218,67 +429,38 @@ const DEFAULT_DATA = {
     pin: '1234',
     minOrder: 5,
     resellerDiscount: 20,
-
     fixedCut: 10,
     customerCutFixedCost: 5,
-
     smallMaxSheets: 3,
     smallSheetCost: 3,
-
     duplexSmallMaxSheets: 5,
     smallDuplexFixed: 5,
-
+    midSheetCost: 0.70,
     standardSheetRate: 0.70,
     standardSheetThreshold: 20,
     discountedSheetRate: 0.50,
-
     heavyThreshold: 170,
     heavyCost: 10,
-
     hourlyFirstHour: 50,
     hourlyNextHours: 30,
-
     dieLeftMm: 2,
     dieRightMm: 2,
     dieTopMm: 2,
     dieBottomMm: 30,
-
     dieNewSmallCost: 40,
     dieNewMediumCost: 60,
     dieNewLargeCost: 100
   },
-
   papers: [
     { id: 'p3244', label: '32×44 cm', w: 320, h: 440, printW: 310, printH: 430, order: 1 },
     { id: 'p3245', label: '32×45 cm', w: 320, h: 450, printW: 310, printH: 440, order: 2 },
     { id: 'p33488', label: '33×48,8 cm', w: 330, h: 488, printW: 320, printH: 478, order: 3 }
   ],
-
   paperTypes: [
-    {
-      id: 'patinata',
-      label: 'Patinata',
-      kind: 'standard',
-      formats: ['p3244', 'p3245', 'p33488'],
-      weights: [80, 90, 135, 150, 170, 200, 300, 350, 400]
-    },
-    {
-      id: 'usomano',
-      label: 'Usomano',
-      kind: 'standard',
-      formats: ['p3244', 'p3245', 'p33488'],
-      weights: [80, 90, 135, 150, 170, 200, 300, 350, 400]
-    },
-    {
-      id: 'speciale',
-      label: 'Carte speciali',
-      kind: 'special',
-      formats: ['p33488'],
-      weights: [280],
-      variants: ['Avorio rigata', 'Avorio liscio', 'Martellata bianca', 'Martellata avorio', 'Corn Mais', 'Colorata']
-    }
+    { id: 'patinata', label: 'Patinata', kind: 'standard', formats: ['p3244','p3245','p33488'], weights: [80,90,135,150,170,200,300,350,400] },
+    { id: 'usomano', label: 'Usomano', kind: 'standard', formats: ['p3244','p3245','p33488'], weights: [80,90,135,150,170,200,300,350,400] },
+    { id: 'speciale', label: 'Carte speciali', kind: 'special', formats: ['p33488'], weights: [280], variants: ['Avorio rigata','Avorio liscio','Martellata bianca','Martellata avorio','Corn Mais','Colorata'] }
   ],
-
   graphicsOptions: [
     { id: 'client', label: 'Grafica fornita dal cliente', cost: 0, type: 'fixed', note: '' },
     { id: 'simple', label: 'Grafica Semplice', cost: 5, type: 'fixed', note: '5 min. circa' },
@@ -1286,7 +468,6 @@ const DEFAULT_DATA = {
     { id: 'complex', label: 'Grafica Articolata', cost: 30, type: 'fixed', note: '25/30 min. circa' },
     { id: 'hourly', label: 'Grafica ad ore', cost: 0, type: 'hourly', note: '50€ prima ora, poi 30€' }
   ],
-
   extras: [
     { id: 'lam', label: 'Plastificazione', enabled: true, fixed: 20, threshold: 50, rate: 0.30, unit: 'sheet', mode: 'over' },
     { id: 'hole', label: 'Foro', enabled: true, fixed: 10, threshold: 50, rate: 0.05, unit: 'piece', mode: 'over' },
@@ -1299,47 +480,29 @@ const DEFAULT_DATA = {
 const state = {
   uiMode: 'wizard',
   wizardStep: 1,
-
   unit: 'cm',
   widthMm: 0,
   heightMm: 0,
-
   qty: 0,
-
   paperType: 'patinata',
   weight: 350,
   specialVariant: 'Avorio rigata',
-
   sides: 1,
-
-  extras: {
-    lam: false,
-    hole: false,
-    round: false,
-    crease: false,
-    die: false
-  },
-
+  extras: { lam: false, hole: false, round: false, crease: false, die: false },
   dieIsNew: false,
   dieNewSize: 'medium',
-
   graphicsType: 'client',
   graphicHours: 1,
-
   reseller: false,
   customerCut: false,
-
   admin: false
 };
 
-function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
+function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 function mergeDeep(base, extra) {
   const out = clone(base);
   if (!extra) return out;
-
   (function merge(target, source) {
     Object.keys(source).forEach(k => {
       const v = source[k];
@@ -1351,7 +514,6 @@ function mergeDeep(base, extra) {
       }
     });
   })(out, extra);
-
   return out;
 }
 
@@ -1380,21 +542,15 @@ function parseNum(v) {
   return isNaN(n) ? 0 : n;
 }
 
-function round2(n) {
-  return Math.round(n * 100) / 100;
-}
+function round2(n) { return Math.round(n * 100) / 100; }
 
 function fmtMoney(n) {
   return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
 }
 
-function fmtNum(n) {
-  return new Intl.NumberFormat('it-IT').format(n);
-}
+function fmtNum(n) { return new Intl.NumberFormat('it-IT').format(n); }
 
-function mmToCm(mm) {
-  return (mm / 10).toLocaleString('it-IT', { maximumFractionDigits: 2 });
-}
+function mmToCm(mm) { return (mm / 10).toLocaleString('it-IT', { maximumFractionDigits: 2 }); }
 
 function formatDim(mm) {
   return state.unit === 'cm' ? `${mmToCm(mm)} cm` : `${fmtNum(mm)} mm`;
@@ -1402,16 +558,12 @@ function formatDim(mm) {
 
 function displayDimension(mm) {
   const v = state.unit === 'cm' ? mm / 10 : mm;
-  return Number.isInteger(v)
-    ? String(v)
-    : v.toLocaleString('it-IT', { maximumFractionDigits: 2 });
+  return Number.isInteger(v) ? String(v) : v.toLocaleString('it-IT', { maximumFractionDigits: 2 });
 }
 
 function displayHours(h) {
   const n = parseNum(h);
-  return Number.isInteger(n)
-    ? String(n)
-    : n.toLocaleString('it-IT', { maximumFractionDigits: 2 });
+  return Number.isInteger(n) ? String(n) : n.toLocaleString('it-IT', { maximumFractionDigits: 2 });
 }
 
 function parseDimensionWithUnit(value, unit) {
@@ -1431,27 +583,16 @@ function escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
-// ============================================================
-// ARROTONDAMENTO PREZZO A MULTIPLI DI 5
-// - Se già multiplo di 5 → nessuna modifica
-// - Se resto <= 2.50 → arrotonda in DIFETTO, mostra barrato
-// - Se resto > 2.50 → arrotonda in ECCESSO, NON mostra barrato
-// ============================================================
 function roundPriceToFive(total) {
   if (total <= 0) return { display: total, original: total, rounded: false, direction: null };
-
   const remainder = total % 5;
-
   if (remainder === 0) {
     return { display: total, original: total, rounded: false, direction: null };
   }
-
   if (remainder <= 2.5) {
-    // Arrotonda in DIFETTO → mostra originale barrato
     const rounded = Math.floor(total / 5) * 5;
     return { display: rounded, original: total, rounded: true, direction: 'down' };
   } else {
-    // Arrotonda in ECCESSO → NON mostra originale barrato
     const rounded = Math.ceil(total / 5) * 5;
     return { display: rounded, original: total, rounded: true, direction: 'up' };
   }
@@ -1475,27 +616,22 @@ function getGraphicOption() {
 function getGraphicsCost() {
   const opt = getGraphicOption();
   if (!opt) return 0;
-
   if (opt.type === 'hourly') {
     const h = Math.max(0, parseNum(state.graphicHours));
     if (h <= 0) return 0;
-
     return data.settings.hourlyFirstHour + Math.max(0, h - 1) * data.settings.hourlyNextHours;
   }
-
   return opt.cost || 0;
 }
 
 function getGraphicsLabel() {
   const opt = getGraphicOption();
   if (!opt) return '';
-
   if (opt.type === 'hourly') {
     const h = Math.max(0, parseNum(state.graphicHours));
     const label = h.toLocaleString('it-IT', { maximumFractionDigits: 2 });
     return `${opt.label} (${label} ${h === 1 ? 'ora' : 'ore'})`;
   }
-
   return opt.label;
 }
 
@@ -1537,7 +673,6 @@ function guessDieSize() {
   const area = state.widthMm * state.heightMm;
   const a6 = 105 * 148;
   const a5 = 148 * 210;
-
   if (area > 0 && area <= a6) return 'small';
   if (area > 0 && area <= a5) return 'medium';
   return 'large';
@@ -1546,7 +681,6 @@ function guessDieSize() {
 function getEffectiveItem() {
   const margins = getDieMargins();
   const active = isDieActive();
-
   return {
     w: state.widthMm + (active ? margins.left + margins.right : 0),
     h: state.heightMm + (active ? margins.top + margins.bottom : 0),
@@ -1559,69 +693,41 @@ function layoutPaper(item, paper) {
   const eps = 0.01;
   const opts = [{ w: item.w, h: item.h, rotated: false }];
   if (item.w !== item.h) opts.push({ w: item.h, h: item.w, rotated: true });
-
   let best = null;
-
   for (const o of opts) {
     const cols = Math.floor((paper.printW + eps) / o.w);
     const rows = Math.floor((paper.printH + eps) / o.h);
     const copies = cols * rows;
-
     if (copies > 0) {
       const unused = paper.w * paper.h - copies * o.w * o.h;
       if (!best || copies > best.copies || (copies === best.copies && unused < best.unused)) {
-        best = {
-          cols,
-          rows,
-          copies,
-          rotated: o.rotated,
-          cellW: o.w,
-          cellH: o.h,
-          unused
-        };
+        best = { cols, rows, copies, rotated: o.rotated, cellW: o.w, cellH: o.h, unused };
       }
     }
   }
-
   return best;
 }
 
 function getExtraCost(extra, sheets, producedPieces) {
   if (!extra.enabled || !state.extras[extra.id]) return 0;
-
   const count = extra.unit === 'sheet' ? sheets : producedPieces;
   let variable = 0;
-
   if (count > extra.threshold) {
     const billable = extra.mode === 'all' ? count : Math.max(0, count - extra.threshold);
     variable = billable * extra.rate;
   }
-
   return extra.fixed + variable;
 }
 
-function evaluate(qty = state.qty) {
-  const item = {
-    w: state.widthMm,
-    h: state.heightMm
-  };
+function evaluate(qty) {
+  qty = qty === undefined ? state.qty : qty;
 
+  const item = { w: state.widthMm, h: state.heightMm };
   const effective = getEffectiveItem();
-
-  const layoutItem = {
-    w: effective.w,
-    h: effective.h
-  };
+  const layoutItem = { w: effective.w, h: effective.h };
 
   if (item.w <= 0 || item.h <= 0 || layoutItem.w <= 0 || layoutItem.h <= 0 || qty <= 0) {
-    return {
-      valid: false,
-      item,
-      qty,
-      effectiveItem: layoutItem,
-      dieActive: effective.active,
-      dieMargins: effective.margins
-    };
+    return { valid: false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
   }
 
   const type = getType();
@@ -1630,31 +736,16 @@ function evaluate(qty = state.qty) {
   for (const pid of type.formats) {
     const paper = data.papers.find(p => p.id === pid);
     if (!paper) continue;
-
     const layout = layoutPaper(layoutItem, paper);
     if (!layout) continue;
-
     const sheets = Math.ceil(qty / layout.copies);
     const paperArea = paper.w * paper.h;
     const totalArea = sheets * paperArea;
-
-    candidates.push({
-      paper,
-      layout,
-      sheets,
-      totalArea
-    });
+    candidates.push({ paper, layout, sheets, totalArea });
   }
 
   if (!candidates.length) {
-    return {
-      valid: false,
-      item,
-      qty,
-      effectiveItem: layoutItem,
-      dieActive: effective.active,
-      dieMargins: effective.margins
-    };
+    return { valid: false, item, qty, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins };
   }
 
   candidates.sort((a, b) => {
@@ -1664,104 +755,54 @@ function evaluate(qty = state.qty) {
 
   const chosen = candidates[0];
   const producedPieces = chosen.sheets * chosen.layout.copies;
-
-  const wasteArea = Math.max(
-    0,
-    chosen.totalArea - (producedPieces * chosen.layout.cellW * chosen.layout.cellH)
-  );
+  const wasteArea = Math.max(0, chosen.totalArea - (producedPieces * chosen.layout.cellW * chosen.layout.cellH));
   const wastePct = chosen.totalArea ? wasteArea / chosen.totalArea * 100 : 0;
-
   chosen.wasteArea = wasteArea;
   chosen.wastePct = wastePct;
 
   const s = data.settings;
-
   let productionCost = 0;
   let details = [];
 
-  // ============================================================
-  // LOGICA COSTO STAMPA
-  // Fogli 1-3: €3/foglio (piccola tiratura)
-  // Fogli 4-5: €0,70/foglio (tariffa standard)
-  // Fogli 1-5 con fronte/retro: +€5 fisso (una tantum)
-  // Fogli 6-20: €0,70 per lato stampato
-  // Fogli 21+: €0,50 per lato stampato
-  // ============================================================
-
-  if (s.smallMaxSheets > 0 && chosen.sheets <= s.smallMaxSheets) {
-    // Fogli 1-3: tariffa piccola
+  // --- LOGICA COSTO STAMPA ---
+  if (chosen.sheets <= s.smallMaxSheets) {
+    // Fogli 1-3: €3/foglio
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
-    details.push({
-      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.smallSheetCost)})`,
-      value: smallCost
-    });
-
-    // Fronte/retro per piccola tiratura (1-5 fogli)
-    if (state.sides === 2 && chosen.sheets <= s.duplexSmallMaxSheets) {
-      productionCost += s.smallDuplexFixed;
-      details.push({
-        label: 'Fronte/retro (piccola tiratura)',
-        value: s.smallDuplexFixed
-      });
-    }
-
-  } else if (chosen.sheets <= s.duplexSmallMaxSheets) {
-    // Fogli 4-5: tariffa standard per foglio
-    const rate = parseNum(s.standardSheetRate);
-    const printCost = chosen.sheets * rate;
-    productionCost += printCost;
-    details.push({
-      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(rate)})`,
-      value: printCost
-    });
-
-    // Fronte/retro fisso per fogli 1-5
+    details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.smallSheetCost)})`, value: smallCost });
     if (state.sides === 2) {
       productionCost += s.smallDuplexFixed;
-      details.push({
-        label: 'Fronte/retro (piccola tiratura)',
-        value: s.smallDuplexFixed
-      });
+      details.push({ label: 'Fronte/retro (piccola tiratura)', value: s.smallDuplexFixed });
     }
-
+  } else if (chosen.sheets <= s.duplexSmallMaxSheets) {
+    // Fogli 4-5: €0,70/foglio
+    const midCost = chosen.sheets * s.midSheetCost;
+    productionCost += midCost;
+    details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.midSheetCost)})`, value: midCost });
+    if (state.sides === 2) {
+      productionCost += s.smallDuplexFixed;
+      details.push({ label: 'Fronte/retro (piccola tiratura)', value: s.smallDuplexFixed });
+    }
   } else {
-    // Fogli 6+: tariffa per LATO STAMPATO
-    const threshold = parseNum(s.standardSheetThreshold);
-    const rate = chosen.sheets > threshold
-      ? parseNum(s.discountedSheetRate)
-      : parseNum(s.standardSheetRate);
-
-    const sides = state.sides;
-    const printCost = chosen.sheets * sides * rate;
+    // Fogli 6+: tariffa per lato stampato
+    const rate = chosen.sheets > s.standardSheetThreshold ? s.discountedSheetRate : s.standardSheetRate;
+    const printCost = chosen.sheets * state.sides * rate;
     productionCost += printCost;
-
-    const latiLabel = sides === 2 ? '2 lati' : '1 lato';
-    details.push({
-      label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`,
-      value: printCost
-    });
+    const latiLabel = state.sides === 2 ? '2 lati' : '1 lato';
+    details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`, value: printCost });
   }
 
-  // Costo aggiuntivo carta: SEMPRE applicato se la grammatura supera la soglia
-  let applyHeavy = state.weight > s.heavyThreshold;
-
-  if (applyHeavy) {
+  // Costo aggiuntivo carta (sempre se grammatura > soglia)
+  if (state.weight > s.heavyThreshold) {
     productionCost += s.heavyCost;
     details.push({ label: 'Costo aggiuntivo Carta', value: s.heavyCost });
   }
 
-  // Costo taglio: sempre applicato, cambia solo l'importo
-  const cutCost = state.customerCut
-    ? parseNum(s.customerCutFixedCost)
-    : parseNum(s.fixedCut);
-
+  // Costo taglio
+  const cutCost = state.customerCut ? s.customerCutFixedCost : s.fixedCut;
   if (cutCost > 0) {
     productionCost += cutCost;
-    details.push({
-      label: state.customerCut ? 'Taglio (a carico cliente)' : 'Taglio',
-      value: cutCost
-    });
+    details.push({ label: state.customerCut ? 'Taglio (a carico cliente)' : 'Taglio', value: cutCost });
   }
 
   // Grafica
@@ -1770,7 +811,6 @@ function evaluate(qty = state.qty) {
 
   // Lavorazioni extra
   let extrasTotal = 0;
-
   data.extras.forEach(extra => {
     const cost = getExtraCost(extra, chosen.sheets, producedPieces);
     if (cost > 0) {
@@ -1784,10 +824,7 @@ function evaluate(qty = state.qty) {
     const size = state.dieNewSize || 'medium';
     const newDieCost = getDieNewCost(size);
     extrasTotal += newDieCost;
-    details.push({
-      label: `Fustella nuova (${getDieNewSizeLabel(size)})`,
-      value: newDieCost
-    });
+    details.push({ label: `Fustella nuova (${getDieNewSizeLabel(size)})`, value: newDieCost });
   }
 
   let total = productionCost + graphicsCost + extrasTotal;
@@ -1799,70 +836,46 @@ function evaluate(qty = state.qty) {
   if (minApplied) total = s.minOrder;
 
   total = round2(total);
-
-  // Arrotondamento a multipli di 5
   const priceInfo = roundPriceToFive(total);
 
   return {
-    valid: true,
-    item,
-    effectiveItem: layoutItem,
-    dieActive: effective.active,
-    dieMargins: effective.margins,
-    qty,
-    candidates,
-    chosen,
-    producedPieces,
-    details,
-    productionCost: round2(productionCost),
-    graphicsCost: round2(graphicsCost),
-    extrasTotal: round2(extrasTotal),
-    discount: round2(discount),
-    total: total,
-    priceInfo: priceInfo,
-    minApplied,
+    valid: true, item, effectiveItem: layoutItem, dieActive: effective.active, dieMargins: effective.margins,
+    qty, candidates, chosen, producedPieces, details,
+    productionCost: round2(productionCost), graphicsCost: round2(graphicsCost), extrasTotal: round2(extrasTotal),
+    discount: round2(discount), total, priceInfo, minApplied,
     costPerPiece: qty ? round2(total / qty) : 0
   };
 }
 
-function svgSheet(chosen, label, isBack = false) {
-  const { paper, layout } = chosen;
+function svgSheet(chosen, label, isBack) {
+  isBack = isBack || false;
+  const paper = chosen.paper;
+  const layout = chosen.layout;
   const mx = (paper.w - paper.printW) / 2;
   const my = (paper.h - paper.printH) / 2;
-
   const gridW = layout.cols * layout.cellW;
   const gridH = layout.rows * layout.cellH;
-
   const offsetX = mx + (paper.printW - gridW) / 2;
   const offsetY = my + (paper.printH - gridH) / 2;
-
   let cells = '';
   const maxDraw = 600;
   const count = Math.min(layout.copies, maxDraw);
-
   for (let i = 0; i < count; i++) {
     const r = Math.floor(i / layout.cols);
     const c = i % layout.cols;
     if (r >= layout.rows) break;
-
     const x = offsetX + c * layout.cellW;
     const y = offsetY + r * layout.cellH;
-
-    cells += `<rect x="${x}" y="${y}" width="${layout.cellW}" height="${layout.cellH}" rx="7" class="copy ${isBack ? 'back' : ''}"></rect>`;
+    cells += '<rect x="' + x + '" y="' + y + '" width="' + layout.cellW + '" height="' + layout.cellH + '" rx="7" class="copy ' + (isBack ? 'back' : '') + '"></rect>';
   }
-
-  return `
-    <figure class="sheetFig ${isBack ? 'back' : ''}">
-      <div class="sheetWrap">
-        <svg viewBox="0 0 ${paper.w} ${paper.h}" preserveAspectRatio="xMidYMid meet">
-          <rect x="0" y="0" width="${paper.w}" height="${paper.h}" rx="18" class="paper"></rect>
-          <rect x="${mx}" y="${my}" width="${paper.printW}" height="${paper.printH}" rx="12" class="printable"></rect>
-          ${cells}
-        </svg>
-      </div>
-      <figcaption>${label}</figcaption>
-    </figure>
-  `;
+  return '<figure class="sheetFig ' + (isBack ? 'back' : '') + '">' +
+    '<div class="sheetWrap">' +
+    '<svg viewBox="0 0 ' + paper.w + ' ' + paper.h + '" preserveAspectRatio="xMidYMid meet">' +
+    '<rect x="0" y="0" width="' + paper.w + '" height="' + paper.h + '" rx="18" class="paper"></rect>' +
+    '<rect x="' + mx + '" y="' + my + '" width="' + paper.printW + '" height="' + paper.printH + '" rx="12" class="printable"></rect>' +
+    cells +
+    '</svg></div>' +
+    '<figcaption>' + label + '</figcaption></figure>';
 }
 
 function renderTopbar() {
@@ -1893,270 +906,159 @@ function updateDimensionInputs() {
 
 function renderExtrasOptions() {
   const containers = [$('#extrasOptions'), $('#wExtrasOptions')];
-
   const enabledExtras = data.extras.filter(e => e.enabled);
-
   const html = enabledExtras.length ? enabledExtras.map(e => {
     const base = e.unit === 'sheet' ? 'fogli' : 'pezzi';
-    const modeText = e.mode === 'all'
-      ? 'applica la tariffa a tutta la quantità quando superi la soglia'
-      : 'applica la tariffa solo alla parte oltre la soglia';
-
-    let tip = `Fisso ${fmtMoney(e.fixed)} · oltre ${e.threshold} ${base} ${fmtMoney(e.rate)} · ${modeText}`;
+    const modeText = e.mode === 'all' ? 'applica la tariffa a tutta la quantità quando superi la soglia' : 'applica la tariffa solo alla parte oltre la soglia';
+    let tip = 'Fisso ' + fmtMoney(e.fixed) + ' · oltre ' + e.threshold + ' ' + base + ' ' + fmtMoney(e.rate) + ' · ' + modeText;
     let labelHtml = e.label;
     let dieBadge = '';
-
     if (e.id === 'die') {
       if (state.extras.die) {
-        labelHtml += ` <span class="starBadge">★</span>`;
-        tip += ` · Margini applicati a ogni singolo elemento sul foglio.`;
-
+        labelHtml += ' <span class="starBadge">★</span>';
+        tip += ' · Margini applicati a ogni singolo elemento sul foglio.';
         if (state.dieIsNew) {
           const size = state.dieNewSize || 'medium';
-          tip += ` · Fustella nuova: ${getDieNewSizeLabel(size)} ${fmtMoney(getDieNewCost(size))}.`;
-          dieBadge = `<button type="button" class="miniBadge" onclick="openDieModal()">Nuova</button>`;
+          tip += ' · Fustella nuova: ' + getDieNewSizeLabel(size) + ' ' + fmtMoney(getDieNewCost(size)) + '.';
+          dieBadge = '<button type="button" class="miniBadge" onclick="openDieModal()">Nuova</button>';
         } else {
-          tip += ` · Fustella già esistente.`;
-          dieBadge = `<button type="button" class="miniBadge" onclick="openDieModal()">Esistente</button>`;
+          tip += ' · Fustella già esistente.';
+          dieBadge = '<button type="button" class="miniBadge" onclick="openDieModal()">Esistente</button>';
         }
       }
     }
-
-    return `
-      <div class="extraItem">
-        <label class="check">
-          <input type="checkbox" ${state.extras[e.id] ? 'checked' : ''} onchange="toggleExtra('${e.id}', this.checked)">
-          <span>${labelHtml}</span>
-        </label>
-        ${dieBadge}
-        <span class="info" tabindex="0" data-tip="${escapeAttr(tip)}">i</span>
-      </div>
-    `;
-  }).join('') : `<div class="muted">Nessuna lavorazione extra disponibile</div>`;
-
-  containers.forEach(el => {
-    if (el) el.innerHTML = html;
-  });
+    return '<div class="extraItem">' +
+      '<label class="check">' +
+      '<input type="checkbox" ' + (state.extras[e.id] ? 'checked' : '') + ' onchange="toggleExtra(\'' + e.id + '\', this.checked)">' +
+      '<span>' + labelHtml + '</span>' +
+      '</label>' +
+      dieBadge +
+      '<span class="info" tabindex="0" data-tip="' + escapeAttr(tip) + '">i</span>' +
+      '</div>';
+  }).join('') : '<div class="muted">Nessuna lavorazione extra disponibile</div>';
+  containers.forEach(el => { if (el) el.innerHTML = html; });
 }
 
 function renderGraphicsControls() {
   normalizeGraphics();
-
   const containers = [$('#graphicsControl'), $('#wGraphicsControl')];
-
-  const barHtml = `
-    <div class="graphicsBar">
-      ${data.graphicsOptions.map(o => {
-        const costText = o.type === 'hourly' ? 'tariffa oraria' : fmtMoney(o.cost);
-        const title = `${o.label} · ${costText}${o.note ? ' · ' + o.note : ''}`;
-        return `
-          <button type="button"
-            class="graphicsBtn ${state.graphicsType === o.id ? 'active' : ''}"
-            title="${escapeAttr(title)}"
-            onclick="setGraphicsType('${o.id}')">
-            ${o.label}
-          </button>
-        `;
-      }).join('')}
-    </div>
-
-    <select class="graphicsSelectMobile" onchange="setGraphicsType(this.value)">
-      ${data.graphicsOptions.map(o => `
-        <option value="${o.id}" ${state.graphicsType === o.id ? 'selected' : ''}>${o.label}</option>
-      `).join('')}
-    </select>
-  `;
-
-  containers.forEach(el => {
-    if (el) el.innerHTML = barHtml;
-  });
+  const barButtons = data.graphicsOptions.map(o => {
+    const costText = o.type === 'hourly' ? 'tariffa oraria' : fmtMoney(o.cost);
+    const title = o.label + ' · ' + costText + (o.note ? ' · ' + o.note : '');
+    return '<button type="button" class="graphicsBtn ' + (state.graphicsType === o.id ? 'active' : '') + '" title="' + escapeAttr(title) + '" onclick="setGraphicsType(\'' + o.id + '\')">' + o.label + '</button>';
+  }).join('');
+  const selectOpts = data.graphicsOptions.map(o => {
+    return '<option value="' + o.id + '" ' + (state.graphicsType === o.id ? 'selected' : '') + '>' + o.label + '</option>';
+  }).join('');
+  const barHtml = '<div class="graphicsBar">' + barButtons + '</div>' +
+    '<select class="graphicsSelectMobile" onchange="setGraphicsType(this.value)">' + selectOpts + '</select>';
+  containers.forEach(el => { if (el) el.innerHTML = barHtml; });
 
   const opt = getGraphicOption();
   const showHours = opt && opt.type === 'hourly';
-
   $('#graphicHoursWrap').classList.toggle('hidden', !showHours);
   $('#wGraphicHoursWrap').classList.toggle('hidden', !showHours);
-
   $('#graphicHours').value = displayHours(state.graphicHours);
   $('#wGraphicHours').value = displayHours(state.graphicHours);
-
-  const note = opt?.type === 'hourly'
-    ? `Prima ora ${fmtMoney(data.settings.hourlyFirstHour)}, poi ${fmtMoney(data.settings.hourlyNextHours)} all'ora. Puoi inserire anche decimali, esempio 1,5.`
+  const note = opt && opt.type === 'hourly'
+    ? 'Prima ora ' + fmtMoney(data.settings.hourlyFirstHour) + ', poi ' + fmtMoney(data.settings.hourlyNextHours) + " all'ora. Puoi inserire anche decimali, esempio 1,5."
     : '';
-
   $('#graphicsNote').textContent = note;
   $('#wGraphicsNote').textContent = note;
 }
 
 function renderPreviewInto(calc, container) {
   if (!container) return;
-
   if (!calc || !calc.valid) {
-    container.innerHTML = `
-      <div class="error">
-        Il formato inserito non sta in nessuno dei fogli disponibili.
-      </div>
-    `;
+    container.innerHTML = '<div class="error">Il formato inserito non sta in nessuno dei fogli disponibili.</div>';
     return;
   }
-
   const chosen = calc.chosen;
   const orientation = chosen.layout.rotated ? 'Orizzontale' : 'Verticale';
   const totalSqm = (chosen.totalArea / 1000000).toLocaleString('it-IT', { maximumFractionDigits: 3 });
-
-  const dieNote = calc.dieActive
-    ? ` · Fustella ${state.dieIsNew ? 'nuova' : 'esistente'}: margini applicati a ogni elemento`
-    : '';
-
-  container.innerHTML = `
-    <div class="heroStats">
-      <div class="heroStat">
-        <span class="heroValue">${chosen.layout.copies}</span>
-        <span class="heroLabel">Copie / foglio</span>
-      </div>
-      <div class="heroStat">
-        <span class="heroValue">${fmtNum(chosen.sheets)}</span>
-        <span class="heroLabel">Fogli necessari</span>
-      </div>
-      <div class="heroStat">
-        <span class="heroValue" style="font-size:20px;line-height:1.15;padding-top:6px">${chosen.paper.label}</span>
-        <span class="heroLabel">Foglio scelto · ${orientation}</span>
-      </div>
-    </div>
-
-    <div class="sheets">
-      ${svgSheet(chosen, 'Fronte', false)}
-      ${state.sides === 2 ? svgSheet(chosen, 'Retro', true) : ''}
-    </div>
-
-    <p class="muted" style="text-align:center;margin-top:14px">
-      Scarto ${chosen.wastePct.toFixed(1)}% · Carta totale ${totalSqm} m² · Area utile foglio ${mmToCm(chosen.paper.printW)}×${mmToCm(chosen.paper.printH)} cm${dieNote}
-    </p>
-  `;
+  const dieNote = calc.dieActive ? ' · Fustella ' + (state.dieIsNew ? 'nuova' : 'esistente') + ': margini applicati a ogni elemento' : '';
+  container.innerHTML =
+    '<div class="heroStats">' +
+    '<div class="heroStat"><span class="heroValue">' + chosen.layout.copies + '</span><span class="heroLabel">Copie / foglio</span></div>' +
+    '<div class="heroStat"><span class="heroValue">' + fmtNum(chosen.sheets) + '</span><span class="heroLabel">Fogli necessari</span></div>' +
+    '<div class="heroStat"><span class="heroValue" style="font-size:20px;line-height:1.15;padding-top:6px">' + chosen.paper.label + '</span><span class="heroLabel">Foglio scelto · ' + orientation + '</span></div>' +
+    '</div>' +
+    '<div class="sheets">' +
+    svgSheet(chosen, 'Fronte', false) +
+    (state.sides === 2 ? svgSheet(chosen, 'Retro', true) : '') +
+    '</div>' +
+    '<p class="muted" style="text-align:center;margin-top:14px">Scarto ' + chosen.wastePct.toFixed(1) + '% · Carta totale ' + totalSqm + ' m² · Area utile foglio ' + mmToCm(chosen.paper.printW) + '×' + mmToCm(chosen.paper.printH) + ' cm' + dieNote + '</p>';
 }
 
 function buildBreakdownHtml(calc) {
-  return `
-    <div class="breakdown">
-      ${calc.details.map(d => `
-        <div class="breakRow">
-          <span>
-            ${d.label}
-            ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
-          </span>
-          <strong>${fmtMoney(d.value)}</strong>
-        </div>
-      `).join('')}
-      ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
-      <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
-    </div>
-  `;
+  let rows = calc.details.map(d => {
+    return '<div class="breakRow"><span>' + d.label + '</span><strong>' + fmtMoney(d.value) + '</strong></div>';
+  }).join('');
+  if (calc.discount) {
+    rows += '<div class="breakRow"><span>Sconto rivenditore</span><strong>-' + fmtMoney(calc.discount) + '</strong></div>';
+  }
+  rows += '<div class="breakRow"><span>Costo Cad.</span><strong>' + fmtMoney(calc.costPerPiece) + '</strong></div>';
+  return '<div class="breakdown">' + rows + '</div>';
 }
 
 function buildPriceHtml(calc) {
   const pi = calc.priceInfo;
-  const mutedLine = `
-    <div class="muted">
-      ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
-      ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
-    </div>
-  `;
+  const mutedLine = '<div class="muted">' +
+    (calc.minApplied ? 'Minimo ordine applicato: ' + fmtMoney(data.settings.minOrder) + ' · ' : '') +
+    (state.reseller ? 'Sconto rivenditore applicato' : 'Cliente standard') +
+    '</div>';
 
   if (calc.isQtyZero) {
-    return `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">—</div>
-        <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
-      </div>
-    `;
+    return '<div class="priceBox"><div class="priceLabel">Totale IVA esclusa</div><div class="price">—</div><div class="muted">Inserisci la quantità per vedere il prezzo.</div></div>';
   }
 
   if (!pi.rounded) {
-    // Prezzo già multiplo di 5 → mostra normale
-    return `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">${fmtMoney(pi.display)}</div>
-        ${mutedLine}
-      </div>
-      ${buildBreakdownHtml(calc)}
-    `;
+    return '<div class="priceBox"><div class="priceLabel">Totale IVA esclusa</div><div class="price">' + fmtMoney(pi.display) + '</div>' + mutedLine + '</div>' + buildBreakdownHtml(calc);
   }
 
   if (pi.direction === 'down') {
-    // Arrotondato in DIFETTO → mostra originale barrato + prezzo arrotondato + (i)
-    return `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">
-          <span class="priceOriginal">${fmtMoney(pi.original)}</span>
-          <span>${fmtMoney(pi.display)}</span>
-          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
-        </div>
-        ${mutedLine}
-      </div>
-      ${buildBreakdownHtml(calc)}
-    `;
+    return '<div class="priceBox"><div class="priceLabel">Totale IVA esclusa</div><div class="price">' +
+      '<span class="priceOriginal">' + fmtMoney(pi.original) + '</span>' +
+      '<span>' + fmtMoney(pi.display) + '</span>' +
+      '<span class="info" tabindex="0" data-tip="Prezzo effettivo: ' + fmtMoney(pi.original) + '">i</span>' +
+      '</div>' + mutedLine + '</div>' + buildBreakdownHtml(calc);
   }
 
   if (pi.direction === 'up') {
-    // Arrotondato in ECCESSO → mostra SOLO prezzo arrotondato + (i), NIENTE barrato
-    return `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">
-          <span>${fmtMoney(pi.display)}</span>
-          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
-        </div>
-        ${mutedLine}
-      </div>
-      ${buildBreakdownHtml(calc)}
-    `;
+    return '<div class="priceBox"><div class="priceLabel">Totale IVA esclusa</div><div class="price">' +
+      '<span>' + fmtMoney(pi.display) + '</span>' +
+      '<span class="info" tabindex="0" data-tip="Prezzo effettivo: ' + fmtMoney(pi.original) + '">i</span>' +
+      '</div>' + mutedLine + '</div>' + buildBreakdownHtml(calc);
   }
+
+  return '';
 }
 
 function renderSummaryInto(calc, container) {
   if (!container) return;
-
   if (!calc || !calc.valid) {
-    container.innerHTML = `<div class="error">Configurazione non valida.</div>`;
+    container.innerHTML = '<div class="error">Configurazione non valida.</div>';
     return;
   }
-
   const type = getType();
   const paperText = type.label;
-  const weightText = type.kind === 'special' ? '280 g' : `${state.weight} g`;
+  const weightText = type.kind === 'special' ? '280 g' : state.weight + ' g';
+  const extraLabels = data.extras.filter(e => e.enabled && state.extras[e.id]).map(e => {
+    if (e.id === 'die') {
+      return state.dieIsNew ? 'Fustella nuova (' + getDieNewSizeLabel(state.dieNewSize || 'medium') + ')' : 'Fustella esistente';
+    }
+    return e.label;
+  });
+  const qtyText = state.qty <= 0 ? fmtNum(state.qty) + ' pz' : fmtNum(state.qty) + ' pz' + (calc.producedPieces !== state.qty ? ' (' + fmtNum(calc.producedPieces) + ' lavorati)' : '');
 
-  const extraLabels = data.extras
-    .filter(e => e.enabled && state.extras[e.id])
-    .map(e => {
-      if (e.id === 'die') {
-        return state.dieIsNew
-          ? `Fustella nuova (${getDieNewSizeLabel(state.dieNewSize || 'medium')})`
-          : 'Fustella esistente';
-      }
-      return e.label;
-    });
-
-  const qtyText = state.qty <= 0
-    ? `${fmtNum(state.qty)} pz`
-    : `${fmtNum(state.qty)} pz${calc.producedPieces !== state.qty ? ` (${fmtNum(calc.producedPieces)} lavorati)` : ''}`;
-
-  let formatValue = `${formatDim(calc.item.w)} × ${formatDim(calc.item.h)}`;
-
+  let formatValue = formatDim(calc.item.w) + ' × ' + formatDim(calc.item.h);
   if (calc.dieActive) {
     const m = calc.dieMargins;
     const effW = calc.effectiveItem.w;
     const effH = calc.effectiveItem.h;
-
-    const dieTypeText = state.dieIsNew
-      ? `Fustella nuova (${getDieNewSizeLabel(state.dieNewSize || 'medium')}).`
-      : `Fustella già esistente.`;
-
-    const dieTip = `${dieTypeText} Per il conteggio delle stampe vengono aggiunti margini a ogni singolo elemento: sinistra ${fmtNum(m.left)} mm, destra ${fmtNum(m.right)} mm, alto ${fmtNum(m.top)} mm, basso ${fmtNum(m.bottom)} mm. Formato utile per l'imposizione: ${formatDim(effW)} × ${formatDim(effH)}.`;
-
-    formatValue += ` <span class="starBadge">★</span><span class="info" tabindex="0" data-tip="${escapeAttr(dieTip)}">i</span>`;
+    const dieTypeText = state.dieIsNew ? 'Fustella nuova (' + getDieNewSizeLabel(state.dieNewSize || 'medium') + ').' : 'Fustella già esistente.';
+    const dieTip = dieTypeText + ' Per il conteggio delle stampe vengono aggiunti margini a ogni singolo elemento: sinistra ' + fmtNum(m.left) + ' mm, destra ' + fmtNum(m.right) + ' mm, alto ' + fmtNum(m.top) + ' mm, basso ' + fmtNum(m.bottom) + ' mm. Formato utile per l\'imposizione: ' + formatDim(effW) + ' × ' + formatDim(effH) + '.';
+    formatValue += ' <span class="starBadge">★</span><span class="info" tabindex="0" data-tip="' + escapeAttr(dieTip) + '">i</span>';
   }
 
   let items = [
@@ -2165,60 +1067,43 @@ function renderSummaryInto(calc, container) {
     { key: 'paperType', label: 'Carta', value: paperText },
     { key: 'weight', label: 'Grammatura', value: weightText }
   ];
-
   if (type.kind === 'special') {
     items.push({ key: 'specialVariant', label: 'Variante', value: state.specialVariant });
   }
-
-  items.push(
-    { key: 'sides', label: 'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' },
-    { key: 'extras', label: 'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' },
-    { key: 'graphics', label: 'Grafica', value: getGraphicsLabel() },
-    { key: 'reseller', label: 'Rivenditore', value: state.reseller ? 'Sì' : 'No' },
-    { key: 'customerCut', label: 'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
-  );
+  items.push({ key: 'sides', label: 'Stampa', value: state.sides === 2 ? 'Fronte/retro' : 'Solo fronte' });
+  items.push({ key: 'extras', label: 'Lavorazioni extra', value: extraLabels.length ? extraLabels.join(', ') : 'Nessuna' });
+  items.push({ key: 'graphics', label: 'Grafica', value: getGraphicsLabel() });
+  items.push({ key: 'reseller', label: 'Rivenditore', value: state.reseller ? 'Sì' : 'No' });
+  items.push({ key: 'customerCut', label: 'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' });
 
   const priceHtml = buildPriceHtml(calc);
 
-  container.innerHTML = `
-    <div class="descGrid">
-      ${items.map(it => `
-        <div class="descItem editable" data-edit="${it.key}" ondblclick="editSummaryItem(this)" title="Doppio click per modificare">
-          <span>${it.label}</span>
-          <strong>${it.value}</strong>
-        </div>
-      `).join('')}
-    </div>
-
-    ${priceHtml}
-  `;
+  container.innerHTML = '<div class="descGrid">' +
+    items.map(it => {
+      return '<div class="descItem editable" data-edit="' + it.key + '" ondblclick="editSummaryItem(this)" title="Doppio click per modificare">' +
+        '<span>' + it.label + '</span>' +
+        '<strong>' + it.value + '</strong>' +
+        '</div>';
+    }).join('') +
+    '</div>' + priceHtml;
 }
 
 function refresh() {
   normalizeExtras();
   normalizeGraphics();
-
   const effectiveQty = state.qty > 0 ? state.qty : 1;
   let calc = evaluate(effectiveQty);
-
-  if (calc && state.qty <= 0) {
-    calc.isQtyZero = true;
-  }
-
+  if (calc && state.qty <= 0) calc.isQtyZero = true;
   lastCalc = calc;
-
   renderTopbar();
   updateSegmented();
   updateUnitControls();
   renderExtrasOptions();
   renderGraphicsControls();
-
   if ($('#reseller')) $('#reseller').checked = state.reseller;
   if ($('#wReseller')) $('#wReseller').checked = state.reseller;
-
   if ($('#customerCut')) $('#customerCut').checked = state.customerCut;
   if ($('#wCustomerCut')) $('#wCustomerCut').checked = state.customerCut;
-
   if (state.uiMode === 'normal') {
     renderPreviewInto(calc, $('#preview'));
     renderSummaryInto(calc, $('#summary'));
@@ -2229,10 +1114,8 @@ function refresh() {
 
 function syncInputsFromState() {
   updateDimensionInputs();
-
   $('#qty').value = state.qty;
   $('#wQty').value = state.qty;
-
   updatePaperSelects();
   renderGraphicsControls();
   updateUnitControls();
@@ -2242,55 +1125,42 @@ function updatePaperSelects() {
   if (!data.paperTypes.some(t => t.id === state.paperType)) {
     state.paperType = data.paperTypes[0].id;
   }
-
-  const typeOptions = data.paperTypes.map(t => `
-    <option value="${t.id}" ${t.id === state.paperType ? 'selected' : ''}>${t.label}</option>
-  `).join('');
-
+  const typeOptions = data.paperTypes.map(t => {
+    return '<option value="' + t.id + '" ' + (t.id === state.paperType ? 'selected' : '') + '>' + t.label + '</option>';
+  }).join('');
   $('#paperType').innerHTML = typeOptions;
   $('#wPaperType').innerHTML = typeOptions;
 
   const type = getType();
-
   if (type.kind === 'special') {
     state.weight = 280;
-
-    $('#weight').innerHTML = `<option value="280" selected>280 g</option>`;
-    $('#wWeight').innerHTML = `<option value="280" selected>280 g</option>`;
+    $('#weight').innerHTML = '<option value="280" selected>280 g</option>';
+    $('#wWeight').innerHTML = '<option value="280" selected>280 g</option>';
     $('#weight').disabled = true;
     $('#wWeight').disabled = true;
-
     $('#variantWrap').classList.remove('hidden');
     $('#wVariantWrap').classList.remove('hidden');
-
     if (!type.variants.includes(state.specialVariant) && type.variants.length) {
       state.specialVariant = type.variants[0];
     }
-
-    const variantOptions = (type.variants || []).map(v => `
-      <option ${v === state.specialVariant ? 'selected' : ''}>${v}</option>
-    `).join('');
-
+    const variantOptions = (type.variants || []).map(v => {
+      return '<option ' + (v === state.specialVariant ? 'selected' : '') + '>' + v + '</option>';
+    }).join('');
     $('#specialVariant').innerHTML = variantOptions;
     $('#wSpecialVariant').innerHTML = variantOptions;
     $('#specialVariant').value = state.specialVariant;
     $('#wSpecialVariant').value = state.specialVariant;
-
   } else {
     $('#weight').disabled = false;
     $('#wWeight').disabled = false;
-
     $('#variantWrap').classList.add('hidden');
     $('#wVariantWrap').classList.add('hidden');
-
     if (!type.weights.includes(state.weight)) {
       state.weight = type.weights[0];
     }
-
-    const weightOptions = type.weights.map(w => `
-      <option value="${w}" ${Number(w) === Number(state.weight) ? 'selected' : ''}>${w} g</option>
-    `).join('');
-
+    const weightOptions = type.weights.map(w => {
+      return '<option value="' + w + '" ' + (Number(w) === Number(state.weight) ? 'selected' : '') + '>' + w + ' g</option>';
+    }).join('');
     $('#weight').innerHTML = weightOptions;
     $('#wWeight').innerHTML = weightOptions;
   }
@@ -2333,7 +1203,6 @@ function handleQtyChange(value) {
 
 function handleDimensionInput(field, value, sourceInput) {
   const mm = parseDimensionToMm(value);
-
   if (field === 'width') {
     state.widthMm = mm;
     if (sourceInput !== $('#width')) $('#width').value = value;
@@ -2343,37 +1212,20 @@ function handleDimensionInput(field, value, sourceInput) {
     if (sourceInput !== $('#height')) $('#height').value = value;
     if (sourceInput !== $('#wHeight')) $('#wHeight').value = value;
   }
-
   refresh();
 }
 
-function setSides(n) {
-  state.sides = Number(n);
-  refresh();
-}
-
-function setReseller(checked) {
-  state.reseller = checked;
-  refresh();
-}
-
-function setCustomerCut(checked) {
-  state.customerCut = checked;
-  refresh();
-}
+function setSides(n) { state.sides = Number(n); refresh(); }
+function setReseller(checked) { state.reseller = checked; refresh(); }
+function setCustomerCut(checked) { state.customerCut = checked; refresh(); }
 
 function toggleExtra(id, checked) {
   if (id === 'die') {
-    if (checked) {
-      openDieModal();
-      return;
-    }
-
+    if (checked) { openDieModal(); return; }
     state.extras.die = false;
     refresh();
     return;
   }
-
   state.extras[id] = checked;
   refresh();
 }
@@ -2381,7 +1233,6 @@ function toggleExtra(id, checked) {
 function openDieModal() {
   dieTemp.isNew = state.dieIsNew;
   dieTemp.size = state.dieNewSize || guessDieSize();
-
   renderDieModal();
   $('#dieModal').classList.remove('hidden');
 }
@@ -2395,20 +1246,12 @@ function confirmDieModal() {
   state.extras.die = true;
   state.dieIsNew = dieTemp.isNew;
   state.dieNewSize = dieTemp.isNew ? dieTemp.size : null;
-
   $('#dieModal').classList.add('hidden');
   refresh();
 }
 
-function setDieTempNew(mode) {
-  dieTemp.isNew = mode === 'new';
-  renderDieModal();
-}
-
-function setDieTempSize(size) {
-  dieTemp.size = size;
-  renderDieModal();
-}
+function setDieTempNew(mode) { dieTemp.isNew = mode === 'new'; renderDieModal(); }
+function setDieTempSize(size) { dieTemp.size = size; renderDieModal(); }
 
 function renderDieModal() {
   const costs = {
@@ -2416,51 +1259,22 @@ function renderDieModal() {
     medium: getDieNewCost('medium'),
     large: getDieNewCost('large')
   };
-
-  $('#dieModalContent').innerHTML = `
-    <p class="muted">
-      Quando la fustella è attiva, i margini vengono applicati a ogni singolo elemento presente sul foglio.
-    </p>
-
-    <div class="segmented">
-      <button class="segBtn ${!dieTemp.isNew ? 'active' : ''}" onclick="setDieTempNew('existing')">Già esistente</button>
-      <button class="segBtn ${dieTemp.isNew ? 'active' : ''}" onclick="setDieTempNew('new')">Nuova</button>
-    </div>
-
-    <div class="dieSizeOptions ${dieTemp.isNew ? '' : 'hidden'}">
-      <label class="check">
-        <input type="radio" name="dieSize" ${dieTemp.size === 'small' ? 'checked' : ''} onclick="setDieTempSize('small')">
-        <span>Piccola (meno di A6) · ${fmtMoney(costs.small)}</span>
-      </label>
-
-      <label class="check">
-        <input type="radio" name="dieSize" ${dieTemp.size === 'medium' ? 'checked' : ''} onclick="setDieTempSize('medium')">
-        <span>Media (meno di A5) · ${fmtMoney(costs.medium)}</span>
-      </label>
-
-      <label class="check">
-        <input type="radio" name="dieSize" ${dieTemp.size === 'large' ? 'checked' : ''} onclick="setDieTempSize('large')">
-        <span>Grande (A4 circa) · ${fmtMoney(costs.large)}</span>
-      </label>
-    </div>
-
-    <div class="adminActions">
-      <button class="btn" onclick="cancelDieModal()">Annulla</button>
-      <button class="btn primary" onclick="confirmDieModal()">Conferma</button>
-    </div>
-  `;
+  $('#dieModalContent').innerHTML =
+    '<p class="muted">Quando la fustella è attiva, i margini vengono applicati a ogni singolo elemento presente sul foglio.</p>' +
+    '<div class="segmented">' +
+    '<button class="segBtn ' + (!dieTemp.isNew ? 'active' : '') + '" onclick="setDieTempNew(\'existing\')">Già esistente</button>' +
+    '<button class="segBtn ' + (dieTemp.isNew ? 'active' : '') + '" onclick="setDieTempNew(\'new\')">Nuova</button>' +
+    '</div>' +
+    '<div class="dieSizeOptions ' + (dieTemp.isNew ? '' : 'hidden') + '">' +
+    '<label class="check"><input type="radio" name="dieSize" ' + (dieTemp.size === 'small' ? 'checked' : '') + ' onclick="setDieTempSize(\'small\')"><span>Piccola (meno di A6) · ' + fmtMoney(costs.small) + '</span></label>' +
+    '<label class="check"><input type="radio" name="dieSize" ' + (dieTemp.size === 'medium' ? 'checked' : '') + ' onclick="setDieTempSize(\'medium\')"><span>Media (meno di A5) · ' + fmtMoney(costs.medium) + '</span></label>' +
+    '<label class="check"><input type="radio" name="dieSize" ' + (dieTemp.size === 'large' ? 'checked' : '') + ' onclick="setDieTempSize(\'large\')"><span>Grande (A4 circa) · ' + fmtMoney(costs.large) + '</span></label>' +
+    '</div>' +
+    '<div class="adminActions"><button class="btn" onclick="cancelDieModal()">Annulla</button><button class="btn primary" onclick="confirmDieModal()">Conferma</button></div>';
 }
 
-function setGraphicsType(id) {
-  state.graphicsType = id;
-  renderGraphicsControls();
-  refresh();
-}
-
-function setGraphicHours(value) {
-  state.graphicHours = Math.max(0, parseNum(value));
-  refresh();
-}
+function setGraphicsType(id) { state.graphicsType = id; renderGraphicsControls(); refresh(); }
+function setGraphicHours(value) { state.graphicHours = Math.max(0, parseNum(value)); refresh(); }
 
 function canProceedStep(step) {
   if (step === 1) {
@@ -2475,54 +1289,34 @@ function canProceedStep(step) {
 }
 
 function wizardBack() {
-  if (state.wizardStep > 1) {
-    state.wizardStep--;
-    refresh();
-  }
+  if (state.wizardStep > 1) { state.wizardStep--; refresh(); }
 }
 
 function wizardNext() {
-  if (!canProceedStep(state.wizardStep)) {
-    toast('Completa lo step corrente');
-    return;
-  }
-
-  if (state.wizardStep < 6) {
-    state.wizardStep++;
-    refresh();
-  } else {
-    finishWizard();
-  }
+  if (!canProceedStep(state.wizardStep)) { toast('Completa lo step corrente'); return; }
+  if (state.wizardStep < 6) { state.wizardStep++; refresh(); }
+  else { finishWizard(); }
 }
 
-function finishWizard() {
-  showNormal();
-}
+function finishWizard() { showNormal(); }
 
 function renderWizardDynamic(calc) {
-  $('#wizardStepLabel').textContent = `Step ${state.wizardStep} di 6`;
-  $('#progressFill').style.width = `${(state.wizardStep / 6) * 100}%`;
-
+  $('#wizardStepLabel').textContent = 'Step ' + state.wizardStep + ' di 6';
+  $('#progressFill').style.width = ((state.wizardStep / 6) * 100) + '%';
   for (let i = 1; i <= 6; i++) {
-    $(`#wStep${i}`).classList.toggle('hidden', state.wizardStep !== i);
+    $('#wStep' + i).classList.toggle('hidden', state.wizardStep !== i);
   }
-
   $('#wBack').disabled = state.wizardStep === 1;
   $('#wNext').classList.toggle('hidden', state.wizardStep === 6);
   $('#wFinish').classList.toggle('hidden', state.wizardStep !== 6);
-
   const nextBtn = $('#wNext');
   nextBtn.disabled = false;
-
   const error1 = $('#wStep1Error');
   const error2 = $('#wStep2Error');
-
   error1.classList.add('hidden');
   error2.classList.add('hidden');
-
   if (state.wizardStep === 1) {
     const layoutCalc = evaluate(1);
-
     if (state.widthMm <= 0 || state.heightMm <= 0) {
       error1.textContent = 'Inserisci larghezza e altezza maggiori di zero.';
       error1.classList.remove('hidden');
@@ -2533,7 +1327,6 @@ function renderWizardDynamic(calc) {
       nextBtn.disabled = true;
     }
   }
-
   if (state.wizardStep === 2) {
     const realCalc = evaluate(state.qty);
     if (state.qty <= 0 || !realCalc || !realCalc.valid) {
@@ -2542,7 +1335,6 @@ function renderWizardDynamic(calc) {
       nextBtn.disabled = true;
     }
   }
-
   if (state.wizardStep === 6) {
     renderSummaryInto(calc, $('#wizardSummary'));
     renderPreviewInto(calc, $('#wizardPreview'));
@@ -2551,215 +1343,130 @@ function renderWizardDynamic(calc) {
 
 function editSummaryItem(el) {
   if (document.querySelector('.inlineEditor')) return;
-
   const key = el.dataset.edit;
   const strong = el.querySelector('strong');
   if (!strong) return;
 
   if (key === 'qty') {
-    strong.outerHTML = `
-      <input type="number" class="inlineEditor" value="${state.qty}" onchange="setQtyFromSummary(this.value)">
-    `;
+    strong.outerHTML = '<input type="number" class="inlineEditor" value="' + state.qty + '" onchange="setQtyFromSummary(this.value)">';
     el.querySelector('input').focus();
     return;
   }
-
   if (key === 'paperType') {
-    const options = data.paperTypes.map(t => `
-      <option value="${t.id}" ${t.id === state.paperType ? 'selected' : ''}>${t.label}</option>
-    `).join('');
-
-    strong.outerHTML = `
-      <select class="inlineEditor" onchange="setPaperTypeFromSummary(this.value)">${options}</select>
-    `;
+    const options = data.paperTypes.map(t => {
+      return '<option value="' + t.id + '" ' + (t.id === state.paperType ? 'selected' : '') + '>' + t.label + '</option>';
+    }).join('');
+    strong.outerHTML = '<select class="inlineEditor" onchange="setPaperTypeFromSummary(this.value)">' + options + '</select>';
     el.querySelector('select').focus();
     return;
   }
-
   if (key === 'weight') {
     const type = getType();
-
     if (type.kind === 'special') {
-      strong.outerHTML = `<input class="inlineEditor" value="280 g" disabled>`;
+      strong.outerHTML = '<input class="inlineEditor" value="280 g" disabled>';
       return;
     }
-
-    const options = type.weights.map(w => `
-      <option value="${w}" ${Number(w) === Number(state.weight) ? 'selected' : ''}>${w} g</option>
-    `).join('');
-
-    strong.outerHTML = `
-      <select class="inlineEditor" onchange="setWeightFromSummary(this.value)">${options}</select>
-    `;
+    const options = type.weights.map(w => {
+      return '<option value="' + w + '" ' + (Number(w) === Number(state.weight) ? 'selected' : '') + '>' + w + ' g</option>';
+    }).join('');
+    strong.outerHTML = '<select class="inlineEditor" onchange="setWeightFromSummary(this.value)">' + options + '</select>';
     el.querySelector('select').focus();
     return;
   }
-
   if (key === 'specialVariant') {
     const type = getType();
-    const options = (type.variants || []).map(v => `
-      <option ${v === state.specialVariant ? 'selected' : ''}>${v}</option>
-    `).join('');
-
-    strong.outerHTML = `
-      <select class="inlineEditor" onchange="setVariantFromSummary(this.value)">${options}</select>
-    `;
+    const options = (type.variants || []).map(v => {
+      return '<option ' + (v === state.specialVariant ? 'selected' : '') + '>' + v + '</option>';
+    }).join('');
+    strong.outerHTML = '<select class="inlineEditor" onchange="setVariantFromSummary(this.value)">' + options + '</select>';
     el.querySelector('select').focus();
     return;
   }
-
   if (key === 'sides') {
-    strong.outerHTML = `
-      <select class="inlineEditor" onchange="setSidesFromSummary(this.value)">
-        <option value="1" ${state.sides === 1 ? 'selected' : ''}>Solo fronte</option>
-        <option value="2" ${state.sides === 2 ? 'selected' : ''}>Fronte/retro</option>
-      </select>
-    `;
+    strong.outerHTML = '<select class="inlineEditor" onchange="setSidesFromSummary(this.value)">' +
+      '<option value="1" ' + (state.sides === 1 ? 'selected' : '') + '>Solo fronte</option>' +
+      '<option value="2" ' + (state.sides === 2 ? 'selected' : '') + '>Fronte/retro</option>' +
+      '</select>';
     el.querySelector('select').focus();
     return;
   }
-
   if (key === 'reseller') {
-    strong.outerHTML = `
-      <label class="check" style="margin-top:8px">
-        <input type="checkbox" ${state.reseller ? 'checked' : ''} onchange="setResellerFromSummary(this.checked)">
-        <span>Rivenditore</span>
-      </label>
-    `;
+    strong.outerHTML = '<label class="check" style="margin-top:8px"><input type="checkbox" ' + (state.reseller ? 'checked' : '') + ' onchange="setResellerFromSummary(this.checked)"><span>Rivenditore</span></label>';
     el.querySelector('input').focus();
     return;
   }
-
   if (key === 'customerCut') {
-    strong.outerHTML = `
-      <label class="check" style="margin-top:8px">
-        <input type="checkbox" ${state.customerCut ? 'checked' : ''} onchange="setCustomerCutFromSummary(this.checked)">
-        <span>Taglio a carico del cliente</span>
-      </label>
-    `;
+    strong.outerHTML = '<label class="check" style="margin-top:8px"><input type="checkbox" ' + (state.customerCut ? 'checked' : '') + ' onchange="setCustomerCutFromSummary(this.checked)"><span>Taglio a carico del cliente</span></label>';
     el.querySelector('input').focus();
     return;
   }
-
   if (key === 'format') {
-    strong.outerHTML = `
-      <div class="inlineEditor" onclick="event.stopPropagation()">
-        <select id="sumUnit" onchange="updateFormatEditorValues()">
-          <option value="cm" ${state.unit === 'cm' ? 'selected' : ''}>cm</option>
-          <option value="mm" ${state.unit === 'mm' ? 'selected' : ''}>mm</option>
-        </select>
-        <div class="fieldRow">
-          <input id="sumWidth" type="text" value="${displayDimension(state.widthMm)}">
-          <input id="sumHeight" type="text" value="${displayDimension(state.heightMm)}">
-        </div>
-        <div class="inlineActions">
-          <button class="btn primary" onclick="saveFormatSummary()">Salva</button>
-          <button class="btn" onclick="refresh()">Annulla</button>
-        </div>
-      </div>
-    `;
+    strong.outerHTML = '<div class="inlineEditor" onclick="event.stopPropagation()">' +
+      '<select id="sumUnit" onchange="updateFormatEditorValues()">' +
+      '<option value="cm" ' + (state.unit === 'cm' ? 'selected' : '') + '>cm</option>' +
+      '<option value="mm" ' + (state.unit === 'mm' ? 'selected' : '') + '>mm</option>' +
+      '</select>' +
+      '<div class="fieldRow">' +
+      '<input id="sumWidth" type="text" value="' + displayDimension(state.widthMm) + '">' +
+      '<input id="sumHeight" type="text" value="' + displayDimension(state.heightMm) + '">' +
+      '</div>' +
+      '<div class="inlineActions">' +
+      '<button class="btn primary" onclick="saveFormatSummary()">Salva</button>' +
+      '<button class="btn" onclick="refresh()">Annulla</button>' +
+      '</div></div>';
     return;
   }
-
   if (key === 'graphics') {
-    const options = data.graphicsOptions.map(o => `
-      <option value="${o.id}" ${o.id === state.graphicsType ? 'selected' : ''}>${o.label}</option>
-    `).join('');
-
+    const options = data.graphicsOptions.map(o => {
+      return '<option value="' + o.id + '" ' + (o.id === state.graphicsType ? 'selected' : '') + '>' + o.label + '</option>';
+    }).join('');
     const opt = getGraphicOption();
     const isHourly = opt.type === 'hourly';
-
-    strong.outerHTML = `
-      <div class="inlineEditor" onclick="event.stopPropagation()">
-        <select id="sumGraphics" onchange="toggleSummaryGraphicsHours()">${options}</select>
-        <input id="sumHours" type="text" inputmode="decimal" value="${displayHours(state.graphicHours)}" class="${isHourly ? '' : 'hidden'}">
-        <div class="inlineActions">
-          <button class="btn primary" onclick="saveGraphicsSummary()">Salva</button>
-          <button class="btn" onclick="refresh()">Annulla</button>
-        </div>
-      </div>
-    `;
+    strong.outerHTML = '<div class="inlineEditor" onclick="event.stopPropagation()">' +
+      '<select id="sumGraphics" onchange="toggleSummaryGraphicsHours()">' + options + '</select>' +
+      '<input id="sumHours" type="text" inputmode="decimal" value="' + displayHours(state.graphicHours) + '" class="' + (isHourly ? '' : 'hidden') + '">' +
+      '<div class="inlineActions">' +
+      '<button class="btn primary" onclick="saveGraphicsSummary()">Salva</button>' +
+      '<button class="btn" onclick="refresh()">Annulla</button>' +
+      '</div></div>';
     return;
   }
-
   if (key === 'extras') {
     const enabledExtras = data.extras.filter(e => e.enabled);
-    const wasDie = state.extras.die;
-
-    strong.outerHTML = `
-      <div class="inlineEditor" onclick="event.stopPropagation()">
-        ${enabledExtras.map(e => `
-          <label class="check">
-            <input type="checkbox" class="sumExtra" value="${e.id}" ${state.extras[e.id] ? 'checked' : ''}>
-            <span>${e.label}</span>
-          </label>
-        `).join('')}
-        <div class="inlineActions">
-          <button class="btn primary" onclick="saveExtrasSummary()">Salva</button>
-          <button class="btn" onclick="refresh()">Annulla</button>
-        </div>
-      </div>
-    `;
+    strong.outerHTML = '<div class="inlineEditor" onclick="event.stopPropagation()">' +
+      enabledExtras.map(e => {
+        return '<label class="check"><input type="checkbox" class="sumExtra" value="' + e.id + '" ' + (state.extras[e.id] ? 'checked' : '') + '><span>' + e.label + '</span></label>';
+      }).join('') +
+      '<div class="inlineActions">' +
+      '<button class="btn primary" onclick="saveExtrasSummary()">Salva</button>' +
+      '<button class="btn" onclick="refresh()">Annulla</button>' +
+      '</div></div>';
     return;
   }
 }
 
-function setQtyFromSummary(value) {
-  state.qty = Math.max(0, Math.round(parseNum(value)));
-  refresh();
-}
-
-function setPaperTypeFromSummary(value) {
-  state.paperType = value;
-  updatePaperSelects();
-  refresh();
-}
-
-function setWeightFromSummary(value) {
-  state.weight = parseNum(value);
-  refresh();
-}
-
-function setVariantFromSummary(value) {
-  state.specialVariant = value;
-  refresh();
-}
-
-function setSidesFromSummary(value) {
-  state.sides = Number(value);
-  refresh();
-}
-
-function setResellerFromSummary(checked) {
-  state.reseller = checked;
-  refresh();
-}
-
-function setCustomerCutFromSummary(checked) {
-  state.customerCut = checked;
-  refresh();
-}
+function setQtyFromSummary(value) { state.qty = Math.max(0, Math.round(parseNum(value))); refresh(); }
+function setPaperTypeFromSummary(value) { state.paperType = value; updatePaperSelects(); refresh(); }
+function setWeightFromSummary(value) { state.weight = parseNum(value); refresh(); }
+function setVariantFromSummary(value) { state.specialVariant = value; refresh(); }
+function setSidesFromSummary(value) { state.sides = Number(value); refresh(); }
+function setResellerFromSummary(checked) { state.reseller = checked; refresh(); }
+function setCustomerCutFromSummary(checked) { state.customerCut = checked; refresh(); }
 
 function updateFormatEditorValues() {
   const unitSel = $('#sumUnit');
   const wInput = $('#sumWidth');
   const hInput = $('#sumHeight');
-
   if (!unitSel || !wInput || !hInput) return;
-
   const oldUnit = state.unit;
   const newUnit = unitSel.value;
-
   if (oldUnit === newUnit) return;
-
   const wMm = parseDimensionWithUnit(wInput.value, oldUnit);
   const hMm = parseDimensionWithUnit(hInput.value, oldUnit);
-
   const display = (mm, unit) => {
     const v = unit === 'cm' ? mm / 10 : mm;
     return Number.isInteger(v) ? String(v) : v.toLocaleString('it-IT', { maximumFractionDigits: 2 });
   };
-
   wInput.value = display(wMm, newUnit);
   hInput.value = display(hMm, newUnit);
 }
@@ -2767,12 +1474,10 @@ function updateFormatEditorValues() {
 function saveFormatSummary() {
   const unit = $('#sumUnit').value;
   const width = $('#sumWidth').value;
-  const height = $('#sumHeight'].value;
-
+  const height = $('#sumHeight').value;
   state.unit = unit;
   state.widthMm = parseDimensionWithUnit(width, unit);
   state.heightMm = parseDimensionWithUnit(height, unit);
-
   updateUnitControls();
   updateDimensionInputs();
   refresh();
@@ -2782,48 +1487,29 @@ function toggleSummaryGraphicsHours() {
   const sel = $('#sumGraphics');
   const hours = $('#sumHours');
   if (!sel || !hours) return;
-
   const opt = data.graphicsOptions.find(o => o.id === sel.value);
-  if (opt && opt.type === 'hourly') {
-    hours.classList.remove('hidden');
-  } else {
-    hours.classList.add('hidden');
-  }
+  if (opt && opt.type === 'hourly') hours.classList.remove('hidden');
+  else hours.classList.add('hidden');
 }
 
 function saveGraphicsSummary() {
   state.graphicsType = $('#sumGraphics').value;
-
   const hours = $('#sumHours');
   if (hours && !hours.classList.contains('hidden')) {
     state.graphicHours = Math.max(0, parseNum(hours.value));
   }
-
   refresh();
 }
 
 function saveExtrasSummary() {
   const checks = $$('.sumExtra');
   const newExtras = {};
-
-  checks.forEach(c => {
-    newExtras[c.value] = c.checked;
-  });
-
+  checks.forEach(c => { newExtras[c.value] = c.checked; });
   const wasDie = state.extras.die;
   const dieNewlySelected = newExtras.die && !wasDie;
-
-  if (dieNewlySelected) {
-    newExtras.die = false;
-  }
-
+  if (dieNewlySelected) newExtras.die = false;
   state.extras = newExtras;
-
-  if (dieNewlySelected) {
-    openDieModal();
-    return;
-  }
-
+  if (dieNewlySelected) { openDieModal(); return; }
   refresh();
 }
 
@@ -2836,232 +1522,110 @@ function openAdmin() {
     }
     state.admin = true;
   }
-
   $('#adminModal').classList.remove('hidden');
   renderAdmin();
   refresh();
 }
 
-function closeAdmin() {
-  $('#adminModal').classList.add('hidden');
-}
-
-function logoutAdmin() {
-  state.admin = false;
-  closeAdmin();
-  refresh();
-}
+function closeAdmin() { $('#adminModal').classList.add('hidden'); }
+function logoutAdmin() { state.admin = false; closeAdmin(); refresh(); }
 
 function renderAdmin() {
   const s = data.settings;
-
-  $('#adminContent').innerHTML = `
-    <h3>Impostazioni principali</h3>
-    <div class="adminGrid">
-      <label>PIN admin
-        <input type="text" id="set_pin" value="${s.pin}">
-      </label>
-      <label>Ordine minimo €
-        <input type="number" step="0.01" id="set_minOrder" value="${s.minOrder}">
-      </label>
-      <label>Sconto rivenditore %
-        <input type="number" step="0.1" id="set_resellerDiscount" value="${s.resellerDiscount}">
-      </label>
-
-      <label>Taglio €
-        <input type="number" step="0.01" id="set_fixedCut" value="${s.fixedCut}">
-      </label>
-      <label>Taglio con cliente €
-        <input type="number" step="0.01" id="set_customerCutFixedCost" value="${s.customerCutFixedCost}">
-      </label>
-
-      <label>Soglia piccola tiratura (fogli)
-        <input type="number" step="1" id="set_smallMaxSheets" value="${s.smallMaxSheets}">
-      </label>
-      <label>Costo piccola tiratura €/foglio
-        <input type="number" step="0.01" id="set_smallSheetCost" value="${s.smallSheetCost}">
-      </label>
-
-      <label>Soglia fronte/retro fisso (fogli)
-        <input type="number" step="1" id="set_duplexSmallMaxSheets" value="${s.duplexSmallMaxSheets}">
-      </label>
-      <label>Fronte/retro fisso €
-        <input type="number" step="0.01" id="set_smallDuplexFixed" value="${s.smallDuplexFixed}">
-      </label>
-
-      <label>Costo standard €/lato
-        <input type="number" step="0.01" id="set_standardSheetRate" value="${s.standardSheetRate}">
-      </label>
-      <label>Soglia standard (fogli)
-        <input type="number" step="1" id="set_standardSheetThreshold" value="${s.standardSheetThreshold}">
-      </label>
-      <label>Costo oltre soglia €/lato
-        <input type="number" step="0.01" id="set_discountedSheetRate" value="${s.discountedSheetRate}">
-      </label>
-
-      <label>Soglia costo aggiuntivo carta (g)
-        <input type="number" step="1" id="set_heavyThreshold" value="${s.heavyThreshold}">
-      </label>
-      <label>Costo aggiuntivo carta €
-        <input type="number" step="0.01" id="set_heavyCost" value="${s.heavyCost}">
-      </label>
-
-      <label>Grafica: prima ora €
-        <input type="number" step="0.01" id="set_hourlyFirstHour" value="${s.hourlyFirstHour}">
-      </label>
-      <label>Grafica: ore successive €
-        <input type="number" step="0.01" id="set_hourlyNextHours" value="${s.hourlyNextHours}">
-      </label>
-    </div>
-
-    <div class="adminNote">
-      <strong>Logica costo stampa:</strong><br>
-      - Fogli 1–3: costo fisso per foglio (default €3/foglio).<br>
-      - Fogli 4–5: costo standard per foglio (default €0,70/foglio).<br>
-      - Fogli 1–5 con fronte/retro: +€${s.smallDuplexFixed} fisso.<br>
-      - Fogli 6–${s.standardSheetThreshold}: €${s.standardSheetRate} per lato stampato.<br>
-      - Fogli ${s.standardSheetThreshold + 1}+: €${s.discountedSheetRate} per lato stampato.<br><br>
-      <strong>Arrotondamento prezzo:</strong><br>
-      - Già multiplo di 5 → nessun arrotondamento.<br>
-      - Resto 0,01–2,50 → arrotonda in DIFETTO, mostra barrato.<br>
-      - Resto 2,51+ → arrotonda in ECCESSO, mostra solo prezzo arrotondato + (i).
-    </div>
-
-    <h3 style="margin-top:20px">Margini Fustella (mm)</h3>
-    <div class="adminGrid">
-      <label>Sinistra
-        <input type="number" step="1" id="set_dieLeft" value="${s.dieLeftMm}">
-      </label>
-      <label>Destra
-        <input type="number" step="1" id="set_dieRight" value="${s.dieRightMm}">
-      </label>
-      <label>Alto
-        <input type="number" step="1" id="set_dieTop" value="${s.dieTopMm}">
-      </label>
-      <label>Basso
-        <input type="number" step="1" id="set_dieBottom" value="${s.dieBottomMm}">
-      </label>
-    </div>
-
-    <h3 style="margin-top:20px">Costi Fustella nuova</h3>
-    <div class="adminGrid">
-      <label>Piccola (meno di A6)
-        <input type="number" step="0.01" id="set_dieNewSmall" value="${s.dieNewSmallCost}">
-      </label>
-      <label>Media (meno di A5)
-        <input type="number" step="0.01" id="set_dieNewMedium" value="${s.dieNewMediumCost}">
-      </label>
-      <label>Grande (A4 circa)
-        <input type="number" step="0.01" id="set_dieNewLarge" value="${s.dieNewLargeCost}">
-      </label>
-    </div>
-
-    <h3 style="margin-top:20px">Costi grafica</h3>
-    <table class="adminTable">
-      <thead>
-        <tr>
-          <th>Voce</th>
-          <th>Costo €</th>
-          <th>Nota</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${data.graphicsOptions.map((g, i) => `
-          <tr>
-            <td>${g.label}</td>
-            <td>
-              ${
-                g.type === 'hourly'
-                  ? `<span class="muted">Tariffa oraria</span>`
-                  : `<input type="number" step="0.01" data-graph-index="${i}" value="${g.cost}">`
-              }
-            </td>
-            <td>${g.note || ''}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-
-    <h3 style="margin-top:20px">Lavorazioni extra</h3>
-    <table class="adminTable">
-      <thead>
-        <tr>
-          <th>Attiva</th>
-          <th>Nome</th>
-          <th>Fisso €</th>
-          <th>Soglia</th>
-          <th>Tariffa €</th>
-          <th>Base</th>
-          <th>Modalità</th>
-        </tr>
-      </thead>
-      <tbody id="extrasBody">
-        ${data.extras.map((e, i) => `
-          <tr>
-            <td><input type="checkbox" class="ex_enabled" ${e.enabled ? 'checked' : ''}></td>
-            <td><input type="text" class="ex_label" value="${String(e.label || '').replace(/"/g, '&quot;')}"></td>
-            <td><input type="number" step="0.01" class="ex_fixed" value="${e.fixed}"></td>
-            <td><input type="number" step="1" class="ex_threshold" value="${e.threshold}"></td>
-            <td><input type="number" step="0.001" class="ex_rate" value="${e.rate}"></td>
-            <td>
-              <select class="ex_unit">
-                <option value="sheet" ${e.unit === 'sheet' ? 'selected' : ''}>Fogli</option>
-                <option value="piece" ${e.unit === 'piece' ? 'selected' : ''}>Pezzi</option>
-              </select>
-            </td>
-            <td>
-              <select class="ex_mode">
-                <option value="over" ${e.mode === 'over' ? 'selected' : ''}>Solo oltre soglia</option>
-                <option value="all" ${e.mode === 'all' ? 'selected' : ''}>Tutta la quantità</option>
-              </select>
-            </td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-
-    <div class="adminActions">
-      <button class="btn primary" onclick="saveAdmin()">Salva impostazioni</button>
-      <button class="btn" onclick="resetData()">Ripristina default</button>
-    </div>
-
-    <div class="adminNote">
-      <strong>Nota pezzi:</strong> le lavorazioni a pezzo vengono calcolate su fogli × copie per foglio, cioè sui cartoncini realmente presenti nella produzione.<br><br>
-      <strong>Nota soglia:</strong> "Solo oltre soglia" applica la tariffa variabile solo alla parte che supera la soglia.
-      "Tutta la quantità" applica la tariffa variabile a tutta la quantità quando la soglia viene superata.
-    </div>
-  `;
+  $('#adminContent').innerHTML =
+    '<h3>Impostazioni principali</h3>' +
+    '<div class="adminGrid">' +
+    '<label>PIN admin<input type="text" id="set_pin" value="' + s.pin + '"></label>' +
+    '<label>Ordine minimo €<input type="number" step="0.01" id="set_minOrder" value="' + s.minOrder + '"></label>' +
+    '<label>Sconto rivenditore %<input type="number" step="0.1" id="set_resellerDiscount" value="' + s.resellerDiscount + '"></label>' +
+    '<label>Taglio €<input type="number" step="0.01" id="set_fixedCut" value="' + s.fixedCut + '"></label>' +
+    '<label>Taglio con cliente €<input type="number" step="0.01" id="set_customerCutFixedCost" value="' + s.customerCutFixedCost + '"></label>' +
+    '<label>Soglia piccola tiratura (fogli)<input type="number" step="1" id="set_smallMaxSheets" value="' + s.smallMaxSheets + '"></label>' +
+    '<label>Costo piccola tiratura €/foglio<input type="number" step="0.01" id="set_smallSheetCost" value="' + s.smallSheetCost + '"></label>' +
+    '<label>Soglia fascia media (fogli)<input type="number" step="1" id="set_duplexSmallMaxSheets" value="' + s.duplexSmallMaxSheets + '"></label>' +
+    '<label>Costo fascia media €/foglio<input type="number" step="0.01" id="set_midSheetCost" value="' + s.midSheetCost + '"></label>' +
+    '<label>Fronte/retro fisso €<input type="number" step="0.01" id="set_smallDuplexFixed" value="' + s.smallDuplexFixed + '"></label>' +
+    '<label>Costo standard €/lato<input type="number" step="0.01" id="set_standardSheetRate" value="' + s.standardSheetRate + '"></label>' +
+    '<label>Soglia standard (fogli)<input type="number" step="1" id="set_standardSheetThreshold" value="' + s.standardSheetThreshold + '"></label>' +
+    '<label>Costo oltre soglia €/lato<input type="number" step="0.01" id="set_discountedSheetRate" value="' + s.discountedSheetRate + '"></label>' +
+    '<label>Soglia costo aggiuntivo carta (g)<input type="number" step="1" id="set_heavyThreshold" value="' + s.heavyThreshold + '"></label>' +
+    '<label>Costo aggiuntivo carta €<input type="number" step="0.01" id="set_heavyCost" value="' + s.heavyCost + '"></label>' +
+    '<label>Grafica: prima ora €<input type="number" step="0.01" id="set_hourlyFirstHour" value="' + s.hourlyFirstHour + '"></label>' +
+    '<label>Grafica: ore successive €<input type="number" step="0.01" id="set_hourlyNextHours" value="' + s.hourlyNextHours + '"></label>' +
+    '</div>' +
+    '<div class="adminNote"><strong>Logica costo stampa:</strong><br>' +
+    '- Fogli 1–' + s.smallMaxSheets + ': costo fisso per foglio (default €3/foglio).<br>' +
+    '- Fogli ' + (s.smallMaxSheets + 1) + '–' + s.duplexSmallMaxSheets + ': costo fascia media per foglio (default €0,70/foglio).<br>' +
+    '- Fogli 1–' + s.duplexSmallMaxSheets + ' con fronte/retro: +€' + s.smallDuplexFixed + ' fisso.<br>' +
+    '- Fogli ' + (s.duplexSmallMaxSheets + 1) + '–' + s.standardSheetThreshold + ': €' + s.standardSheetRate + ' per lato stampato.<br>' +
+    '- Fogli ' + (s.standardSheetThreshold + 1) + '+: €' + s.discountedSheetRate + ' per lato stampato.<br><br>' +
+    '<strong>Arrotondamento prezzo:</strong><br>' +
+    '- Già multiplo di 5 → nessun arrotondamento.<br>' +
+    '- Resto 0,01–2,50 → arrotonda in DIFETTO, mostra barrato.<br>' +
+    '- Resto 2,51+ → arrotonda in ECCESSO, mostra solo prezzo arrotondato + (i).</div>' +
+    '<h3 style="margin-top:20px">Margini Fustella (mm)</h3>' +
+    '<div class="adminGrid">' +
+    '<label>Sinistra<input type="number" step="1" id="set_dieLeft" value="' + s.dieLeftMm + '"></label>' +
+    '<label>Destra<input type="number" step="1" id="set_dieRight" value="' + s.dieRightMm + '"></label>' +
+    '<label>Alto<input type="number" step="1" id="set_dieTop" value="' + s.dieTopMm + '"></label>' +
+    '<label>Basso<input type="number" step="1" id="set_dieBottom" value="' + s.dieBottomMm + '"></label>' +
+    '</div>' +
+    '<h3 style="margin-top:20px">Costi Fustella nuova</h3>' +
+    '<div class="adminGrid">' +
+    '<label>Piccola (meno di A6)<input type="number" step="0.01" id="set_dieNewSmall" value="' + s.dieNewSmallCost + '"></label>' +
+    '<label>Media (meno di A5)<input type="number" step="0.01" id="set_dieNewMedium" value="' + s.dieNewMediumCost + '"></label>' +
+    '<label>Grande (A4 circa)<input type="number" step="0.01" id="set_dieNewLarge" value="' + s.dieNewLargeCost + '"></label>' +
+    '</div>' +
+    '<h3 style="margin-top:20px">Costi grafica</h3>' +
+    '<table class="adminTable"><thead><tr><th>Voce</th><th>Costo €</th><th>Nota</th></tr></thead><tbody>' +
+    data.graphicsOptions.map((g, i) => {
+      return '<tr><td>' + g.label + '</td><td>' +
+        (g.type === 'hourly' ? '<span class="muted">Tariffa oraria</span>' : '<input type="number" step="0.01" data-graph-index="' + i + '" value="' + g.cost + '">') +
+        '</td><td>' + (g.note || '') + '</td></tr>';
+    }).join('') +
+    '</tbody></table>' +
+    '<h3 style="margin-top:20px">Lavorazioni extra</h3>' +
+    '<table class="adminTable"><thead><tr><th>Attiva</th><th>Nome</th><th>Fisso €</th><th>Soglia</th><th>Tariffa €</th><th>Base</th><th>Modalità</th></tr></thead><tbody id="extrasBody">' +
+    data.extras.map((e, i) => {
+      return '<tr>' +
+        '<td><input type="checkbox" class="ex_enabled" ' + (e.enabled ? 'checked' : '') + '></td>' +
+        '<td><input type="text" class="ex_label" value="' + String(e.label || '').replace(/"/g, '&quot;') + '"></td>' +
+        '<td><input type="number" step="0.01" class="ex_fixed" value="' + e.fixed + '"></td>' +
+        '<td><input type="number" step="1" class="ex_threshold" value="' + e.threshold + '"></td>' +
+        '<td><input type="number" step="0.001" class="ex_rate" value="' + e.rate + '"></td>' +
+        '<td><select class="ex_unit"><option value="sheet" ' + (e.unit === 'sheet' ? 'selected' : '') + '>Fogli</option><option value="piece" ' + (e.unit === 'piece' ? 'selected' : '') + '>Pezzi</option></select></td>' +
+        '<td><select class="ex_mode"><option value="over" ' + (e.mode === 'over' ? 'selected' : '') + '>Solo oltre soglia</option><option value="all" ' + (e.mode === 'all' ? 'selected' : '') + '>Tutta la quantità</option></select></td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table>' +
+    '<div class="adminActions"><button class="btn primary" onclick="saveAdmin()">Salva impostazioni</button><button class="btn" onclick="resetData()">Ripristina default</button></div>' +
+    '<div class="adminNote"><strong>Nota pezzi:</strong> le lavorazioni a pezzo vengono calcolate su fogli × copie per foglio, cioè sui cartoncini realmente presenti nella produzione.<br><br>' +
+    '<strong>Nota soglia:</strong> "Solo oltre soglia" applica la tariffa variabile solo alla parte che supera la soglia. "Tutta la quantità" applica la tariffa variabile a tutta la quantità quando la soglia viene superata.</div>';
 }
 
 function saveAdmin() {
   const s = data.settings;
-
-  s.pin = $('#set_pin'].value || '1234';
+  s.pin = $('#set_pin').value || '1234';
   s.minOrder = parseNum($('#set_minOrder').value);
   s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
   s.fixedCut = parseNum($('#set_fixedCut').value);
   s.customerCutFixedCost = parseNum($('#set_customerCutFixedCost').value);
-
   s.smallMaxSheets = Math.max(0, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
   s.duplexSmallMaxSheets = Math.max(0, Math.round(parseNum($('#set_duplexSmallMaxSheets').value)));
+  s.midSheetCost = parseNum($('#set_midSheetCost').value);
   s.smallDuplexFixed = parseNum($('#set_smallDuplexFixed').value);
-
   s.standardSheetRate = parseNum($('#set_standardSheetRate').value);
   s.standardSheetThreshold = parseNum($('#set_standardSheetThreshold').value);
   s.discountedSheetRate = parseNum($('#set_discountedSheetRate').value);
-
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
   s.heavyCost = parseNum($('#set_heavyCost').value);
-
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
   s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
-
   s.dieLeftMm = parseNum($('#set_dieLeft').value);
   s.dieRightMm = parseNum($('#set_dieRight').value);
   s.dieTopMm = parseNum($('#set_dieTop').value);
   s.dieBottomMm = parseNum($('#set_dieBottom').value);
-
   s.dieNewSmallCost = parseNum($('#set_dieNewSmall').value);
   s.dieNewMediumCost = parseNum($('#set_dieNewMedium').value);
   s.dieNewLargeCost = parseNum($('#set_dieNewLarge').value);
@@ -3076,7 +1640,6 @@ function saveAdmin() {
   const rows = $$('#extrasBody tr');
   rows.forEach((tr, i) => {
     if (!data.extras[i]) return;
-
     data.extras[i].enabled = tr.querySelector('.ex_enabled').checked;
     data.extras[i].label = tr.querySelector('.ex_label').value;
     data.extras[i].fixed = parseNum(tr.querySelector('.ex_fixed').value);
@@ -3110,64 +1673,22 @@ function toast(msg) {
 }
 
 function initEvents() {
-  $('#wWidth').addEventListener('input', e => {
-    handleDimensionInput('width', e.target.value, e.target);
-  });
-
-  $('#wHeight').addEventListener('input', e => {
-    handleDimensionInput('height', e.target.value, e.target);
-  });
-
-  $('#width').addEventListener('input', e => {
-    handleDimensionInput('width', e.target.value, e.target);
-  });
-
-  $('#height').addEventListener('input', e => {
-    handleDimensionInput('height', e.target.value, e.target);
-  });
-
+  $('#wWidth').addEventListener('input', e => { handleDimensionInput('width', e.target.value, e.target); });
+  $('#wHeight').addEventListener('input', e => { handleDimensionInput('height', e.target.value, e.target); });
+  $('#width').addEventListener('input', e => { handleDimensionInput('width', e.target.value, e.target); });
+  $('#height').addEventListener('input', e => { handleDimensionInput('height', e.target.value, e.target); });
   $('#qty').addEventListener('change', e => handleQtyChange(e.target.value));
   $('#wQty').addEventListener('change', e => handleQtyChange(e.target.value));
-
-  $('#paperType').addEventListener('change', e => {
-    state.paperType = e.target.value;
-    updatePaperSelects();
-    refresh();
-  });
-
-  $('#wPaperType').addEventListener('change', e => {
-    state.paperType = e.target.value;
-    updatePaperSelects();
-    refresh();
-  });
-
-  $('#weight').addEventListener('change', e => {
-    state.weight = parseNum(e.target.value);
-    refresh();
-  });
-
-  $('#wWeight').addEventListener('change', e => {
-    state.weight = parseNum(e.target.value);
-    refresh();
-  });
-
-  $('#specialVariant').addEventListener('change', e => {
-    state.specialVariant = e.target.value;
-    refresh();
-  });
-
-  $('#wSpecialVariant').addEventListener('change', e => {
-    state.specialVariant = e.target.value;
-    refresh();
-  });
-
+  $('#paperType').addEventListener('change', e => { state.paperType = e.target.value; updatePaperSelects(); refresh(); });
+  $('#wPaperType').addEventListener('change', e => { state.paperType = e.target.value; updatePaperSelects(); refresh(); });
+  $('#weight').addEventListener('change', e => { state.weight = parseNum(e.target.value); refresh(); });
+  $('#wWeight').addEventListener('change', e => { state.weight = parseNum(e.target.value); refresh(); });
+  $('#specialVariant').addEventListener('change', e => { state.specialVariant = e.target.value; refresh(); });
+  $('#wSpecialVariant').addEventListener('change', e => { state.specialVariant = e.target.value; refresh(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (!$('#dieModal').classList.contains('hidden')) {
-        cancelDieModal();
-      } else {
-        closeAdmin();
-      }
+      if (!$('#dieModal').classList.contains('hidden')) cancelDieModal();
+      else closeAdmin();
     }
   });
 }
