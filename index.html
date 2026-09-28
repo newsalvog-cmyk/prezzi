@@ -318,7 +318,13 @@
     border:1px solid rgba(91,91,91,.10)
   }
   .priceLabel{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
-  .price{font-size:38px;font-weight:600;margin-top:6px;color:var(--primary)}
+  .price{font-size:38px;font-weight:600;margin-top:6px;color:var(--primary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .priceOriginal{
+    font-size:22px;
+    color:var(--muted);
+    text-decoration:line-through;
+    font-weight:400;
+  }
   .breakdown{margin-top:14px;display:grid;gap:8px}
   .breakRow{
     display:flex;justify-content:space-between;gap:12px;padding:10px 12px;
@@ -675,7 +681,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v14';
+const STORAGE_KEY = 'configuratore_stampa_v15';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -699,7 +705,6 @@ const DEFAULT_DATA = {
 
     heavyThreshold: 170,
     heavyCost: 10,
-    customerCutHeavySheetThreshold: 50,
 
     hourlyFirstHour: 50,
     hourlyNextHours: 30,
@@ -936,6 +941,26 @@ function escapeAttr(str){
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+// Funzione arrotondamento prezzo a multipli di 5
+function roundPriceToFive(total){
+  if(total <= 0) return { display: total, original: total, rounded: false };
+
+  const isMultipleOf5 = total % 5 === 0;
+  if(isMultipleOf5) return { display: total, original: total, rounded: false };
+
+  const hasDecimals = total % 1 !== 0;
+
+  if(hasDecimals){
+    // Con decimali: arrotonda per eccesso al multiplo di 5 superiore
+    const rounded = Math.ceil(total / 5) * 5;
+    return { display: rounded, original: total, rounded: true, direction: 'up' };
+  } else {
+    // Senza decimali: arrotonda per difetto al multiplo di 5 inferiore
+    const rounded = Math.floor(total / 5) * 5;
+    return { display: rounded, original: total, rounded: true, direction: 'down' };
+  }
 }
 
 function getType(){
@@ -1204,13 +1229,16 @@ function evaluate(qty = state.qty){
       value: printCost
     });
 
-  let applyHeavy = state.weight > s.heavyThreshold;
+    // Costo aggiuntivo carta: SEMPRE applicato se la grammatura supera la soglia
+    let applyHeavy = state.weight > s.heavyThreshold;
 
-if(applyHeavy){
-  productionCost += s.heavyCost;
-  details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
-}
+    if(applyHeavy){
+      productionCost += s.heavyCost;
+      details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
+    }
+  }
 
+  // Costo taglio: sempre applicato, cambia solo l'importo
   const cutCost = state.customerCut
     ? parseNum(s.customerCutFixedCost)
     : parseNum(s.fixedCut);
@@ -1254,6 +1282,11 @@ if(applyHeavy){
   const minApplied = total < s.minOrder;
   if(minApplied) total = s.minOrder;
 
+  total = round2(total);
+
+  // Arrotondamento a multipli di 5
+  const priceInfo = roundPriceToFive(total);
+
   return {
     valid:true,
     item,
@@ -1269,7 +1302,8 @@ if(applyHeavy){
     graphicsCost: round2(graphicsCost),
     extrasTotal: round2(extrasTotal),
     discount: round2(discount),
-    total: round2(total),
+    total: total,
+    priceInfo: priceInfo,
     minApplied,
     costPerPiece: qty ? round2(total / qty) : 0
   };
@@ -1547,18 +1581,28 @@ function renderSummaryInto(calc, container){
     { key:'customerCut', label:'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
   );
 
-  const priceHtml = calc.isQtyZero
-    ? `
+  // Costruzione HTML prezzo con arrotondamento
+  const pi = calc.priceInfo;
+  let priceHtml;
+
+  if(calc.isQtyZero){
+    priceHtml = `
       <div class="priceBox">
         <div class="priceLabel">Totale IVA esclusa</div>
         <div class="price">—</div>
         <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
       </div>
-    `
-    : `
+    `;
+  } else if(pi.rounded && pi.direction === 'down'){
+    // Prezzo senza decimali arrotondato per difetto: mostra originale barrato + arrotondato
+    priceHtml = `
       <div class="priceBox">
         <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">${fmtMoney(calc.total)}</div>
+        <div class="price">
+          <span class="priceOriginal">${fmtMoney(pi.original)}</span>
+          <span>${fmtMoney(pi.display)}</span>
+          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
+        </div>
         <div class="muted">
           ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
           ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
@@ -1579,6 +1623,62 @@ function renderSummaryInto(calc, container){
         <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
       </div>
     `;
+  } else if(pi.rounded && pi.direction === 'up'){
+    // Prezzo con decimali arrotondato per eccesso: mostra solo arrotondato + info
+    priceHtml = `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">
+          <span>${fmtMoney(pi.display)}</span>
+          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
+        </div>
+        <div class="muted">
+          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
+          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
+        </div>
+      </div>
+
+      <div class="breakdown">
+        ${calc.details.map(d => `
+          <div class="breakRow">
+            <span>
+              ${d.label}
+              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
+            </span>
+            <strong>${fmtMoney(d.value)}</strong>
+          </div>
+        `).join('')}
+        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
+        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
+      </div>
+    `;
+  } else {
+    // Prezzo già multiplo di 5, nessun arrotondamento
+    priceHtml = `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">${fmtMoney(pi.display)}</div>
+        <div class="muted">
+          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
+          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
+        </div>
+      </div>
+
+      <div class="breakdown">
+        ${calc.details.map(d => `
+          <div class="breakRow">
+            <span>
+              ${d.label}
+              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
+            </span>
+            <strong>${fmtMoney(d.value)}</strong>
+          </div>
+        `).join('')}
+        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
+        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
+      </div>
+    `;
+  }
 
   container.innerHTML = `
     <div class="descGrid">
@@ -2304,9 +2404,6 @@ function renderAdmin(){
       <label>Costo aggiuntivo carta €
         <input type="number" step="0.01" id="set_heavyCost" value="${s.heavyCost}">
       </label>
-      <label>Soglia costo carta con taglio cliente (fogli)
-        <input type="number" step="1" id="set_customerCutHeavySheetThreshold" value="${s.customerCutHeavySheetThreshold}">
-      </label>
 
       <label>Grafica: prima ora €
         <input type="number" step="0.01" id="set_hourlyFirstHour" value="${s.hourlyFirstHour}">
@@ -2320,10 +2417,14 @@ function renderAdmin(){
       Logica attuale del taglio:<br>
       - senza taglio cliente: costo pieno (default €10);<br>
       - con taglio cliente: costo ridotto (default €5).<br><br>
-      Tutto il resto del calcolo rimane identico nei due casi.<br><br>
+      Il costo aggiuntivo carta viene SEMPRE applicato quando la grammatura supera la soglia, indipendentemente dal taglio.<br><br>
       Logica stampe:<br>
       - senza taglio cliente: €0,70 a foglio fino alla soglia standard, poi €0,50 oltre la soglia;<br>
       - con taglio cliente: €0,70 a foglio fino alla soglia taglio cliente, poi €0,50 oltre la soglia.<br><br>
+      Arrotondamento prezzo:<br>
+      - Prezzo senza decimali (es. 17€): arrotondato per difetto a 15€;<br>
+      - Prezzo con decimali (es. 17,51€): arrotondato per eccesso a 20€.<br>
+      Sempre a multipli di 5. L'icona (i) mostra il prezzo effettivo.<br><br>
       Se vuoi disattivare la fascia piccola 1–3 fogli, imposta "Soglia piccola tiratura" a 0.
     </div>
 
@@ -2453,7 +2554,6 @@ function saveAdmin(){
 
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
   s.heavyCost = parseNum($('#set_heavyCost').value);
-  s.customerCutHeavySheetThreshold = parseNum($('#set_customerCutHeavySheetThreshold').value);
 
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
   s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
