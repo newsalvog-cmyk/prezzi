@@ -806,8 +806,8 @@ function evaluate(qty) {
     details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`, value: printCost });
   }
 
-  // Costo aggiuntivo carta (sempre se grammatura > soglia)
-  if (state.weight > s.heavyThreshold) {
+  // Costo aggiuntivo carta (solo se grammatura > soglia E oltre la fascia piccola)
+  if (state.weight > s.heavyThreshold && chosen.sheets > s.smallMaxSheets) {
     productionCost += s.heavyCost;
     details.push({ label: 'Costo aggiuntivo Carta', value: s.heavyCost });
   }
