@@ -681,7 +681,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v16';
+const STORAGE_KEY = 'configuratore_stampa_v17';
 let lastCalc = null;
 let dieTemp = { isNew:false, size:'medium' };
 
@@ -943,16 +943,30 @@ function escapeAttr(str){
     .replace(/>/g, '&gt;');
 }
 
-// ARROTONDAMENTO PREZZO: standard al multiplo di 5 più vicino
+// ============================================================
+// ARROTONDAMENTO PREZZO A MULTIPLI DI 5
+// - Se già multiplo di 5 → nessuna modifica
+// - Se resto <= 2.50 → arrotonda in DIFETTO, mostra barrato
+// - Se resto > 2.50 → arrotonda in ECCESSO, NON mostra barrato
+// ============================================================
 function roundPriceToFive(total){
-  if(total <= 0) return { display: total, original: total, rounded: false };
+  if(total <= 0) return { display: total, original: total, rounded: false, direction: null };
 
-  const isMultipleOf5 = total % 5 === 0;
-  if(isMultipleOf5) return { display: total, original: total, rounded: false };
+  const remainder = total % 5;
 
-  // Arrotondamento standard: se resto >= 2.50 arrotonda su, altrimenti giù
-  const rounded = Math.round(total / 5) * 5;
-  return { display: rounded, original: total, rounded: true };
+  if(remainder === 0){
+    return { display: total, original: total, rounded: false, direction: null };
+  }
+
+  if(remainder <= 2.5){
+    // Arrotonda in DIFETTO → mostra originale barrato
+    const rounded = Math.floor(total / 5) * 5;
+    return { display: rounded, original: total, rounded: true, direction: 'down' };
+  } else {
+    // Arrotonda in ECCESSO → NON mostra originale barrato
+    const rounded = Math.ceil(total / 5) * 5;
+    return { display: rounded, original: total, rounded: true, direction: 'up' };
+  }
 }
 
 function getType(){
@@ -1221,7 +1235,6 @@ function evaluate(qty = state.qty){
       value: printCost
     });
 
-    // Costo aggiuntivo carta: SEMPRE applicato se la grammatura supera la soglia
     let applyHeavy = state.weight > s.heavyThreshold;
 
     if(applyHeavy){
@@ -1230,7 +1243,6 @@ function evaluate(qty = state.qty){
     }
   }
 
-  // Costo taglio: sempre applicato, cambia solo l'importo
   const cutCost = state.customerCut
     ? parseNum(s.customerCutFixedCost)
     : parseNum(s.fixedCut);
@@ -1276,7 +1288,6 @@ function evaluate(qty = state.qty){
 
   total = round2(total);
 
-  // Arrotondamento a multipli di 5 (sempre per difetto)
   const priceInfo = roundPriceToFive(total);
 
   return {
@@ -1511,6 +1522,87 @@ function renderPreviewInto(calc, container){
   `;
 }
 
+function buildBreakdownHtml(calc){
+  return `
+    <div class="breakdown">
+      ${calc.details.map(d => `
+        <div class="breakRow">
+          <span>
+            ${d.label}
+            ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
+          </span>
+          <strong>${fmtMoney(d.value)}</strong>
+        </div>
+      `).join('')}
+      ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
+      <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
+    </div>
+  `;
+}
+
+function buildPriceHtml(calc){
+  const pi = calc.priceInfo;
+  const mutedLine = `
+    <div class="muted">
+      ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
+      ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
+    </div>
+  `;
+
+  if(calc.isQtyZero){
+    return `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">—</div>
+        <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
+      </div>
+    `;
+  }
+
+  if(!pi.rounded){
+    // Prezzo già multiplo di 5 → mostra normale
+    return `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">${fmtMoney(pi.display)}</div>
+        ${mutedLine}
+      </div>
+      ${buildBreakdownHtml(calc)}
+    `;
+  }
+
+  if(pi.direction === 'down'){
+    // Arrotondato in DIFETTO → mostra originale barrato + prezzo arrotondato + (i)
+    return `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">
+          <span class="priceOriginal">${fmtMoney(pi.original)}</span>
+          <span>${fmtMoney(pi.display)}</span>
+          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
+        </div>
+        ${mutedLine}
+      </div>
+      ${buildBreakdownHtml(calc)}
+    `;
+  }
+
+  if(pi.direction === 'up'){
+    // Arrotondato in ECCESSO → mostra SOLO prezzo arrotondato + (i), NIENTE barrato
+    return `
+      <div class="priceBox">
+        <div class="priceLabel">Totale IVA esclusa</div>
+        <div class="price">
+          <span>${fmtMoney(pi.display)}</span>
+          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
+        </div>
+        ${mutedLine}
+      </div>
+      ${buildBreakdownHtml(calc)}
+    `;
+  }
+}
+
 function renderSummaryInto(calc, container){
   if(!container) return;
 
@@ -1573,75 +1665,7 @@ function renderSummaryInto(calc, container){
     { key:'customerCut', label:'Taglio a carico del cliente', value: state.customerCut ? 'Sì' : 'No' }
   );
 
-  // Costruzione HTML prezzo con arrotondamento SEMPRE per difetto
-  const pi = calc.priceInfo;
-  let priceHtml;
-
-  if(calc.isQtyZero){
-    priceHtml = `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">—</div>
-        <div class="muted">Inserisci la quantità per vedere il prezzo.</div>
-      </div>
-    `;
-  } else if(pi.rounded){
-    // Prezzo arrotondato per difetto: mostra originale barrato + arrotondato + info
-    priceHtml = `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">
-          <span class="priceOriginal">${fmtMoney(pi.original)}</span>
-          <span>${fmtMoney(pi.display)}</span>
-          <span class="info" tabindex="0" data-tip="Prezzo effettivo: ${fmtMoney(pi.original)}">i</span>
-        </div>
-        <div class="muted">
-          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
-          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
-        </div>
-      </div>
-
-      <div class="breakdown">
-        ${calc.details.map(d => `
-          <div class="breakRow">
-            <span>
-              ${d.label}
-              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
-            </span>
-            <strong>${fmtMoney(d.value)}</strong>
-          </div>
-        `).join('')}
-        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
-        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
-      </div>
-    `;
-  } else {
-    // Prezzo già multiplo di 5, nessun arrotondamento
-    priceHtml = `
-      <div class="priceBox">
-        <div class="priceLabel">Totale IVA esclusa</div>
-        <div class="price">${fmtMoney(pi.display)}</div>
-        <div class="muted">
-          ${calc.minApplied ? `Minimo ordine applicato: ${fmtMoney(data.settings.minOrder)} · ` : ''}
-          ${state.reseller ? `Sconto rivenditore applicato` : 'Cliente standard'}
-        </div>
-      </div>
-
-      <div class="breakdown">
-        ${calc.details.map(d => `
-          <div class="breakRow">
-            <span>
-              ${d.label}
-              ${d.info ? `<span class="info" tabindex="0" data-tip="${escapeAttr(d.info)}">i</span>` : ''}
-            </span>
-            <strong>${fmtMoney(d.value)}</strong>
-          </div>
-        `).join('')}
-        ${calc.discount ? `<div class="breakRow"><span>Sconto rivenditore</span><strong>-${fmtMoney(calc.discount)}</strong></div>` : ''}
-        <div class="breakRow"><span>Costo Cad.</span><strong>${fmtMoney(calc.costPerPiece)}</strong></div>
-      </div>
-    `;
-  }
+  const priceHtml = buildPriceHtml(calc);
 
   container.innerHTML = `
     <div class="descGrid">
@@ -2377,12 +2401,11 @@ function renderAdmin(){
     </div>
 
     <div class="adminNote">
-      Logica arrotondamento prezzo:<br>
-      - Il prezzo viene SEMPRE arrotondato per DIFETTO al multiplo di 5 inferiore.<br>
-      - Esempio: 22,80€ → mostra 22,80€ barrato e 20€ come prezzo finale.<br>
-      - Esempio: 17€ → mostra 17€ barrato e 15€ come prezzo finale.<br>
-      - Se il prezzo è già multiplo di 5 (es. 20€), non viene arrotondato.<br>
-      - L'icona (i) mostra sempre il prezzo effettivo prima dell'arrotondamento.<br><br>
+      Logica arrotondamento prezzo a multipli di 5:<br>
+      - Se il prezzo è già multiplo di 5 → nessun arrotondamento.<br>
+      - Se il resto è da 0,01 a 2,50 → arrotonda in DIFETTO e mostra il prezzo originale barrato.<br>
+      - Se il resto è da 2,51 in poi → arrotonda in ECCESSO e mostra SOLO il prezzo arrotondato (senza barrato).<br>
+      - In entrambi i casi l'icona (i) mostra il prezzo effettivo.<br><br>
       Logica taglio:<br>
       - senza taglio cliente: costo pieno (default €10);<br>
       - con taglio cliente: costo ridotto (default €5).<br><br>
