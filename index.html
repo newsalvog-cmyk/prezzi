@@ -416,7 +416,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v23';
+const STORAGE_KEY = 'configuratore_stampa_v24';
 let lastCalc = null;
 let dieTemp = { isNew: false, size: 'medium' };
 
@@ -441,7 +441,6 @@ const DEFAULT_DATA = {
     heavyThreshold: 170,
     heavyCost: 10,
     midHeavyCost: 5,
-    midHeavyMaxSheets: 7,
     hourlyFirstHour: 50,
     hourlyNextHours: 30,
     dieLeftMm: 2,
@@ -801,13 +800,12 @@ function evaluate(qty) {
 
   if (state.weight > s.heavyThreshold) {
     if (chosen.sheets <= s.smallMaxSheets) {
-      // Fascia piccola: nessun costo carta
-    } else if (chosen.sheets <= s.midHeavyMaxSheets) {
-      productionCost += s.midHeavyCost;
-      details.push({ label: 'Costo aggiuntivo Carta (fascia media)', value: s.midHeavyCost });
+      // Fascia piccola (1-3 fogli): nessun costo carta
     } else {
-      productionCost += s.heavyCost;
-      details.push({ label: 'Costo aggiuntivo Carta', value: s.heavyCost });
+      // Da 4 fogli in poi: costo progressivo da €5 a €10 (+€1 per ogni foglio)
+      const paperCost = Math.min(s.midHeavyCost + (chosen.sheets - (s.smallMaxSheets + 1)), s.heavyCost);
+      productionCost += paperCost;
+      details.push({ label: 'Costo aggiuntivo Carta (' + chosen.sheets + ' fogli)', value: paperCost });
     }
   }
 
@@ -1573,9 +1571,8 @@ function renderAdmin() {
     '<label>Costo extra-sconto €/lato<input type="number" step="0.01" id="set_superDiscountedSheetRate" value="' + s.superDiscountedSheetRate + '"></label>' +
     '<label>Soglia extra-sconto (lati)<input type="number" step="1" id="set_superDiscountedSidesThreshold" value="' + s.superDiscountedSidesThreshold + '"></label>' +
     '<label>Soglia costo aggiuntivo carta (g)<input type="number" step="1" id="set_heavyThreshold" value="' + s.heavyThreshold + '"></label>' +
-    '<label>Costo carta fascia alta €<input type="number" step="0.01" id="set_heavyCost" value="' + s.heavyCost + '"></label>' +
-    '<label>Costo carta fascia media €<input type="number" step="0.01" id="set_midHeavyCost" value="' + s.midHeavyCost + '"></label>' +
-    '<label>Soglia max carta fascia media (fogli)<input type="number" step="1" id="set_midHeavyMaxSheets" value="' + s.midHeavyMaxSheets + '"></label>' +
+    '<label>Costo carta iniziale €<input type="number" step="0.01" id="set_midHeavyCost" value="' + s.midHeavyCost + '"></label>' +
+    '<label>Costo carta massimo €<input type="number" step="0.01" id="set_heavyCost" value="' + s.heavyCost + '"></label>' +
     '<label>Grafica: prima ora €<input type="number" step="0.01" id="set_hourlyFirstHour" value="' + s.hourlyFirstHour + '"></label>' +
     '<label>Grafica: ore successive €<input type="number" step="0.01" id="set_hourlyNextHours" value="' + s.hourlyNextHours + '"></label>' +
     '</div>' +
@@ -1588,8 +1585,7 @@ function renderAdmin() {
     '- Oltre ' + s.superDiscountedSidesThreshold + ' lati di stampa: €' + s.superDiscountedSheetRate + ' per lato stampato.<br><br>' +
     '<strong>Logica costo carta (se grammatura > ' + s.heavyThreshold + 'g):</strong><br>' +
     '- Fogli 1–' + s.smallMaxSheets + ': NESSUN costo carta.<br>' +
-    '- Fogli ' + (s.smallMaxSheets + 1) + '–' + s.midHeavyMaxSheets + ': €' + s.midHeavyCost + ' (fascia media).<br>' +
-    '- Fogli ' + (s.midHeavyMaxSheets + 1) + '+: €' + s.heavyCost + ' (fascia alta).<br><br>' +
+    '- Fogli ' + (s.smallMaxSheets + 1) + '+: costo progressivo da €' + s.midHeavyCost + ' a €' + s.heavyCost + ' (+€1 per ogni foglio).<br><br>' +
     '<strong>Logica taglio:</strong><br>' +
     '- Taglio normale: €' + s.fixedCut + '.<br>' +
     '- Taglio a carico cliente: €' + s.customerCutFixedCost + '.<br>' +
@@ -1657,9 +1653,8 @@ function saveAdmin() {
   s.superDiscountedSheetRate = parseNum($('#set_superDiscountedSheetRate').value);
   s.superDiscountedSidesThreshold = parseNum($('#set_superDiscountedSidesThreshold').value);
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
-  s.heavyCost = parseNum($('#set_heavyCost').value);
   s.midHeavyCost = parseNum($('#set_midHeavyCost').value);
-  s.midHeavyMaxSheets = Math.max(0, Math.round(parseNum($('#set_midHeavyMaxSheets').value)));
+  s.heavyCost = parseNum($('#set_heavyCost').value);
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
   s.hourlyNextHours = parseNum($('#set_hourlyNextHours').value);
   s.dieLeftMm = parseNum($('#set_dieLeft').value);
