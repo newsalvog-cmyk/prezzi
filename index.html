@@ -943,15 +943,15 @@ function escapeAttr(str){
     .replace(/>/g, '&gt;');
 }
 
-// ARROTONDAMENTO PREZZO: sempre per DIFETTO al multiplo di 5 inferiore
+// ARROTONDAMENTO PREZZO: standard al multiplo di 5 più vicino
 function roundPriceToFive(total){
   if(total <= 0) return { display: total, original: total, rounded: false };
 
   const isMultipleOf5 = total % 5 === 0;
   if(isMultipleOf5) return { display: total, original: total, rounded: false };
 
-  // Sempre arrotondare per DIFETTO
-  const rounded = Math.floor(total / 5) * 5;
+  // Arrotondamento standard: se resto >= 2.50 arrotonda su, altrimenti giù
+  const rounded = Math.round(total / 5) * 5;
   return { display: rounded, original: total, rounded: true };
 }
 
