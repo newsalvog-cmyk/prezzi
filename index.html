@@ -420,7 +420,7 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v20';
+const STORAGE_KEY = 'configuratore_stampa_v21';
 let lastCalc = null;
 let dieTemp = { isNew: false, size: 'medium' };
 
@@ -431,14 +431,17 @@ const DEFAULT_DATA = {
     resellerDiscount: 20,
     fixedCut: 10,
     customerCutFixedCost: 5,
+    dieCutCost: 5,
     smallMaxSheets: 3,
     smallSheetCost: 3,
     duplexSmallMaxSheets: 5,
-    smallDuplexFixed: 5,
     midSheetCost: 0.70,
+    smallDuplexFixed: 5,
     standardSheetRate: 0.70,
     standardSheetThreshold: 20,
     discountedSheetRate: 0.50,
+    superDiscountedSheetRate: 0.35,
+    superDiscountedSidesThreshold: 70,
     heavyThreshold: 170,
     heavyCost: 10,
     hourlyFirstHour: 50,
@@ -785,8 +788,19 @@ function evaluate(qty) {
     }
   } else {
     // Fogli 6+: tariffa per lato stampato
-    const rate = chosen.sheets > s.standardSheetThreshold ? s.discountedSheetRate : s.standardSheetRate;
-    const printCost = chosen.sheets * state.sides * rate;
+    const printedSides = chosen.sheets * state.sides;
+    let rate;
+    if (chosen.sheets > s.standardSheetThreshold) {
+      // Fascia scontata: verifico se superare la soglia lati per lo sconto extra
+      if (printedSides > s.superDiscountedSidesThreshold) {
+        rate = s.superDiscountedSheetRate;
+      } else {
+        rate = s.discountedSheetRate;
+      }
+    } else {
+      rate = s.standardSheetRate;
+    }
+    const printCost = printedSides * rate;
     productionCost += printCost;
     const latiLabel = state.sides === 2 ? '2 lati' : '1 lato';
     details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`, value: printCost });
@@ -799,10 +813,21 @@ function evaluate(qty) {
   }
 
   // Costo taglio
-  const cutCost = state.customerCut ? s.customerCutFixedCost : s.fixedCut;
+  let cutCost;
+  let cutLabel;
+  if (state.customerCut) {
+    cutCost = s.customerCutFixedCost;
+    cutLabel = 'Taglio (a carico cliente)';
+  } else if (isDieActive()) {
+    cutCost = s.dieCutCost;
+    cutLabel = 'Taglio (con fustella)';
+  } else {
+    cutCost = s.fixedCut;
+    cutLabel = 'Taglio';
+  }
   if (cutCost > 0) {
     productionCost += cutCost;
-    details.push({ label: state.customerCut ? 'Taglio (a carico cliente)' : 'Taglio', value: cutCost });
+    details.push({ label: cutLabel, value: cutCost });
   }
 
   // Grafica
@@ -917,6 +942,7 @@ function renderExtrasOptions() {
       if (state.extras.die) {
         labelHtml += ' <span class="starBadge">★</span>';
         tip += ' · Margini applicati a ogni singolo elemento sul foglio.';
+        tip += ' · Taglio ridotto a ' + fmtMoney(data.settings.dieCutCost) + '.';
         if (state.dieIsNew) {
           const size = state.dieNewSize || 'medium';
           tip += ' · Fustella nuova: ' + getDieNewSizeLabel(size) + ' ' + fmtMoney(getDieNewCost(size)) + '.';
@@ -1260,7 +1286,7 @@ function renderDieModal() {
     large: getDieNewCost('large')
   };
   $('#dieModalContent').innerHTML =
-    '<p class="muted">Quando la fustella è attiva, i margini vengono applicati a ogni singolo elemento presente sul foglio.</p>' +
+    '<p class="muted">Quando la fustella è attiva, i margini vengono applicati a ogni singolo elemento presente sul foglio e il taglio viene ridotto a ' + fmtMoney(data.settings.dieCutCost) + '.</p>' +
     '<div class="segmented">' +
     '<button class="segBtn ' + (!dieTemp.isNew ? 'active' : '') + '" onclick="setDieTempNew(\'existing\')">Già esistente</button>' +
     '<button class="segBtn ' + (dieTemp.isNew ? 'active' : '') + '" onclick="setDieTempNew(\'new\')">Nuova</button>' +
@@ -1540,6 +1566,7 @@ function renderAdmin() {
     '<label>Sconto rivenditore %<input type="number" step="0.1" id="set_resellerDiscount" value="' + s.resellerDiscount + '"></label>' +
     '<label>Taglio €<input type="number" step="0.01" id="set_fixedCut" value="' + s.fixedCut + '"></label>' +
     '<label>Taglio con cliente €<input type="number" step="0.01" id="set_customerCutFixedCost" value="' + s.customerCutFixedCost + '"></label>' +
+    '<label>Taglio con fustella €<input type="number" step="0.01" id="set_dieCutCost" value="' + s.dieCutCost + '"></label>' +
     '<label>Soglia piccola tiratura (fogli)<input type="number" step="1" id="set_smallMaxSheets" value="' + s.smallMaxSheets + '"></label>' +
     '<label>Costo piccola tiratura €/foglio<input type="number" step="0.01" id="set_smallSheetCost" value="' + s.smallSheetCost + '"></label>' +
     '<label>Soglia fascia media (fogli)<input type="number" step="1" id="set_duplexSmallMaxSheets" value="' + s.duplexSmallMaxSheets + '"></label>' +
@@ -1547,7 +1574,9 @@ function renderAdmin() {
     '<label>Fronte/retro fisso €<input type="number" step="0.01" id="set_smallDuplexFixed" value="' + s.smallDuplexFixed + '"></label>' +
     '<label>Costo standard €/lato<input type="number" step="0.01" id="set_standardSheetRate" value="' + s.standardSheetRate + '"></label>' +
     '<label>Soglia standard (fogli)<input type="number" step="1" id="set_standardSheetThreshold" value="' + s.standardSheetThreshold + '"></label>' +
-    '<label>Costo oltre soglia €/lato<input type="number" step="0.01" id="set_discountedSheetRate" value="' + s.discountedSheetRate + '"></label>' +
+    '<label>Costo scontato €/lato<input type="number" step="0.01" id="set_discountedSheetRate" value="' + s.discountedSheetRate + '"></label>' +
+    '<label>Costo extra-sconto €/lato<input type="number" step="0.01" id="set_superDiscountedSheetRate" value="' + s.superDiscountedSheetRate + '"></label>' +
+    '<label>Soglia extra-sconto (lati)<input type="number" step="1" id="set_superDiscountedSidesThreshold" value="' + s.superDiscountedSidesThreshold + '"></label>' +
     '<label>Soglia costo aggiuntivo carta (g)<input type="number" step="1" id="set_heavyThreshold" value="' + s.heavyThreshold + '"></label>' +
     '<label>Costo aggiuntivo carta €<input type="number" step="0.01" id="set_heavyCost" value="' + s.heavyCost + '"></label>' +
     '<label>Grafica: prima ora €<input type="number" step="0.01" id="set_hourlyFirstHour" value="' + s.hourlyFirstHour + '"></label>' +
@@ -1558,7 +1587,12 @@ function renderAdmin() {
     '- Fogli ' + (s.smallMaxSheets + 1) + '–' + s.duplexSmallMaxSheets + ': costo fascia media per foglio (default €0,70/foglio).<br>' +
     '- Fogli 1–' + s.duplexSmallMaxSheets + ' con fronte/retro: +€' + s.smallDuplexFixed + ' fisso.<br>' +
     '- Fogli ' + (s.duplexSmallMaxSheets + 1) + '–' + s.standardSheetThreshold + ': €' + s.standardSheetRate + ' per lato stampato.<br>' +
-    '- Fogli ' + (s.standardSheetThreshold + 1) + '+: €' + s.discountedSheetRate + ' per lato stampato.<br><br>' +
+    '- Fogli ' + (s.standardSheetThreshold + 1) + '+: €' + s.discountedSheetRate + ' per lato stampato.<br>' +
+    '- Oltre ' + s.superDiscountedSidesThreshold + ' lati di stampa: €' + s.superDiscountedSheetRate + ' per lato stampato.<br><br>' +
+    '<strong>Logica taglio:</strong><br>' +
+    '- Taglio normale: €' + s.fixedCut + '.<br>' +
+    '- Taglio a carico cliente: €' + s.customerCutFixedCost + '.<br>' +
+    '- Taglio con fustella attiva: €' + s.dieCutCost + '.<br><br>' +
     '<strong>Arrotondamento prezzo:</strong><br>' +
     '- Già multiplo di 5 → nessun arrotondamento.<br>' +
     '- Resto 0,01–2,50 → arrotonda in DIFETTO, mostra barrato.<br>' +
@@ -1610,6 +1644,7 @@ function saveAdmin() {
   s.resellerDiscount = parseNum($('#set_resellerDiscount').value);
   s.fixedCut = parseNum($('#set_fixedCut').value);
   s.customerCutFixedCost = parseNum($('#set_customerCutFixedCost').value);
+  s.dieCutCost = parseNum($('#set_dieCutCost').value);
   s.smallMaxSheets = Math.max(0, Math.round(parseNum($('#set_smallMaxSheets').value)));
   s.smallSheetCost = parseNum($('#set_smallSheetCost').value);
   s.duplexSmallMaxSheets = Math.max(0, Math.round(parseNum($('#set_duplexSmallMaxSheets').value)));
@@ -1618,6 +1653,8 @@ function saveAdmin() {
   s.standardSheetRate = parseNum($('#set_standardSheetRate').value);
   s.standardSheetThreshold = parseNum($('#set_standardSheetThreshold').value);
   s.discountedSheetRate = parseNum($('#set_discountedSheetRate').value);
+  s.superDiscountedSheetRate = parseNum($('#set_superDiscountedSheetRate').value);
+  s.superDiscountedSidesThreshold = parseNum($('#set_superDiscountedSidesThreshold').value);
   s.heavyThreshold = parseNum($('#set_heavyThreshold').value);
   s.heavyCost = parseNum($('#set_heavyCost').value);
   s.hourlyFirstHour = parseNum($('#set_hourlyFirstHour').value);
