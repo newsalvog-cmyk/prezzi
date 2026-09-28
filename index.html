@@ -1204,18 +1204,12 @@ function evaluate(qty = state.qty){
       value: printCost
     });
 
-    let applyHeavy = state.weight > s.heavyThreshold;
+  let applyHeavy = state.weight > s.heavyThreshold;
 
-    if(applyHeavy && state.customerCut){
-      const customerHeavyThreshold = parseNum(s.customerCutHeavySheetThreshold);
-      applyHeavy = chosen.sheets > customerHeavyThreshold;
-    }
-
-    if(applyHeavy){
-      productionCost += s.heavyCost;
-      details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
-    }
-  }
+if(applyHeavy){
+  productionCost += s.heavyCost;
+  details.push({ label:'Costo aggiuntivo Carta', value:s.heavyCost });
+}
 
   const cutCost = state.customerCut
     ? parseNum(s.customerCutFixedCost)
