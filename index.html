@@ -203,7 +203,6 @@
   </header>
 
   <main>
-    <!-- WIZARD -->
     <section id="wizardView" class="wizard">
       <div class="glass wizardCard">
         <div class="wizardHead">
@@ -313,7 +312,6 @@
       </div>
     </section>
 
-    <!-- NORMAL VIEW -->
     <div id="normalView" class="hidden">
       <section class="glass preview">
         <div id="preview"></div>
@@ -393,7 +391,6 @@
     </div>
   </main>
 
-  <!-- MODALE FUSTELLA -->
   <div id="dieModal" class="modal hidden">
     <div class="modal-backdrop" onclick="cancelDieModal()"></div>
     <div class="modal-panel glass small">
@@ -405,7 +402,6 @@
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div id="adminModal" class="modal hidden">
     <div class="modal-backdrop" onclick="closeAdmin()"></div>
     <div class="modal-panel glass">
@@ -420,13 +416,13 @@
   <div id="toast" class="toast"></div>
 
 <script>
-const STORAGE_KEY = 'configuratore_stampa_v22';
+const STORAGE_KEY = 'configuratore_stampa_v23';
 let lastCalc = null;
 let dieTemp = { isNew: false, size: 'medium' };
 
 const DEFAULT_DATA = {
   settings: {
-    pin: 'agfa',
+    pin: '1234',
     minOrder: 5,
     resellerDiscount: 20,
     fixedCut: 10,
@@ -769,9 +765,7 @@ function evaluate(qty) {
   let productionCost = 0;
   let details = [];
 
-  // --- LOGICA COSTO STAMPA ---
   if (chosen.sheets <= s.smallMaxSheets) {
-    // Fogli 1-3: €3/foglio
     const smallCost = chosen.sheets * s.smallSheetCost;
     productionCost += smallCost;
     details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.smallSheetCost)})`, value: smallCost });
@@ -780,7 +774,6 @@ function evaluate(qty) {
       details.push({ label: 'Fronte/retro (piccola tiratura)', value: s.smallDuplexFixed });
     }
   } else if (chosen.sheets <= s.duplexSmallMaxSheets) {
-    // Fogli 4-5: €0,70/foglio
     const midCost = chosen.sheets * s.midSheetCost;
     productionCost += midCost;
     details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${fmtMoney(s.midSheetCost)})`, value: midCost });
@@ -789,7 +782,6 @@ function evaluate(qty) {
       details.push({ label: 'Fronte/retro (piccola tiratura)', value: s.smallDuplexFixed });
     }
   } else {
-    // Fogli 6+: tariffa per lato stampato
     const printedSides = chosen.sheets * state.sides;
     let rate;
     if (chosen.sheets > s.standardSheetThreshold) {
@@ -807,25 +799,18 @@ function evaluate(qty) {
     details.push({ label: `Stampa (${fmtNum(chosen.sheets)} fogli × ${latiLabel} × ${fmtMoney(rate)})`, value: printCost });
   }
 
-  // --- COSTO AGGIUNTIVO CARTA (con 3 fasce) ---
-  // Fogli 1-3 (fascia piccola): NESSUN costo carta
-  // Fogli 4-15 (fascia media): costo ridotto (€5)
-  // Fogli 16+: costo pieno (€10)
   if (state.weight > s.heavyThreshold) {
     if (chosen.sheets <= s.smallMaxSheets) {
-      // Nessuno costo carta per fascia piccola
+      // Fascia piccola: nessun costo carta
     } else if (chosen.sheets <= s.midHeavyMaxSheets) {
-      // Fascia media: costo ridotto
       productionCost += s.midHeavyCost;
       details.push({ label: 'Costo aggiuntivo Carta (fascia media)', value: s.midHeavyCost });
     } else {
-      // Oltre soglia fascia media: costo pieno
       productionCost += s.heavyCost;
       details.push({ label: 'Costo aggiuntivo Carta', value: s.heavyCost });
     }
   }
 
-  // Costo taglio
   let cutCost;
   let cutLabel;
   if (state.customerCut) {
@@ -843,11 +828,9 @@ function evaluate(qty) {
     details.push({ label: cutLabel, value: cutCost });
   }
 
-  // Grafica
   const graphicsCost = getGraphicsCost();
   details.push({ label: `Grafica: ${getGraphicsLabel()}`, value: graphicsCost });
 
-  // Lavorazioni extra
   let extrasTotal = 0;
   data.extras.forEach(extra => {
     const cost = getExtraCost(extra, chosen.sheets, producedPieces);
@@ -857,7 +840,6 @@ function evaluate(qty) {
     }
   });
 
-  // Fustella nuova
   if (isDieActive() && state.dieIsNew) {
     const size = state.dieNewSize || 'medium';
     const newDieCost = getDieNewCost(size);
@@ -1511,7 +1493,7 @@ function updateFormatEditorValues() {
 }
 
 function saveFormatSummary() {
-  const unit = $('#sumUnit'].value;
+  const unit = $('#sumUnit').value;
   const width = $('#sumWidth').value;
   const height = $('#sumHeight').value;
   state.unit = unit;
@@ -1566,7 +1548,7 @@ function openAdmin() {
   refresh();
 }
 
-function closeAdmin() { $('#adminModal'].classList.add('hidden'); }
+function closeAdmin() { $('#adminModal').classList.add('hidden'); }
 function logoutAdmin() { state.admin = false; closeAdmin(); refresh(); }
 
 function renderAdmin() {
